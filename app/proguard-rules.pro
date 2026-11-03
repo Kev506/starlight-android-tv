@@ -9,6 +9,7 @@
 
 # Necessary for GSON reflection and Kotlin serialization signatures
 -keepattributes Signature, *Annotation*, AnnotationDefault, RuntimeVisibleAnnotations
+-keep class kotlin.Metadata { *; }
 
 # ==============================================================================
 # 2. NATIVE JNI & SECURITY BOUNDARY SECURITY (Hardened)
@@ -51,6 +52,27 @@
 -keep class com.google.crypto.tink.** { public *; }
 -keep class com.google.crypto.tink.integration.android.** { *; }
 -dontwarn com.google.crypto.tink.**
+
+# This is also needed for R8 in compat mode since multiple
+# optimizations will remove the generic signature such as class
+# merging and argument removal. See:
+# https://r8.googlesource.com/r8/+/refs/heads/main/compatibility-faq.md#troubleshooting-gson-gson
+-keep,allowobfuscation class com.google.gson.reflect.TypeToken{<init>(...);}
+-keep,allowobfuscation class * extends com.google.gson.reflect.TypeToken{<init>(...);}
+
+# kotlinx.serialization rules for IGDB models and Twitch
+-keepattributes *Annotation*, InnerClasses
+-dontnote kotlinx.serialization.**
+-keepclassmembers class com.starlight.models.** {
+    *** Companion;
+}
+-keepclasseswithmembers class com.starlight.models.** {
+    kotlinx.serialization.KSerializer serializer(...);
+}
+-keep,allowobfuscation,allowshrinking class com.starlight.models.**$$serializer { *; }
+-keepclassmembers class com.starlight.models.** {
+    <fields>;
+}
 
 # BouncyCastle Cryptography Configuration (X.509 Certificate & Crypto Engine)
 -keep class org.bouncycastle.jce.provider.BouncyCastleProvider

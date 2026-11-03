@@ -218,7 +218,9 @@ class AppViewHelper(
                 e.printStackTrace()
             }
             if (updated) {
-                updateList()
+                applicationScope.launch(Dispatchers.Main) {
+                    updateList()
+                }
             }
         })
 
@@ -323,18 +325,24 @@ class AppViewHelper(
                 val dbHandler =
                     GameDataBaseManager.getInstance(view) ?: return
                 if (!dbHandler.isDatabaseEmpty()) {
-                    val databaseGameCount = dbHandler.getGamesCount()
-                    val appCount = appList.size.toLong()
-                    if (databaseGameCount < appCount) {
-                        val gameRepo = IgdbRepository(
-                            view,
-                            viewModel.computer!!,
-                            viewModel.uuidString!!
-                        )
-                        applicationScope.launch {
-                            appList.forEach { app ->
-                                gameRepo.fetchAndConnectIgdb(app)
-                                delay(1000.milliseconds)
+                    val gameRepo = IgdbRepository(
+                        view,
+                        viewModel.computer!!,
+                        viewModel.uuidString!!
+                    )
+                    applicationScope.launch {
+                        val missingApps = appList.filter { app ->
+                            val existing = dbHandler.getAppData(app.id.toString())
+                            existing.title.isNullOrEmpty() || existing.description == view.getString(
+                                R.string.No_Details
+                            )
+                        }
+                        if (missingApps.isNotEmpty()) {
+                            applicationScope.launch {
+                                missingApps.forEach { app ->
+                                    gameRepo.fetchAndConnectIgdb(app)
+                                    delay(1000.milliseconds)
+                                }
                             }
                         }
                     }
@@ -402,13 +410,15 @@ class AppViewHelper(
     }
 
     // Helper method to update the app list
-    private fun updateList() {
-        applicationScope.launch(Dispatchers.Main) {
+    private suspend fun updateList() {
+        withContext(Dispatchers.Main) {
+            viewModel.triggerReload()
             Toast.makeText(
                 uiContext,
                 uiContext.getString(R.string.app_list_updated), Toast.LENGTH_SHORT
             ).show()
         }
+        updated = false
     }
 
     // Update the UI with the app list
