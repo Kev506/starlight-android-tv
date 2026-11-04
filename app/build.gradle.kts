@@ -75,8 +75,8 @@ android {
         minSdk = 29
         targetSdk = 37
 
-        versionName = ("14.2.5")
-        versionCode = 72
+        versionName = ("14.3.0")
+        versionCode = 73
         applicationId = ("com.github.kev506.starlight")
 
         externalNativeBuild {
@@ -217,5 +217,5 @@ dependencies {
     implementation("com.squareup.retrofit2:retrofit:3.0.0")
     implementation("com.squareup.retrofit2:converter-kotlinx-serialization:3.0.0")
     implementation("com.squareup.okhttp3:logging-interceptor")
-    implementation("io.github.kev506:compose-custom-youtube-player:1.0.5")
+    implementation("io.github.kev506:compose-custom-youtube-player:2.0.0")
 }

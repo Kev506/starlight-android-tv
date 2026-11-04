@@ -392,6 +392,12 @@ class HomeScreenHelper(
                                     gameRepo.fetchAndConnectIgdb(app)
                                     delay(1000.milliseconds)
                                 }
+                                withContext(Dispatchers.Main) {
+                                    viewModel.videos.clear()
+                                    for (app in appList) {
+                                        viewModel.videos.addAll(getGameVideos(AppComputerObject(app), uiContext))
+                                    }
+                                }
                             }
                         }
                     }
@@ -539,10 +545,10 @@ class HomeScreenHelper(
             if (!dbHandler.isDatabaseEmpty()) {
                 val gameList = dbHandler.queryAllGames()
                 val removedApps = gameList.filter { game ->
-                    !appList.any { app -> app.appName.equals(game.title, ignoreCase = true) }
+                    !appList.any { app -> app.id!! == game.id }
                 }
                 removedApps.forEach { removedGame ->
-                    dbHandler.deleteGameEntryByName(removedGame.title!!)
+                    dbHandler.deleteGameEntryById(removedGame.id.toString())
                 }
             }
         }

@@ -12,6 +12,7 @@ import com.starlight.computers.ComputerManagerService.ApplistPoller
 import com.starlight.computers.ComputerManagerService.ComputerManagerBinder
 import com.starlight.games.GameDataBaseManager
 import com.starlight.games.IgdbRepository
+import com.starlight.models.DbVideoItem
 import com.starlight.models.MainViewModel
 import com.starlight.nvstream.http.ComputerDetails
 import com.starlight.nvstream.http.NvApp
@@ -343,11 +344,28 @@ class AppViewHelper(
                                     gameRepo.fetchAndConnectIgdb(app)
                                     delay(1000.milliseconds)
                                 }
+                                withContext(Dispatchers.Main) {
+                                    viewModel.videos.clear()
+                                    for (app in appList) {
+                                        viewModel.videos.addAll(getGameVideos(AppComputerObject(app), uiContext))
+                                    }
+                                }
                             }
                         }
                     }
                 }
             }
+        }
+    }
+
+    fun getGameVideos(app: AppComputerObject?, context: Context): List<DbVideoItem> {
+        val dbHandler = GameDataBaseManager.getInstance(context) ?: return emptyList()
+        val appData = dbHandler.getAppData(app?.app?.id.toString())
+
+        return if (!appData.videos.isNullOrEmpty() && appData.videos!!.trim() != "null") {
+            dbHandler.fetchVideosById(app?.app?.id.toString())
+        } else {
+            emptyList()
         }
     }
 
@@ -366,10 +384,10 @@ class AppViewHelper(
             if (!dbHandler.isDatabaseEmpty()) {
                 val gameList = dbHandler.queryAllGames()
                 val removedApps = gameList.filter { game ->
-                    !appList.any { app -> app.appName.equals(game.title, ignoreCase = true) }
+                    !appList.any { app -> app.id!! == game.id }
                 }
                 removedApps.forEach { removedGame ->
-                    dbHandler.deleteGameEntryByName(removedGame.title!!)
+                    dbHandler.deleteGameEntryById(removedGame.id.toString())
                 }
             }
         }

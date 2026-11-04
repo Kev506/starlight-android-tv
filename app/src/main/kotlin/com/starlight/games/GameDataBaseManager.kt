@@ -3,7 +3,6 @@ package com.starlight.games
 import android.annotation.SuppressLint
 import android.content.Context
 import android.database.Cursor
-import android.database.DatabaseUtils
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
 import android.graphics.Bitmap
@@ -148,12 +147,6 @@ class GameDataBaseManager(context: Context?, factory: SQLiteDatabase.CursorFacto
         return app
     }
 
-    // Helper function to get the number of games in the database
-    fun getGamesCount(): Long {
-        val db = this.readableDatabase
-        return DatabaseUtils.queryNumEntries(db, GAME_TABLE_NAME)
-    }
-
     // Helper function to delete the database
     fun deleteGameData(context: Context, db: SQLiteDatabase) {
         if (db.isOpen) {
@@ -166,6 +159,11 @@ class GameDataBaseManager(context: Context?, factory: SQLiteDatabase.CursorFacto
     fun deleteGameEntryByName(appName: String) {
         val db = this.writableDatabase
         db.delete(GAME_TABLE_NAME, "$GAME_NAME_COLUMN_NAME = ?", arrayOf(appName))
+    }
+
+    fun deleteGameEntryById(gameId: String) {
+        val db = this.writableDatabase
+        db.delete(GAME_TABLE_NAME, "$GAME_TABLE_ID = ?", arrayOf(gameId))
     }
 
     override fun onUpgrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) {
@@ -223,7 +221,7 @@ class GameDataBaseManager(context: Context?, factory: SQLiteDatabase.CursorFacto
 
         val cursor = db.query(
             GAME_TABLE_NAME,
-            arrayOf(GAME_NAME_COLUMN_NAME), // Fetch only app names for this query
+            arrayOf(GAME_TABLE_ID, GAME_NAME_COLUMN_NAME),
             null,
             null,
             null,
@@ -232,9 +230,12 @@ class GameDataBaseManager(context: Context?, factory: SQLiteDatabase.CursorFacto
         )
 
         with(cursor) {
+            val idIndex = getColumnIndexOrThrow(GAME_TABLE_ID)
+            val nameIndex = getColumnIndexOrThrow(GAME_NAME_COLUMN_NAME)
             while (moveToNext()) {
                 val game = GameDataBaseDetails(
-                    title = getString(getColumnIndexOrThrow(GAME_NAME_COLUMN_NAME)),
+                    id = getString(idIndex)?.toIntOrNull() ?: 0,
+                    title = getString(nameIndex)
                 )
                 games.add(game)
             }

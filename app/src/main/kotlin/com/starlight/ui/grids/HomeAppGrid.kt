@@ -228,10 +228,19 @@ fun HomeAppGridContent(
                     yield()
                 }
 
-                focusRequesters.getOrNull(target)?.requestFocus()
-
-                delay(50.milliseconds)
                 isGridReady = true
+                yield()
+
+                var attempts = 0
+                while (attempts < 5) {
+                    try {
+                        focusRequesters.getOrNull(target)?.requestFocus()
+                        break
+                    } catch (_: Exception) {
+                        delay(50.milliseconds)
+                        attempts++
+                    }
+                }
 
                 if (reloaded) viewModel.setReloaded(false)
             }

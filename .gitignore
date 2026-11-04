@@ -53,3 +53,6 @@ app/google-services.json
 .kotlin/
 
 gradle/gradle-daemon-jvm.properties
+
+# Local Video Player module
+video-player/
