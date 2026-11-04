@@ -1,6 +1,8 @@
 @file:Suppress("UnstableApiUsage")
 
-
+if (file("video-player").exists()) {
+    include(":video-player")
+}
 
 pluginManagement {
 
