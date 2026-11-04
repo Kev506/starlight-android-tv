@@ -70,7 +70,7 @@ You can now move on to the next step and build and run the project.
 This project is built using a modern, scalable multi-module architecture:
 
 * **`Starlight Android`** - The primary Jetpack Compose TV application.
-* **[Video Player](https://central.sonatype.com/artifact/io.github.kev506/compose-custom-youtube-player) - Our standalone custom Compose YouTube player library with persistent subtitle engine and language controls (published on Maven Central).
+* [Video Player](https://central.sonatype.com/artifact/io.github.kev506/compose-custom-youtube-player) - Our standalone custom Compose YouTube player library with persistent subtitle engine and language controls (published on Maven Central).
 
 
 ## ᝰ🖋️ Authors
