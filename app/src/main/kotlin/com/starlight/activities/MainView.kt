@@ -243,7 +243,7 @@ class MainView : ComponentActivity(), OptionsHelper.OptionsCallback,
                             viewModel = viewModel,
                             mainContentRequester = mainContentRequester,
                             modifier = Modifier.focusProperties {
-                                canFocus = isMenuRequired && (!isBackInProgress || isMainView || isSideMenuOpen)
+                                canFocus = isMenuRequired && !isBackInProgress
                             },
                             content = {
                                 Surface(

@@ -304,6 +304,7 @@ fun Modifier.handleMainBackEvent(
                                     }
 
                                     !isSideMenuOpen -> {
+                                        viewModel.setBackInProgress(false)
                                         viewModel.setIsSideMenuOpen(true)
                                         viewModel.setItemSelected(0)
 
@@ -329,6 +330,7 @@ fun Modifier.handleMainBackEvent(
                                     }
 
                                     !isSideMenuOpen -> {
+                                        viewModel.setBackInProgress(false)
                                         viewModel.setIsSideMenuOpen(true)
                                         viewModel.setItemSelected(1)
 
@@ -354,6 +356,7 @@ fun Modifier.handleMainBackEvent(
                                     }
 
                                     !isSideMenuOpen -> {
+                                        viewModel.setBackInProgress(false)
                                         viewModel.setIsSideMenuOpen(true)
                                         viewModel.setItemSelected(0)
 
@@ -381,6 +384,7 @@ fun Modifier.handleMainBackEvent(
                                     else -> {
                                         viewModel.getNavController()?.popBackStack()
                                         viewModel.setIsSideMenuOpen(false)
+                                        viewModel.setBackInProgress(false)
                                         viewModel.videos.clear()
 
                                         if (!viewModel.isFavs) {
@@ -406,6 +410,7 @@ fun Modifier.handleMainBackEvent(
                                     }
 
                                     !isSideMenuOpen -> {
+                                        viewModel.setBackInProgress(false)
                                         viewModel.setIsSideMenuOpen(true)
                                         viewModel.setItemSelected(0)
 
@@ -450,6 +455,7 @@ fun Modifier.handleMainMenuBackEvent(
 
                                         viewModel.isFavs = false
                                         viewModel.setIsSideMenuOpen(false)
+                                        viewModel.setBackInProgress(false)
 
                                         coroutineScope.launch(Dispatchers.IO) {
                                             parent.dataStore.edit { preferences ->

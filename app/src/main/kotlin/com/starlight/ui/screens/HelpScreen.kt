@@ -18,7 +18,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
-import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.tv.material3.Surface
@@ -41,11 +40,6 @@ fun HelpScreen(
     Surface(
         modifier = Modifier
             .fillMaxSize()
-            .onFocusChanged { focusState ->
-                if (focusState.hasFocus) {
-                    viewModel.setBackInProgress(false)
-                }
-            }
             .focusRequester(focusRequester),
         colors = SurfaceDefaults.colors(containerColor = Color.Transparent)
     ) {

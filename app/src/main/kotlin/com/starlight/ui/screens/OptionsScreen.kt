@@ -201,7 +201,6 @@ fun OptionsScreenContent(
                                         focused = it.isFocused
                                         if (it.isFocused) {
                                             focusedIndex = index
-                                            viewModel.setBackInProgress(false)
                                         }
                                     },
                                 onClick = {

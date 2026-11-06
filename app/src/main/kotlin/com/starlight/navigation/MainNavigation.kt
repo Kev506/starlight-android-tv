@@ -124,6 +124,7 @@ fun MainNavigation(
 
         composable(Screens.MainScreen.route) {
             viewModel.setScreenState("MainScreen")
+            viewModel.setBackInProgress(true)
 
             key(refreshId) {
                 HomeScreen(
@@ -144,6 +145,7 @@ fun MainNavigation(
 
         composable(Screens.FavoritesScreen.route) {
             viewModel.setScreenState("FavoritesScreen")
+            viewModel.setBackInProgress(true)
 
             FavoritesScreen(
                 viewModel = viewModel,
@@ -161,6 +163,7 @@ fun MainNavigation(
 
         composable(Screens.AppViewScreen.route) {
             viewModel.setScreenState("AppViewScreen")
+            viewModel.setBackInProgress(true)
 
             key(refreshId) {
                 CompositionLocalProvider(LocalBringIntoViewSpec provides tvBringIntoViewSpec) {
@@ -179,6 +182,7 @@ fun MainNavigation(
             val managerBinder by viewModel.binder.observeAsState(null)
             val selectedApp by viewModel.selectedApp.observeAsState(null)
             val computer by viewModel.getComputer.observeAsState(null)
+            viewModel.setBackInProgress(true)
 
             GameDetailsScreen(
                 app = selectedApp,
@@ -263,6 +267,7 @@ fun MainNavigation(
 
         composable(Screens.VideoScreen.route) {
             viewModel.setScreenState("VideoScreen")
+            viewModel.setBackInProgress(true)
 
             CompositionLocalProvider(LocalBringIntoViewSpec provides tvBringIntoViewSpec) {
                 VideoGridScreen(

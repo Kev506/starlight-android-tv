@@ -75,8 +75,8 @@ android {
         minSdk = 29
         targetSdk = 37
 
-        versionName = ("14.3.0")
-        versionCode = 73
+        versionName = ("14.4.0")
+        versionCode = 74
         applicationId = ("com.github.kev506.starlight")
 
         externalNativeBuild {
@@ -175,7 +175,7 @@ dependencies {
     implementation("org.bouncycastle:bcpkix-jdk15on:1.70")
     implementation("org.jcodec:jcodec:0.2.5")
     implementation(platform("com.squareup.okhttp3:okhttp-bom:5.5.1"))
-    implementation("org.jmdns:jmdns:3.6.4")
+    implementation("org.jmdns:jmdns:3.6.5")
     implementation("com.github.cgutman:ShieldControllerExtensions:1.0.1")
 
     implementation("com.google.crypto.tink:tink-android:1.24.0")
@@ -217,5 +217,5 @@ dependencies {
     implementation("com.squareup.retrofit2:retrofit:3.0.0")
     implementation("com.squareup.retrofit2:converter-kotlinx-serialization:3.0.0")
     implementation("com.squareup.okhttp3:logging-interceptor")
-    implementation("io.github.kev506:compose-custom-youtube-player:2.0.0")
+    implementation("io.github.kev506:compose-custom-youtube-player:2.0.1")
 }
