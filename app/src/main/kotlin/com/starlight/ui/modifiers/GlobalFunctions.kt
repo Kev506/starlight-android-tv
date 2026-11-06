@@ -613,6 +613,7 @@ fun Modifier.handleMainNavigation(
                             "AppViewScreen" -> {
                                 if (isFirstInRow) {
                                     if (index == 0) {
+                                        viewModel.setBackInProgress(false)
                                         viewModel.setIsSideMenuOpen(true)
                                         return@onPreviewKeyEvent true
                                     } else {
@@ -628,8 +629,7 @@ fun Modifier.handleMainNavigation(
                             "VideoScreen" -> {
                                 if (videoFirstInRow) {
                                     if (index == 0) {
-                                        viewModel.setIsSideMenuOpen(true)
-                                        return@onPreviewKeyEvent true
+                                        return@onPreviewKeyEvent false
                                     } else {
                                         coroutineScope.launch {
                                             val target = index - 1
