@@ -11,9 +11,14 @@ jobs:
     if: github.event.pull_request.user.login == github.repository_owner
     permissions:
       pull-requests: write
+    env:
+      GH_TOKEN: ${{ secrets.AUTO_APPROVE_TOKEN }}
     steps:
       - name: Approve PR
+        if: env.GH_TOKEN != ''
         run: gh api "repos/${GITHUB_REPOSITORY}/pulls/${PR_NUMBER}/reviews" --method POST --field event=APPROVE
         env:
-          GH_TOKEN: ${{ github.token }}
           PR_NUMBER: ${{ github.event.pull_request.number }}
+      - name: Report missing approval token
+        if: env.GH_TOKEN == ''
+        run: echo "::notice::Set the AUTO_APPROVE_TOKEN repository secret to enable automatic approvals."

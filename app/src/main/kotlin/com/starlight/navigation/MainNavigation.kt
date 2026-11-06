@@ -124,7 +124,10 @@ fun MainNavigation(
 
         composable(Screens.MainScreen.route) {
             viewModel.setScreenState("MainScreen")
-            viewModel.setBackInProgress(true)
+
+            LaunchedEffect(Unit) {
+                viewModel.setBackInProgress(true)
+            }
 
             key(refreshId) {
                 HomeScreen(
@@ -163,7 +166,10 @@ fun MainNavigation(
 
         composable(Screens.AppViewScreen.route) {
             viewModel.setScreenState("AppViewScreen")
-            viewModel.setBackInProgress(true)
+
+            LaunchedEffect(Unit) {
+                viewModel.setBackInProgress(true)
+            }
 
             key(refreshId) {
                 CompositionLocalProvider(LocalBringIntoViewSpec provides tvBringIntoViewSpec) {
