@@ -23,7 +23,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
@@ -36,14 +35,11 @@ import androidx.compose.ui.focus.focusRestorer
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.CompositingStrategy
-import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.tv.material3.DrawerValue.Closed
 import androidx.tv.material3.DrawerValue.Open
 import androidx.tv.material3.Glow
@@ -122,18 +118,6 @@ fun AppDrawer(
         }
     }
 
-    val navBackStackEntry by viewModel.getNavController()?.currentBackStackEntryAsState() ?: remember { mutableStateOf(null) }
-
-    LaunchedEffect(navBackStackEntry) {
-        val backQueueCount = viewModel.getNavController()?.currentBackStack?.value?.size ?: 0
-
-        if (backQueueCount > 2) {
-            viewModel.setBackInProgress(true)
-        } else {
-            viewModel.setBackInProgress(false)
-        }
-    }
-
     ModalNavigationDrawer(
         drawerContent = { _ ->
             AppHeaderImage(
@@ -158,13 +142,10 @@ fun AppDrawer(
                             isSideMenuOpen = isSideMenuOpen,
                             coroutineScope = coroutineScope
                         )
-                        .graphicsLayer {
-                            compositingStrategy = CompositingStrategy.Offscreen
-                        }
                         .padding(12.dp)
                         .focusProperties {
                             onExit = { mainContentRequester.requestFocus() }
-                            canFocus = !isBackInProgress || isMainView || isSideMenuOpen
+                            canFocus = !isBackInProgress
                         }
                         .background(Color.Transparent)
                         .selectableGroup()

@@ -155,12 +155,6 @@ class GameDataBaseManager(context: Context?, factory: SQLiteDatabase.CursorFacto
         context.deleteDatabase(DB_NAME)
     }
 
-    // Helper function to delete a game by its name
-    fun deleteGameEntryByName(appName: String) {
-        val db = this.writableDatabase
-        db.delete(GAME_TABLE_NAME, "$GAME_NAME_COLUMN_NAME = ?", arrayOf(appName))
-    }
-
     fun deleteGameEntryById(gameId: String) {
         val db = this.writableDatabase
         db.delete(GAME_TABLE_NAME, "$GAME_TABLE_ID = ?", arrayOf(gameId))

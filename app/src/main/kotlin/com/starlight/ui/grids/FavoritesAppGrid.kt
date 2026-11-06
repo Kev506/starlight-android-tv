@@ -330,8 +330,6 @@ fun FavoritesAppGridContent(
                                                     AppComputerObject(it)
                                                 )
                                             }
-
-                                            viewModel.setBackInProgress(false)
                                         }
                                     }
                                     .aspectRatio(7f / 9f),

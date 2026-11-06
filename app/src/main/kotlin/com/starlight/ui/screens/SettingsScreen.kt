@@ -30,7 +30,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
-import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Color.Companion.White
 import androidx.compose.ui.graphics.ColorFilter
@@ -337,11 +336,6 @@ fun SettingsScreen(viewModel: MainViewModel) {
             modifier = Modifier
                 .padding(start = 45.dp, end = 45.dp, top = 30.dp)
                 .focusRequester(mainContentRequester)
-                .onFocusChanged {
-                    if (it.hasFocus) {
-                        viewModel.setBackInProgress(false)
-                    }
-                }
                 .wrapContentWidth()
                 .wrapContentHeight(),
             colors = SurfaceDefaults.colors(
@@ -702,14 +696,14 @@ fun SettingsScreen(viewModel: MainViewModel) {
                             },
                             onClick = {
                                 if (currentConfig.videoSr) {
-                                   coroutineScope.launch(Dispatchers.IO) {
+                                    coroutineScope.launch(Dispatchers.IO) {
                                         context.dataStore.edit { preferences ->
                                             preferences[booleanPreferencesKey(VIDEO_SR_STRING)] =
                                                 false
                                         }
                                     }
                                 } else {
-                                   coroutineScope.launch(Dispatchers.IO) {
+                                    coroutineScope.launch(Dispatchers.IO) {
                                         context.dataStore.edit { preferences ->
                                             preferences[booleanPreferencesKey(VIDEO_SR_STRING)] =
                                                 true
@@ -764,14 +758,14 @@ fun SettingsScreen(viewModel: MainViewModel) {
                         },
                         onClick = {
                             if (currentConfig.stretchVideo) {
-                               coroutineScope.launch(Dispatchers.IO) {
+                                coroutineScope.launch(Dispatchers.IO) {
                                     context.dataStore.edit { preferences ->
                                         preferences[booleanPreferencesKey(STRETCH_PREF_STRING)] =
                                             false
                                     }
                                 }
                             } else {
-                               coroutineScope.launch(Dispatchers.IO) {
+                                coroutineScope.launch(Dispatchers.IO) {
                                     context.dataStore.edit { preferences ->
                                         preferences[booleanPreferencesKey(STRETCH_PREF_STRING)] =
                                             true
@@ -967,7 +961,7 @@ fun SettingsScreen(viewModel: MainViewModel) {
                                     isFramePacing.value = false
                                     openAlertDialog.value = true
                                 } else {
-                                   coroutineScope.launch(Dispatchers.IO) {
+                                    coroutineScope.launch(Dispatchers.IO) {
                                         context.dataStore.edit { preferences ->
                                             preferences[booleanPreferencesKey(AAUDIO_PREF_STRING)] =
                                                 false
@@ -988,7 +982,7 @@ fun SettingsScreen(viewModel: MainViewModel) {
                         )
                     }
                 } else {
-                   coroutineScope.launch(Dispatchers.IO) {
+                    coroutineScope.launch(Dispatchers.IO) {
                         context.dataStore.edit { preferences ->
                             preferences[booleanPreferencesKey(AAUDIO_PREF_STRING)] =
                                 false
@@ -1029,7 +1023,7 @@ fun SettingsScreen(viewModel: MainViewModel) {
                         },
                         onClick = {
                             if (currentConfig.enableAudioFx) {
-                               coroutineScope.launch(Dispatchers.IO) {
+                                coroutineScope.launch(Dispatchers.IO) {
                                     context.dataStore.edit { preferences ->
                                         preferences[booleanPreferencesKey(
                                             ENABLE_AUDIO_FX_PREF_STRING
@@ -1037,7 +1031,7 @@ fun SettingsScreen(viewModel: MainViewModel) {
                                     }
                                 }
                             } else {
-                               coroutineScope.launch(Dispatchers.IO) {
+                                coroutineScope.launch(Dispatchers.IO) {
                                     context.dataStore.edit { preferences ->
                                         preferences[booleanPreferencesKey(
                                             ENABLE_AUDIO_FX_PREF_STRING
@@ -1151,7 +1145,7 @@ fun SettingsScreen(viewModel: MainViewModel) {
                         },
                         onClick = {
                             if (currentConfig.multiController) {
-                               coroutineScope.launch(Dispatchers.IO) {
+                                coroutineScope.launch(Dispatchers.IO) {
                                     context.dataStore.edit { preferences ->
                                         preferences[booleanPreferencesKey(
                                             MULTI_CONTROLLER_PREF_STRING
@@ -1159,7 +1153,7 @@ fun SettingsScreen(viewModel: MainViewModel) {
                                     }
                                 }
                             } else {
-                               coroutineScope.launch(Dispatchers.IO) {
+                                coroutineScope.launch(Dispatchers.IO) {
                                     context.dataStore.edit { preferences ->
                                         preferences[booleanPreferencesKey(
                                             MULTI_CONTROLLER_PREF_STRING
@@ -1215,14 +1209,14 @@ fun SettingsScreen(viewModel: MainViewModel) {
                             },
                             onClick = {
                                 if (currentConfig.usbDriver) {
-                                   coroutineScope.launch(Dispatchers.IO) {
+                                    coroutineScope.launch(Dispatchers.IO) {
                                         context.dataStore.edit { preferences ->
                                             preferences[booleanPreferencesKey(USB_DRIVER_PREF_SRING)] =
                                                 false
                                         }
                                     }
                                 } else {
-                                   coroutineScope.launch(Dispatchers.IO) {
+                                    coroutineScope.launch(Dispatchers.IO) {
                                         context.dataStore.edit { preferences ->
                                             preferences[booleanPreferencesKey(USB_DRIVER_PREF_SRING)] =
                                                 true
@@ -1278,7 +1272,7 @@ fun SettingsScreen(viewModel: MainViewModel) {
                                 },
                                 onClick = {
                                     if (currentConfig.bindAllUsb) {
-                                       coroutineScope.launch(Dispatchers.IO) {
+                                        coroutineScope.launch(Dispatchers.IO) {
                                             context.dataStore.edit { preferences ->
                                                 preferences[booleanPreferencesKey(
                                                     BIND_ALL_USB_STRING
@@ -1287,7 +1281,7 @@ fun SettingsScreen(viewModel: MainViewModel) {
                                             }
                                         }
                                     } else {
-                                       coroutineScope.launch(Dispatchers.IO) {
+                                        coroutineScope.launch(Dispatchers.IO) {
                                             context.dataStore.edit { preferences ->
                                                 preferences[booleanPreferencesKey(
                                                     BIND_ALL_USB_STRING
@@ -1345,14 +1339,14 @@ fun SettingsScreen(viewModel: MainViewModel) {
                         },
                         onClick = {
                             if (currentConfig.mouseEmulation) {
-                               coroutineScope.launch(Dispatchers.IO) {
+                                coroutineScope.launch(Dispatchers.IO) {
                                     context.dataStore.edit { preferences ->
                                         preferences[booleanPreferencesKey(MOUSE_EMULATION_STRING)] =
                                             false
                                     }
                                 }
                             } else {
-                               coroutineScope.launch(Dispatchers.IO) {
+                                coroutineScope.launch(Dispatchers.IO) {
                                     context.dataStore.edit { preferences ->
                                         preferences[booleanPreferencesKey(MOUSE_EMULATION_STRING)] =
                                             true
@@ -1460,7 +1454,7 @@ fun SettingsScreen(viewModel: MainViewModel) {
                         },
                         onClick = {
                             if (currentConfig.gamepadTouchpadAsMouse) {
-                               coroutineScope.launch(Dispatchers.IO) {
+                                coroutineScope.launch(Dispatchers.IO) {
                                     context.dataStore.edit { preferences ->
                                         preferences[booleanPreferencesKey(
                                             GAMEPAD_TOUCHPAD_AS_MOUSE_PREF_STRING
@@ -1468,7 +1462,7 @@ fun SettingsScreen(viewModel: MainViewModel) {
                                     }
                                 }
                             } else {
-                               coroutineScope.launch(Dispatchers.IO) {
+                                coroutineScope.launch(Dispatchers.IO) {
                                     context.dataStore.edit { preferences ->
                                         preferences[booleanPreferencesKey(
                                             GAMEPAD_TOUCHPAD_AS_MOUSE_PREF_STRING
@@ -1540,14 +1534,14 @@ fun SettingsScreen(viewModel: MainViewModel) {
                         },
                         onClick = {
                             if (currentConfig.mouseNavButtons) {
-                               coroutineScope.launch(Dispatchers.IO) {
+                                coroutineScope.launch(Dispatchers.IO) {
                                     context.dataStore.edit { preferences ->
                                         preferences[booleanPreferencesKey(MOUSE_NAV_BUTTONS_STRING)] =
                                             false
                                     }
                                 }
                             } else {
-                               coroutineScope.launch(Dispatchers.IO) {
+                                coroutineScope.launch(Dispatchers.IO) {
                                     context.dataStore.edit { preferences ->
                                         preferences[booleanPreferencesKey(MOUSE_NAV_BUTTONS_STRING)] =
                                             true
@@ -1602,7 +1596,7 @@ fun SettingsScreen(viewModel: MainViewModel) {
                             },
                             onClick = {
                                 if (currentConfig.absoluteMouseMode) {
-                                   coroutineScope.launch(Dispatchers.IO) {
+                                    coroutineScope.launch(Dispatchers.IO) {
                                         context.dataStore.edit { preferences ->
                                             preferences[booleanPreferencesKey(
                                                 ABSOLUTE_MOUSE_MODE_PREF_STRING
@@ -1610,7 +1604,7 @@ fun SettingsScreen(viewModel: MainViewModel) {
                                         }
                                     }
                                 } else {
-                                   coroutineScope.launch(Dispatchers.IO) {
+                                    coroutineScope.launch(Dispatchers.IO) {
                                         context.dataStore.edit { preferences ->
                                             preferences[booleanPreferencesKey(
                                                 ABSOLUTE_MOUSE_MODE_PREF_STRING
@@ -1684,14 +1678,14 @@ fun SettingsScreen(viewModel: MainViewModel) {
                             },
                             onClick = {
                                 if (currentConfig.enablePip) {
-                                   coroutineScope.launch(Dispatchers.IO) {
+                                    coroutineScope.launch(Dispatchers.IO) {
                                         context.dataStore.edit { preferences ->
                                             preferences[booleanPreferencesKey(ENABLE_PIP_PREF_STRING)] =
                                                 false
                                         }
                                     }
                                 } else {
-                                   coroutineScope.launch(Dispatchers.IO) {
+                                    coroutineScope.launch(Dispatchers.IO) {
                                         context.dataStore.edit { preferences ->
                                             preferences[booleanPreferencesKey(ENABLE_PIP_PREF_STRING)] =
                                                 true
@@ -1746,7 +1740,7 @@ fun SettingsScreen(viewModel: MainViewModel) {
                         },
                         onClick = {
                             if (currentConfig.areCaptionsVisible) {
-                               coroutineScope.launch(Dispatchers.IO) {
+                                coroutineScope.launch(Dispatchers.IO) {
                                     context.dataStore.edit { preferences ->
                                         preferences[booleanPreferencesKey(
                                             DEFAULT_CAPTIONS_STRING
@@ -1754,7 +1748,7 @@ fun SettingsScreen(viewModel: MainViewModel) {
                                     }
                                 }
                             } else {
-                               coroutineScope.launch(Dispatchers.IO) {
+                                coroutineScope.launch(Dispatchers.IO) {
                                     context.dataStore.edit { preferences ->
                                         preferences[booleanPreferencesKey(
                                             DEFAULT_CAPTIONS_STRING
@@ -1916,7 +1910,7 @@ fun SettingsScreen(viewModel: MainViewModel) {
                                         ).show()
 
                                         viewModel.triggerReload()
-                                       coroutineScope.launch(Dispatchers.IO) {
+                                        coroutineScope.launch(Dispatchers.IO) {
                                             context.dataStore.edit { preferences ->
                                                 preferences[booleanPreferencesKey(ML_DOWNLOADED)] =
                                                     false
@@ -1979,7 +1973,7 @@ fun SettingsScreen(viewModel: MainViewModel) {
                             },
                             onClick = {
                                 if (currentConfig.smallIconMode) {
-                                   coroutineScope.launch(Dispatchers.IO) {
+                                    coroutineScope.launch(Dispatchers.IO) {
                                         context.dataStore.edit { preferences ->
                                             preferences[booleanPreferencesKey(
                                                 SMALL_ICONS_PREF_STRING
@@ -1987,7 +1981,7 @@ fun SettingsScreen(viewModel: MainViewModel) {
                                         }
                                     }
                                 } else {
-                                   coroutineScope.launch(Dispatchers.IO) {
+                                    coroutineScope.launch(Dispatchers.IO) {
                                         context.dataStore.edit { preferences ->
                                             preferences[booleanPreferencesKey(
                                                 SMALL_ICONS_PREF_STRING
@@ -2045,14 +2039,14 @@ fun SettingsScreen(viewModel: MainViewModel) {
                             },
                             onClick = {
                                 if (currentConfig.leanback) {
-                                   coroutineScope.launch(Dispatchers.IO) {
+                                    coroutineScope.launch(Dispatchers.IO) {
                                         context.dataStore.edit { preferences ->
                                             preferences[booleanPreferencesKey(LEANBACK_PREF_STRING)] =
                                                 false
                                         }
                                     }
                                 } else {
-                                   coroutineScope.launch(Dispatchers.IO) {
+                                    coroutineScope.launch(Dispatchers.IO) {
                                         context.dataStore.edit { preferences ->
                                             preferences[booleanPreferencesKey(LEANBACK_PREF_STRING)] =
                                                 true
@@ -2125,14 +2119,14 @@ fun SettingsScreen(viewModel: MainViewModel) {
                         },
                         onClick = {
                             if (currentConfig.unlockFps) {
-                               coroutineScope.launch(Dispatchers.IO) {
+                                coroutineScope.launch(Dispatchers.IO) {
                                     context.dataStore.edit { preferences ->
                                         preferences[booleanPreferencesKey(UNLOCK_FPS_STRING)] =
                                             false
                                     }
                                 }
                             } else {
-                               coroutineScope.launch(Dispatchers.IO) {
+                                coroutineScope.launch(Dispatchers.IO) {
                                     context.dataStore.edit { preferences ->
                                         preferences[booleanPreferencesKey(UNLOCK_FPS_STRING)] = true
                                     }
@@ -2186,7 +2180,7 @@ fun SettingsScreen(viewModel: MainViewModel) {
                         },
                         onClick = {
                             if (currentConfig.reduceRefreshRate) {
-                               coroutineScope.launch(Dispatchers.IO) {
+                                coroutineScope.launch(Dispatchers.IO) {
                                     context.dataStore.edit { preferences ->
                                         preferences[booleanPreferencesKey(
                                             REDUCE_REFRESH_RATE_PREF_STRING
@@ -2194,7 +2188,7 @@ fun SettingsScreen(viewModel: MainViewModel) {
                                     }
                                 }
                             } else {
-                               coroutineScope.launch(Dispatchers.IO) {
+                                coroutineScope.launch(Dispatchers.IO) {
                                     context.dataStore.edit { preferences ->
                                         preferences[booleanPreferencesKey(
                                             REDUCE_REFRESH_RATE_PREF_STRING
@@ -2249,14 +2243,14 @@ fun SettingsScreen(viewModel: MainViewModel) {
                         },
                         onClick = {
                             if (currentConfig.disableWarnings) {
-                               coroutineScope.launch(Dispatchers.IO) {
+                                coroutineScope.launch(Dispatchers.IO) {
                                     context.dataStore.edit { preferences ->
                                         preferences[booleanPreferencesKey(DISABLE_TOASTS_PREF_STRING)] =
                                             false
                                     }
                                 }
                             } else {
-                               coroutineScope.launch(Dispatchers.IO) {
+                                coroutineScope.launch(Dispatchers.IO) {
                                     context.dataStore.edit { preferences ->
                                         preferences[booleanPreferencesKey(DISABLE_TOASTS_PREF_STRING)] =
                                             true
@@ -2360,14 +2354,14 @@ fun SettingsScreen(viewModel: MainViewModel) {
                         },
                         onClick = {
                             if (currentConfig.fullRange) {
-                               coroutineScope.launch(Dispatchers.IO) {
+                                coroutineScope.launch(Dispatchers.IO) {
                                     context.dataStore.edit { preferences ->
                                         preferences[booleanPreferencesKey(FULL_RANGE_PREF_STRING)] =
                                             false
                                     }
                                 }
                             } else {
-                               coroutineScope.launch(Dispatchers.IO) {
+                                coroutineScope.launch(Dispatchers.IO) {
                                     context.dataStore.edit { preferences ->
                                         preferences[booleanPreferencesKey(FULL_RANGE_PREF_STRING)] =
                                             true
@@ -2421,14 +2415,14 @@ fun SettingsScreen(viewModel: MainViewModel) {
                         },
                         onClick = {
                             if (currentConfig.enablePerfOverlay) {
-                               coroutineScope.launch(Dispatchers.IO) {
+                                coroutineScope.launch(Dispatchers.IO) {
                                     context.dataStore.edit { preferences ->
                                         preferences[booleanPreferencesKey(ENABLE_PERF_OVERLAY_STRING)] =
                                             false
                                     }
                                 }
                             } else {
-                               coroutineScope.launch(Dispatchers.IO) {
+                                coroutineScope.launch(Dispatchers.IO) {
                                     context.dataStore.edit { preferences ->
                                         preferences[booleanPreferencesKey(ENABLE_PERF_OVERLAY_STRING)] =
                                             true
@@ -2482,14 +2476,14 @@ fun SettingsScreen(viewModel: MainViewModel) {
                         },
                         onClick = {
                             if (currentConfig.enableLatencyToast) {
-                               coroutineScope.launch(Dispatchers.IO) {
+                                coroutineScope.launch(Dispatchers.IO) {
                                     context.dataStore.edit { preferences ->
                                         preferences[booleanPreferencesKey(LATENCY_TOAST_PREF_STRING)] =
                                             false
                                     }
                                 }
                             } else {
-                               coroutineScope.launch(Dispatchers.IO) {
+                                coroutineScope.launch(Dispatchers.IO) {
                                     context.dataStore.edit { preferences ->
                                         preferences[booleanPreferencesKey(LATENCY_TOAST_PREF_STRING)] =
                                             true
@@ -2553,14 +2547,15 @@ fun SettingsScreen(viewModel: MainViewModel) {
                                         coroutineScope.launch {
                                             val newStatsState = !currentConfig.statsEnabled
                                             context.dataStore.edit { preferences ->
-                                                preferences[booleanPreferencesKey(STATS_PREF_STRING)] = newStatsState
+                                                preferences[booleanPreferencesKey(STATS_PREF_STRING)] =
+                                                    newStatsState
                                             }
                                             restartApplication(context)
                                         }
                                         openAlertDialog.value = false
                                         isStats.value = false
                                     } else if (!isFpsSupported.value) {
-                                       coroutineScope.launch(Dispatchers.IO) {
+                                        coroutineScope.launch(Dispatchers.IO) {
                                             context.dataStore.edit { preferences ->
                                                 preferences[stringPreferencesKey(FPS_PREF_STRING)] =
                                                     unsupportedFps.value
@@ -2575,18 +2570,19 @@ fun SettingsScreen(viewModel: MainViewModel) {
                                             fpsValue = unsupportedFps.value
                                         )
                                     } else if (isLanguage.value) {
-                                       coroutineScope.launch(Dispatchers.IO) {
+                                        coroutineScope.launch(Dispatchers.IO) {
                                             context.dataStore.edit { preferences ->
                                                 preferences[stringPreferencesKey(
                                                     LANGUAGE_PREF_STRING
-                                                )] = if (selectedLanguage.value == "default") DEFAULT_LANGUAGE_STRING else selectedLanguage.value
+                                                )] =
+                                                    if (selectedLanguage.value == "default") DEFAULT_LANGUAGE_STRING else selectedLanguage.value
                                             }
                                         }
                                         restartApplication(context)
                                         openAlertDialog.value = false
                                         isLanguage.value = false
                                     } else if (isAaudio.value) {
-                                       coroutineScope.launch(Dispatchers.IO) {
+                                        coroutineScope.launch(Dispatchers.IO) {
                                             context.dataStore.edit { preferences ->
                                                 preferences[booleanPreferencesKey(AAUDIO_PREF_STRING)] =
                                                     !currentConfig.aaudio
@@ -2621,7 +2617,7 @@ fun SettingsScreen(viewModel: MainViewModel) {
                                 },
                                 onClick = {
                                     if (isResolution.value) {
-                                       coroutineScope.launch(Dispatchers.IO) {
+                                        coroutineScope.launch(Dispatchers.IO) {
                                             context.dataStore.edit { preferences ->
                                                 preferences[stringPreferencesKey(
                                                     RESOLUTION_PREF_STRING
@@ -2657,7 +2653,7 @@ fun SettingsScreen(viewModel: MainViewModel) {
                                                 openAlertDialog.value = true
                                                 isFpsSupported.value = false
                                             } else {
-                                               coroutineScope.launch(Dispatchers.IO) {
+                                                coroutineScope.launch(Dispatchers.IO) {
                                                     context.dataStore.edit { preferences ->
                                                         preferences[stringPreferencesKey(
                                                             FPS_PREF_STRING
@@ -2673,7 +2669,7 @@ fun SettingsScreen(viewModel: MainViewModel) {
                                                 )
                                             }
                                         } else {
-                                           coroutineScope.launch(Dispatchers.IO) {
+                                            coroutineScope.launch(Dispatchers.IO) {
                                                 context.dataStore.edit { preferences ->
                                                     preferences[stringPreferencesKey(FPS_PREF_STRING)] =
                                                         it
@@ -2688,7 +2684,7 @@ fun SettingsScreen(viewModel: MainViewModel) {
                                             )
                                         }
                                     } else if (isFramePacing.value) {
-                                       coroutineScope.launch(Dispatchers.IO) {
+                                        coroutineScope.launch(Dispatchers.IO) {
                                             context.dataStore.edit { preferences ->
                                                 preferences[stringPreferencesKey(
                                                     FRAME_PACING_PREF_STRING
@@ -2697,7 +2693,7 @@ fun SettingsScreen(viewModel: MainViewModel) {
                                         }
                                         buttonListAlertDialog.value = false
                                     } else if (isAudioConfig.value) {
-                                       coroutineScope.launch(Dispatchers.IO) {
+                                        coroutineScope.launch(Dispatchers.IO) {
                                             context.dataStore.edit { preferences ->
                                                 preferences[stringPreferencesKey(
                                                     AUDIO_CONFIG_PREF_STRING
@@ -2720,7 +2716,7 @@ fun SettingsScreen(viewModel: MainViewModel) {
                                         buttonListAlertDialog.value = false
                                         openAlertDialog.value = true
                                     } else if (isVideoFormat.value) {
-                                       coroutineScope.launch(Dispatchers.IO) {
+                                        coroutineScope.launch(Dispatchers.IO) {
                                             context.dataStore.edit { preferences ->
                                                 preferences[stringPreferencesKey(
                                                     VIDEO_FORMAT_PREF_STRING
@@ -2729,7 +2725,7 @@ fun SettingsScreen(viewModel: MainViewModel) {
                                         }
                                         buttonListAlertDialog.value = false
                                     } else if (isAnalog.value) {
-                                       coroutineScope.launch(Dispatchers.IO) {
+                                        coroutineScope.launch(Dispatchers.IO) {
                                             context.dataStore.edit { preferences ->
                                                 preferences[stringPreferencesKey(
                                                     DEFAULT_ANALOG_STICK_FOR_SCROLLING
@@ -2738,7 +2734,7 @@ fun SettingsScreen(viewModel: MainViewModel) {
                                         }
                                         buttonListAlertDialog.value = false
                                     } else if (isAudioOutput.value) {
-                                       coroutineScope.launch(Dispatchers.IO) {
+                                        coroutineScope.launch(Dispatchers.IO) {
                                             context.dataStore.edit { preferences ->
                                                 preferences[stringPreferencesKey(
                                                     AUDIO_OUTPUT_MODE_PREF_STRING
@@ -2828,7 +2824,7 @@ fun SettingsScreen(viewModel: MainViewModel) {
                                     seekBarAlertDialog.value = false
                                 },
                                 onConfirm = {
-                                   coroutineScope.launch(Dispatchers.IO) {
+                                    coroutineScope.launch(Dispatchers.IO) {
                                         context.dataStore.edit { preferences ->
                                             preferences[intPreferencesKey(BITRATE_PREF_STRING)] = it
                                         }
@@ -2854,7 +2850,7 @@ fun SettingsScreen(viewModel: MainViewModel) {
                                     deadZoneDialog.value = false
                                 },
                                 onConfirm = {
-                                   coroutineScope.launch(Dispatchers.IO) {
+                                    coroutineScope.launch(Dispatchers.IO) {
                                         context.dataStore.edit { preferences ->
                                             preferences[intPreferencesKey(DEADZONE_PREF_STRING)] =
                                                 it
@@ -2895,7 +2891,7 @@ private fun resetBitrateToDefault(
     fpsValue: String,
 ) {
 
-   coroutineScope.launch {
+    coroutineScope.launch {
         context.dataStore.edit { preferences ->
             preferences[intPreferencesKey(name = BITRATE_PREF_STRING)] =
                 PreferenceKeys.calculateBitrate(resString = resolutionValue, fpsString = fpsValue)

@@ -5,12 +5,10 @@ import androidx.activity.compose.LocalActivity
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.MarqueeAnimationMode
 import androidx.compose.foundation.MarqueeDefaults
-import androidx.compose.foundation.background
 import androidx.compose.foundation.basicMarquee
 import androidx.compose.foundation.focusGroup
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
@@ -54,6 +52,8 @@ import androidx.tv.material3.Card
 import androidx.tv.material3.CardDefaults
 import androidx.tv.material3.Glow
 import androidx.tv.material3.StandardCardContainer
+import androidx.tv.material3.Surface
+import androidx.tv.material3.SurfaceDefaults
 import androidx.tv.material3.Text
 import coil3.compose.AsyncImage
 import com.starlight.R
@@ -127,12 +127,11 @@ fun VideoGridScreen(
             }
         }
 
-        Column(
+        Surface(
             modifier = Modifier
                 .fillMaxSize()
-                .background(Color(0xFF121212))
                 .padding(top = 30.dp, start = 24.dp, end = 24.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
+            colors = SurfaceDefaults.colors(containerColor = Color.Black)
         ) {
             Text(
                 text = stringResource(R.string.game_media_library),
@@ -149,8 +148,10 @@ fun VideoGridScreen(
                 horizontalArrangement = Arrangement.spacedBy(16.dp),
                 verticalArrangement = Arrangement.spacedBy(16.dp),
                 contentPadding = PaddingValues(
-                    top = 30.dp,
-                    bottom = 30.dp
+                    top = 60.dp,
+                    bottom = 30.dp,
+                    start = 24.dp,
+                    end = 24.dp
                 ),
                 state = gridState,
                 modifier = Modifier
@@ -193,9 +194,6 @@ fun VideoGridScreen(
                                     )
                                     .onFocusChanged { focusState ->
                                         itemFocused = focusState.isFocused
-                                        if (focusState.hasFocus) {
-                                            viewModel.setBackInProgress(false)
-                                        }
                                     }
                                     .padding(start = 1.dp, end = 1.dp, top = 1.dp, bottom = 1.dp)
                                     .padding(1.dp)

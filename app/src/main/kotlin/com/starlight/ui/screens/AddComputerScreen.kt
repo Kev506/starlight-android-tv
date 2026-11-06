@@ -29,7 +29,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
-import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Color.Companion.White
 import androidx.compose.ui.input.key.Key
@@ -153,11 +152,6 @@ fun AddComputerScreenContent(
                     parent = LocalActivity.current as ComponentActivity,
                     isSideMenuOpen = false
                 )
-                .onFocusChanged {
-                    if (it.hasFocus) {
-                        viewModel.setBackInProgress(false)
-                    }
-                }
                 .focusable(true)
         ) {
 
@@ -239,7 +233,7 @@ fun AddComputerScreenContent(
                     ),
                     keyboardActions = KeyboardActions(
                         onDone = {
-                           coroutineScope.launch {
+                            coroutineScope.launch {
                                 composeData.handleDoneEvent(
                                     text.value
                                 )
@@ -252,7 +246,7 @@ fun AddComputerScreenContent(
                         .background(Color.Transparent)
                         .onKeyEvent { event ->
                             if (event.key == Key.Enter && event.type == KeyEventType.KeyDown) {
-                               coroutineScope.launch {
+                                coroutineScope.launch {
                                     composeData.handleDoneEvent(
                                         text.value
                                     )
@@ -269,7 +263,7 @@ fun AddComputerScreenContent(
                 Spacer(modifier = Modifier.width(12.dp))
                 Button(
                     onClick = {
-                       coroutineScope.launch {
+                        coroutineScope.launch {
                             composeData.handleDoneEvent(
                                 text.value
                             )

@@ -210,6 +210,7 @@ fun GameDetailsContent(
             if (loader != null) {
                 detailsLoader.cancelQueuedOperations()
             }
+            viewModel.setBackInProgress(false)
         }
     }
 
