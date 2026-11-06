@@ -94,17 +94,21 @@ fun Modifier.handleKeyEvent(
                     is MainView -> {
                         when (screenState) {
                             "MainScreen" -> {
+                                viewModel.setBackInProgress(false)
                                 parent.handleKeyLeft(
                                     isSideMenuOpen
                                 )
                             }
+
                             "FavoritesScreen" -> {
+                                viewModel.setBackInProgress(false)
                                 parent.handleKeyLeft(
                                     isSideMenuOpen
                                 )
                             }
 
                             "ComputerScreen" -> {
+                                viewModel.setBackInProgress(false)
                                 parent.handleKeyLeft(
                                     isSideMenuOpen
                                 )
@@ -577,6 +581,7 @@ fun Modifier.handleMainNavigation(
                             "MainScreen" -> {
                                 if (mainFirstInRow) {
                                     if (index == 0) {
+                                        viewModel.setBackInProgress(false)
                                         viewModel.setIsSideMenuOpen(true)
                                         return@onPreviewKeyEvent true
                                     } else {
@@ -592,6 +597,7 @@ fun Modifier.handleMainNavigation(
                             "FavoritesScreen" -> {
                                 if (mainFirstInRow) {
                                     if (index == 0) {
+                                        viewModel.setBackInProgress(false)
                                         viewModel.setIsSideMenuOpen(true)
                                         return@onPreviewKeyEvent true
                                     } else {
