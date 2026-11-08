@@ -1,6 +1,7 @@
 package com.starlight.ui.modifiers
 
 import android.view.KeyEvent
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
@@ -30,6 +31,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.intPreferencesKey
+import com.starlight.R
 import com.starlight.activities.MainView
 import com.starlight.models.MainViewModel
 import com.starlight.preferences.DataStoreConfiguration
@@ -95,23 +97,54 @@ fun Modifier.handleKeyEvent(
                         when (screenState) {
                             "MainScreen" -> {
                                 viewModel.setBackInProgress(false)
-                                parent.handleKeyLeft(
-                                    isSideMenuOpen
-                                )
+                                when {
+                                    !isSideMenuOpen -> {
+                                        viewModel.setIsSideMenuOpen(true)
+                                    }
+
+                                    else -> {
+                                        return@onKeyEvent false
+                                    }
+                                }
                             }
 
                             "FavoritesScreen" -> {
                                 viewModel.setBackInProgress(false)
-                                parent.handleKeyLeft(
-                                    isSideMenuOpen
-                                )
+                                when {
+                                    !isSideMenuOpen -> {
+                                        viewModel.setIsSideMenuOpen(true)
+                                    }
+
+                                    else -> {
+                                        return@onKeyEvent false
+                                    }
+                                }
+                            }
+
+                            "VideoScreen" -> {
+                                viewModel.setBackInProgress(false)
+                                when {
+                                    !isSideMenuOpen -> {
+                                        viewModel.setIsSideMenuOpen(true)
+                                    }
+
+                                    else -> {
+                                        return@onKeyEvent false
+                                    }
+                                }
                             }
 
                             "ComputerScreen" -> {
                                 viewModel.setBackInProgress(false)
-                                parent.handleKeyLeft(
-                                    isSideMenuOpen
-                                )
+                                when {
+                                    !isSideMenuOpen -> {
+                                        viewModel.setIsSideMenuOpen(true)
+                                    }
+
+                                    else -> {
+                                        return@onKeyEvent false
+                                    }
+                                }
                             }
                         }
                     }
@@ -124,31 +157,78 @@ fun Modifier.handleKeyEvent(
                     is MainView -> {
                         when (screenState) {
                             "HelpScreen" -> {
-                                parent.handleHelpBackPress()
+                                viewModel.setIsMenuRequired(true)
+
+                                viewModel.getNavController()!!
+                                    .popBackStack()
+
+                                if (viewModel.isMainView.value == true) {
+                                    viewModel.setItemSelected(if (viewModel.isFavs) 1 else 0)
+                                } else {
+                                    viewModel.setScreenState("ComputerScreen")
+                                    viewModel.setItemSelected(0)
+                                }
                             }
 
                             "SettingsScreen" -> {
-                                parent.handleOptionsBackPress()
+                                viewModel.getNavController()?.popBackStack()
+
+                                if (viewModel.isMainView.value == true) {
+                                    if (viewModel.getIsVideoScreen()) {
+                                        viewModel.setScreenState("VideoScreen")
+                                        viewModel.setItemSelected(3)
+                                    } else {
+                                        viewModel.setItemSelected(if (viewModel.isFavs) 1 else 0)
+                                    }
+                                } else {
+                                    viewModel.setScreenState("ComputerScreen")
+                                    viewModel.setItemSelected(0)
+                                }
                             }
 
                             "MainSettingsScreen" -> {
-                                parent.handleMainSettingsBackPress()
+                                viewModel.getNavController()!!.popBackStack()
+
+                                if (viewModel.isMainView.value == true) {
+                                    viewModel.setItemSelected(5)
+                                } else {
+                                    viewModel.setScreenState("ComputerScreen")
+                                    viewModel.setItemSelected(0)
+                                }
                             }
 
                             "DetailsScreen" -> {
-                                parent.handleDetailsBackPress()
+                                viewModel.getNavController()?.popBackStack()
+                                viewModel.setIsMenuRequired(true)
+                                viewModel.setDetailsScreenState(false)
+                                viewModel.setItemSelected(if (viewModel.isFavs) 1 else 0)
                             }
 
                             "TrailerScreen" -> {
-                                parent.handleTrailerBackPress()
+                                viewModel.getNavController()?.popBackStack()
+
+                                if (viewModel.isDetailsScreen.value == false) viewModel.setIsMenuRequired(
+                                    true
+                                )
+                                else viewModel.setIsMenuRequired(false)
                             }
 
                             "DataCollectionScreen" -> {
-                                parent.handleDataCollectionBackPress()
+                                if (viewModel.canGoBack) {
+                                    viewModel.getNavController()
+                                        ?.popBackStack()
+                                } else {
+                                    Toast.makeText(
+                                        parent,
+                                        parent.getString(R.string.please_wait_for_the_process_to_complete),
+                                        Toast.LENGTH_SHORT
+                                    ).show()
+                                }
                             }
 
                             "AddComputerScreen" -> {
-                                parent.handleAddComputerBackPress()
+                                viewModel.getNavController()?.popBackStack()
+                                viewModel.setItemSelected(0)
                             }
                         }
                     }
@@ -300,7 +380,9 @@ fun Modifier.handleMainBackEvent(
 
                                             coroutineScope.launch(Dispatchers.IO) {
                                                 parent.dataStore.edit { preferences ->
-                                                    preferences[intPreferencesKey(KEY_SELECTED_POSITION)] = 0
+                                                    preferences[intPreferencesKey(
+                                                        KEY_SELECTED_POSITION
+                                                    )] = 0
                                                 }
                                             }
                                         }
@@ -316,6 +398,7 @@ fun Modifier.handleMainBackEvent(
                                     }
                                 }
                             }
+
                             "FavoritesScreen" -> {
                                 when {
                                     index != 0 -> {
@@ -326,7 +409,9 @@ fun Modifier.handleMainBackEvent(
 
                                             coroutineScope.launch(Dispatchers.IO) {
                                                 parent.dataStore.edit { preferences ->
-                                                    preferences[intPreferencesKey(KEY_FAV_SELECTED_POSITION)] = 0
+                                                    preferences[intPreferencesKey(
+                                                        KEY_FAV_SELECTED_POSITION
+                                                    )] = 0
                                                 }
                                             }
                                         }
@@ -342,6 +427,7 @@ fun Modifier.handleMainBackEvent(
                                     }
                                 }
                             }
+
                             "AppViewScreen" -> {
                                 when {
                                     index != 0 -> {
@@ -352,7 +438,9 @@ fun Modifier.handleMainBackEvent(
 
                                             coroutineScope.launch(Dispatchers.IO) {
                                                 parent.dataStore.edit { preferences ->
-                                                    preferences[intPreferencesKey(APP_VIEW_KEY_SELECTED_POSITION)] = 0
+                                                    preferences[intPreferencesKey(
+                                                        APP_VIEW_KEY_SELECTED_POSITION
+                                                    )] = 0
                                                 }
                                             }
                                         }
@@ -368,6 +456,7 @@ fun Modifier.handleMainBackEvent(
                                     }
                                 }
                             }
+
                             "VideoScreen" -> {
                                 when {
                                     index != 0 -> {
@@ -378,26 +467,19 @@ fun Modifier.handleMainBackEvent(
 
                                             coroutineScope.launch(Dispatchers.IO) {
                                                 parent.dataStore.edit { preferences ->
-                                                    preferences[intPreferencesKey(VIDEO_SELECTED_POSITION)] = 0
+                                                    preferences[intPreferencesKey(
+                                                        VIDEO_SELECTED_POSITION
+                                                    )] = 0
                                                 }
                                             }
                                         }
                                         return@onKeyEvent true
                                     }
 
-                                    else -> {
-                                        viewModel.getNavController()?.popBackStack()
-                                        viewModel.setIsSideMenuOpen(false)
+                                    !isSideMenuOpen -> {
                                         viewModel.setBackInProgress(false)
-                                        viewModel.videos.clear()
+                                        viewModel.setIsSideMenuOpen(true)
 
-                                        if (!viewModel.isFavs) {
-                                            viewModel.setScreenState("MainScreen")
-                                            viewModel.setItemSelected(0)
-                                        } else {
-                                            viewModel.setScreenState("FavoritesScreen")
-                                            viewModel.setItemSelected(1)
-                                        }
                                         return@onKeyEvent true
                                     }
                                 }
@@ -463,19 +545,23 @@ fun Modifier.handleMainMenuBackEvent(
 
                                         coroutineScope.launch(Dispatchers.IO) {
                                             parent.dataStore.edit { preferences ->
-                                                preferences[intPreferencesKey(KEY_FAV_SELECTED_POSITION)] = 0
+                                                preferences[intPreferencesKey(
+                                                    KEY_FAV_SELECTED_POSITION
+                                                )] = 0
                                             }
                                         }
                                     }
                                 }
                             }
+
                             "MainScreen" -> {
                                 when {
                                     isSideMenuOpen -> {
 
                                         coroutineScope.launch(Dispatchers.IO) {
                                             parent.dataStore.edit { preferences ->
-                                                preferences[intPreferencesKey(KEY_SELECTED_POSITION)] = 0
+                                                preferences[intPreferencesKey(KEY_SELECTED_POSITION)] =
+                                                    0
                                             }
                                         }
 
@@ -496,13 +582,16 @@ fun Modifier.handleMainMenuBackEvent(
                                     }
                                 }
                             }
+
                             "AppViewScreen" -> {
                                 when {
                                     isSideMenuOpen -> {
 
                                         coroutineScope.launch(Dispatchers.IO) {
                                             parent.dataStore.edit { preferences ->
-                                                preferences[intPreferencesKey(APP_VIEW_KEY_SELECTED_POSITION)] = 0
+                                                preferences[intPreferencesKey(
+                                                    APP_VIEW_KEY_SELECTED_POSITION
+                                                )] = 0
                                             }
                                         }
 
@@ -519,7 +608,25 @@ fun Modifier.handleMainMenuBackEvent(
                                             viewModel.setIsMainView(false)
                                             viewModel.setBackInProgress(false)
                                             viewModel.setItemSelected(0)
+                                            viewModel.videos.clear()
                                         }
+                                    }
+                                }
+                            }
+
+                            "VideoScreen" -> {
+                                when {
+                                    isSideMenuOpen -> {
+                                        viewModel.getNavController()!!.popBackStack()
+                                        if (!viewModel.isFavs) {
+                                            viewModel.setScreenState("MainScreen")
+                                            viewModel.setItemSelected(0)
+                                        } else {
+                                            viewModel.setScreenState("FavoritesScreen")
+                                            viewModel.setItemSelected(1)
+                                        }
+                                        viewModel.setBackInProgress(false)
+                                        viewModel.setIsVideoScreen(false)
                                     }
                                 }
                             }
@@ -594,6 +701,7 @@ fun Modifier.handleMainNavigation(
                                     }
                                 }
                             }
+
                             "FavoritesScreen" -> {
                                 if (mainFirstInRow) {
                                     if (index == 0) {
@@ -610,6 +718,7 @@ fun Modifier.handleMainNavigation(
                                     }
                                 }
                             }
+
                             "AppViewScreen" -> {
                                 if (isFirstInRow) {
                                     if (index == 0) {
@@ -626,10 +735,13 @@ fun Modifier.handleMainNavigation(
                                     }
                                 }
                             }
+
                             "VideoScreen" -> {
                                 if (videoFirstInRow) {
                                     if (index == 0) {
-                                        return@onPreviewKeyEvent false
+                                        viewModel.setBackInProgress(false)
+                                        viewModel.setIsSideMenuOpen(true)
+                                        return@onPreviewKeyEvent true
                                     } else {
                                         coroutineScope.launch {
                                             val target = index - 1
@@ -667,6 +779,7 @@ fun Modifier.handleMainNavigation(
                                     }
                                 }
                             }
+
                             "FavoritesScreen" -> {
                                 if (mainLastInRow) {
                                     if (index < scrollState.layoutInfo.totalItemsCount - 1) {
@@ -685,6 +798,7 @@ fun Modifier.handleMainNavigation(
                                     }
                                 }
                             }
+
                             "AppViewScreen" -> {
                                 if (isLastInRow) {
                                     if (index < scrollState.layoutInfo.totalItemsCount - 1) {
@@ -703,6 +817,7 @@ fun Modifier.handleMainNavigation(
                                     }
                                 }
                             }
+
                             "VideoScreen" -> {
                                 if (videoLastInRow) {
                                     if (index < scrollState.layoutInfo.totalItemsCount - 1) {
@@ -739,6 +854,7 @@ fun Modifier.handleMainNavigation(
                                     return@onPreviewKeyEvent true
                                 }
                             }
+
                             "FavoritesScreen" -> {
                                 if (index == scrollState.layoutInfo.totalItemsCount - 1) {
                                     coroutineScope.launch {
@@ -748,6 +864,7 @@ fun Modifier.handleMainNavigation(
                                     return@onPreviewKeyEvent true
                                 }
                             }
+
                             "AppViewScreen" -> {
                                 if (index == scrollState.layoutInfo.totalItemsCount - 1) {
                                     coroutineScope.launch {
@@ -757,6 +874,7 @@ fun Modifier.handleMainNavigation(
                                     return@onPreviewKeyEvent true
                                 }
                             }
+
                             "VideoScreen" -> {
                                 if (index == scrollState.layoutInfo.totalItemsCount - 1) {
                                     coroutineScope.launch {
