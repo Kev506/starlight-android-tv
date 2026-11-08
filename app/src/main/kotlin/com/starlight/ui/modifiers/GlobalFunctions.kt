@@ -157,13 +157,18 @@ fun Modifier.handleKeyEvent(
                     is MainView -> {
                         when (screenState) {
                             "HelpScreen" -> {
-                                viewModel.setIsMenuRequired(true)
+                                 viewModel.setIsMenuRequired(true)
 
                                 viewModel.getNavController()!!
                                     .popBackStack()
 
                                 if (viewModel.isMainView.value == true) {
-                                    viewModel.setItemSelected(if (viewModel.isFavs) 1 else 0)
+                                    if (viewModel.getIsVideoScreen()) {
+                                        viewModel.setScreenState("VideoScreen")
+                                        viewModel.setItemSelected(3)
+                                    } else {
+                                        viewModel.setItemSelected(if (viewModel.isFavs) 1 else 0)
+                                    }
                                 } else {
                                     viewModel.setScreenState("ComputerScreen")
                                     viewModel.setItemSelected(0)
@@ -608,7 +613,6 @@ fun Modifier.handleMainMenuBackEvent(
                                             viewModel.setIsMainView(false)
                                             viewModel.setBackInProgress(false)
                                             viewModel.setItemSelected(0)
-                                            viewModel.videos.clear()
                                         }
                                     }
                                 }
