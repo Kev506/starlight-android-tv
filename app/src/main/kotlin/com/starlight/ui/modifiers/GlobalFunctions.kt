@@ -174,7 +174,9 @@ fun Modifier.handleKeyEvent(
                                 viewModel.getNavController()?.popBackStack()
 
                                 if (viewModel.isMainView.value == true) {
-                                    if (viewModel.getIsVideoScreen()) {
+                                    if (viewModel.getNavController()?.currentDestination?.route ==
+                                        com.starlight.navigation.Screens.VideoScreen.route
+                                    ) {
                                         viewModel.setScreenState("VideoScreen")
                                         viewModel.setItemSelected(3)
                                     } else {
