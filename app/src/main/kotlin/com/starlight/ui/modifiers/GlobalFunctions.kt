@@ -157,7 +157,7 @@ fun Modifier.handleKeyEvent(
                     is MainView -> {
                         when (screenState) {
                             "HelpScreen" -> {
-                                viewModel.setIsMenuRequired(true)
+                                viewModel.setIsMenuRequired(viewModel.isDetailsScreen.value != true)
 
                                 viewModel.getNavController()!!
                                     .popBackStack()
