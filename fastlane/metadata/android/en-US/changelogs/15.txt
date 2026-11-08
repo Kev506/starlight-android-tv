@@ -1,0 +1,6 @@
+- Enhanced Navigation Drawer usage
+- Centralized navigation control in GlobalFuntions
+- Handled menu selected item on each required screen
+- Fixed visual anomally on Navigation Drawer on navigating and on back press
+- Switched help screen to full screen mode for better readabilty
+- Minor bug fixes and improvements

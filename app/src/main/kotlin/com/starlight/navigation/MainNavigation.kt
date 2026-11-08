@@ -274,6 +274,7 @@ fun MainNavigation(
         composable(Screens.VideoScreen.route) {
             viewModel.setScreenState("VideoScreen")
             viewModel.setBackInProgress(true)
+            viewModel.setIsVideoScreen(true)
 
             CompositionLocalProvider(LocalBringIntoViewSpec provides tvBringIntoViewSpec) {
                 VideoGridScreen(

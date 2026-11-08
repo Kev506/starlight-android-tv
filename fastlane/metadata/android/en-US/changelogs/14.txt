@@ -1,0 +1,3 @@
+- Improved Xbox controller support using the built-in USB driver
+- Updated dependencies to the latest versions
+- Improved the handling of the backInProgress state throughout the app, ensuring more consistent and centralized management of navigation and focus behavior.

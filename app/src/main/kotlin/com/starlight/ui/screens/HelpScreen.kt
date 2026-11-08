@@ -101,6 +101,7 @@ fun HelpScreen(
                 }
             },
             onRelease = { webView ->
+
                 webView.stopLoading()
                 webView.removeAllViews()
                 webView.destroy()
