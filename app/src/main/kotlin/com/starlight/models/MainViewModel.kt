@@ -66,6 +66,10 @@ class MainViewModel(private val state: SavedStateHandle) : ViewModel() {
     val isComputerScreen: LiveData<Boolean>
         field = MutableLiveData(true)
 
+    // MutableLiveData for tracking is video screen
+    val isVideoScreen: LiveData<Boolean>
+        field = MutableLiveData(false)
+
     // MutableLiveData for tracking is deep link
     val isNotDeepLink: LiveData<Boolean>
         field = MutableLiveData(false)
@@ -827,6 +831,14 @@ class MainViewModel(private val state: SavedStateHandle) : ViewModel() {
 
     fun setTvAlertDialog(value: Boolean) {
         tvOpenAlertDialog.value = value
+    }
+
+    fun setIsVideoScreen(value: Boolean) {
+        isVideoScreen.value = value
+    }
+
+    fun getIsVideoScreen(): Boolean {
+        return isVideoScreen.value ?: false
     }
 
     fun setIsComputerScreen(value: Boolean) {

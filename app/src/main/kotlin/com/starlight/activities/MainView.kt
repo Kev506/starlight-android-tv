@@ -11,7 +11,6 @@ import android.view.ContextMenu
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
-import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
@@ -392,50 +391,6 @@ class MainView : ComponentActivity(), OptionsHelper.OptionsCallback,
         }
     }
 
-    // Helper function to handle data collection back press
-    fun handleDataCollectionBackPress() {
-        if (viewModel.canGoBack) {
-            viewModel.getNavController()
-                ?.popBackStack()
-        } else {
-            Toast.makeText(
-                this@MainView,
-                getString(R.string.please_wait_for_the_process_to_complete),
-                Toast.LENGTH_SHORT
-            ).show()
-        }
-    }
-
-    // Helper function to handle add computer back press
-    fun handleAddComputerBackPress() {
-        viewModel.getNavController()?.popBackStack()
-        viewModel.setItemSelected(0)
-    }
-
-    // Helper function to handle key left
-    fun handleKeyLeft(isSideMenuOpen: Boolean) {
-        if (!isSideMenuOpen) {
-            viewModel.setIsSideMenuOpen(true)
-        } else {
-            return
-        }
-    }
-
-    // Handle back press in details screen
-    fun handleDetailsBackPress() {
-        viewModel.getNavController()?.popBackStack()
-        viewModel.setIsMenuRequired(true)
-        viewModel.setDetailsScreenState(false)
-        viewModel.setItemSelected(if (viewModel.isFavs) 1 else 0)
-    }
-
-    // Handle back press in trailer screen
-    fun handleTrailerBackPress() {
-        viewModel.getNavController()?.popBackStack()
-        if (viewModel.isDetailsScreen.value == false) viewModel.setIsMenuRequired(true)
-        else viewModel.setIsMenuRequired(false)
-    }
-
     override fun onStop() {
         super.onStop()
         if (viewModel.getTVScreenState()) {
@@ -463,42 +418,8 @@ class MainView : ComponentActivity(), OptionsHelper.OptionsCallback,
                 LimeLog.close()
             }
         }
-        cancelQuitGameJob()
+        quitGameJob?.cancel()
         info("QuitGameJob cancelled")
-    }
-
-    // Handle back press in settings screen
-    fun handleMainSettingsBackPress() {
-        if (viewModel.isMainView.value == true) {
-            viewModel.setItemSelected(5)
-        } else {
-            viewModel.setScreenState("ComputerScreen")
-            viewModel.setItemSelected(0)
-        }
-        viewModel.getNavController()!!.popBackStack()
-    }
-
-    // Handle back press in options screen
-    fun handleOptionsBackPress() {
-        viewModel.getNavController()?.popBackStack()
-        if (viewModel.isMainView.value == true) {
-            viewModel.setItemSelected(if (viewModel.isFavs) 1 else 0)
-        } else {
-            viewModel.setScreenState("ComputerScreen")
-            viewModel.setItemSelected(0)
-        }
-    }
-
-    // Handle back press in help screen
-    fun handleHelpBackPress() {
-        viewModel.getNavController()!!
-            .popBackStack()
-        if (viewModel.isMainView.value == true) {
-            viewModel.setItemSelected(if (viewModel.isFavs) 1 else 0)
-        } else {
-            viewModel.setScreenState("ComputerScreen")
-            viewModel.setItemSelected(0)
-        }
     }
 
     // Helper functions to show/hide the favorites button
@@ -1295,10 +1216,6 @@ class MainView : ComponentActivity(), OptionsHelper.OptionsCallback,
     private fun doesDatabaseExist(context: Context): Boolean {
         val dbFile: File = context.getDatabasePath(GameDataBaseManager.DB_NAME)
         return dbFile.exists()
-    }
-
-    private fun cancelQuitGameJob() {
-        quitGameJob?.cancel()
     }
 
     override fun popStack() {

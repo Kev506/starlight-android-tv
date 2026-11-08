@@ -183,7 +183,7 @@ fun AppDrawer(
                                 when (navItem.title) {
                                     R.string.help -> {
                                         viewModel.url = SETUP_GUIDE_URL
-                                        viewModel.setIsMenuRequired(true)
+                                        viewModel.setIsMenuRequired(false)
                                     }
 
                                     R.string.settings -> {
