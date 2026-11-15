@@ -7,7 +7,7 @@ Gamestream client for Android TV
 ![Starlight](https://starlight-stream.com/gallery/1000000214.png)
 ![Starlight](https://starlight-stream.com/gallery/Screenshot_20261019112354.png)
 
-## 📻 Projectivity Launcher
+## 📻 Projectivity Launcher - Google TV & Android TV
 ![Starlight](https://starlight-stream.com/gallery/1000000232.png)
 
 Starlight was created by ACSDigital as a project inspired by Moonlight Game Streaming client for Android, 
