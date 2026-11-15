@@ -17,10 +17,6 @@ Si el elemento seleccionado es una aplicación de escritorio, no habrá detalles
     
     
     <string name="trailers">Tráileres</string>
-
-    <!--Leanback UI-->
-    <string name="leanback">Usar la interfaz de usuario inclinada</string>
-    <string name="leanback_summary">Seleccione para mostrar aplicaciones en la interfaz de usuario de Leanback</string>
     
     
     

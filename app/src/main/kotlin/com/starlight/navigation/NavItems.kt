@@ -12,7 +12,6 @@ enum class Screens(val route: String) {
     HomeScreen("home"),
     FavoritesScreen("favorites"),
     MainScreen("main"),
-    AppViewScreen("app view"),
     MainSettingsScreen("main settings"),
     DataCollectionScreen("data collection"),
     SettingsScreen("settings"),

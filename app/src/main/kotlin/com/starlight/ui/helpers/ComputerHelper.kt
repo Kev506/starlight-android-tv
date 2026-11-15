@@ -100,11 +100,6 @@ class ComputerHelper(var viewModel: MainViewModel, var uiContext: ComponentActiv
                             updateComputer(details)
                             viewModel.setIsComputerScreen(true)
                         }
-
-                        // Add a launcher shortcut for this PC (off the main thread to prevent ANRs)
-                        if (details.pairState == PairState.PAIRED) {
-                            shortcutHelper?.createAppViewShortcutForOnlineHost(details)
-                        }
                     }
                 }
 
@@ -342,13 +337,13 @@ class ComputerHelper(var viewModel: MainViewModel, var uiContext: ComponentActiv
             viewModel.name = computer.name
 
             viewModel.getNavController()
-                ?.navigate(if (viewModel.getIsLeanbackEnabled()) Screens.MainScreen.route else Screens.AppViewScreen.route)
+                ?.navigate(Screens.MainScreen.route)
         }
 
         prefs.databaseEnabled.let {
             if (!it) {
                 viewModel.setIsMainView(false)
-                startDataCollection(computer)
+                startDataCollection(computer, newlyPaired)
             } else {
                 startMainView()
             }
@@ -356,12 +351,13 @@ class ComputerHelper(var viewModel: MainViewModel, var uiContext: ComponentActiv
     }
 
     fun startDataCollection(
-        computer: ComputerDetails
+        computer: ComputerDetails,
+        pairState: Boolean
     ) {
         // Update the Nav Bar
         (uiContext as? ComposeCallback)?.updateNavBar()
 
-        (uiContext as? ComposeCallback)?.startDataCollection(computer.uuid!!)
+        (uiContext as? ComposeCallback)?.startDataCollection(computer.uuid!!, pairState)
     }
 
     // Helper function to remove a computer
@@ -382,10 +378,11 @@ class ComputerHelper(var viewModel: MainViewModel, var uiContext: ComponentActiv
 
                 if (details == computer?.details) {
                     // Disable or delete shortcuts referencing this PC
-                    shortcutHelper?.disableComputerShortcut(
-                        details,
-                        uiContext.resources.getString(R.string.scut_deleted_pc)
-                    )
+                    withContext(Dispatchers.Main) {
+                        shortcutHelper?.disableComputerShortcut(
+                            details
+                        )
+                    }
 
                     pcAdapter?.removeComputer(computer)
 
@@ -432,6 +429,6 @@ class ComputerHelper(var viewModel: MainViewModel, var uiContext: ComponentActiv
 
     interface ComposeCallback {
         fun updateNavBar()
-        fun startDataCollection(uuid: String)
+        fun startDataCollection(uuid: String, pairState: Boolean)
     }
 }

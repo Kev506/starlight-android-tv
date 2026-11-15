@@ -17,10 +17,6 @@ Als het geselecteerde item een desktopapplicatie is, worden er geen details weer
     
     
     <string name="trailers">Trailers</string>
-
-    <!--Leanback UI-->
-    <string name="leanback">Gebruik de Leanback-gebruikersinterface</string>
-    <string name="leanback_summary">Selecteer om apps weer te geven in de Leanback-gebruikersinterface</string>
     
     
     

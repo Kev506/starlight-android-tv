@@ -35,6 +35,7 @@ import kotlin.time.Duration.Companion.milliseconds
 
 class DataCollectionHelper(var viewModel: MainViewModel, var uiContext: ComponentActivity) {
 
+    private var shortcutHelper: ShortcutHelper
     private lateinit var computer: ComputerDetails
     private var lastRawApplist: String? = null
     private lateinit var game: IgdbRepository
@@ -58,6 +59,14 @@ class DataCollectionHelper(var viewModel: MainViewModel, var uiContext: Componen
                     // Get the computer object
                     computer = localBinder.getComputer(viewModel.uuidString!!)!!
 
+                    // Add the channel
+                    withContext(Dispatchers.Main) {
+                        shortcutHelper.createMainShortcut(
+                            viewModel.computer ?: return@withContext,
+                            viewModel.pairState
+                        )
+                    }
+
                     managerBinder = localBinder
 
                     // Start updates
@@ -73,6 +82,7 @@ class DataCollectionHelper(var viewModel: MainViewModel, var uiContext: Componen
 
     init {
         viewModel.canGoBack = false
+        shortcutHelper = ShortcutHelper(uiContext)
     }
 
     // Start polling for computer updates
@@ -210,7 +220,7 @@ class DataCollectionHelper(var viewModel: MainViewModel, var uiContext: Componen
                 viewModel.name = computer.name
 
                 viewModel.getNavController()
-                    ?.navigate(if (viewModel.getIsLeanbackEnabled()) Screens.MainScreen.route else Screens.AppViewScreen.route) {
+                    ?.navigate(Screens.MainScreen.route) {
                         viewModel.getNavController()?.graph?.startDestinationRoute?.let { route ->
                             popUpTo(route) {
                                 inclusive = false

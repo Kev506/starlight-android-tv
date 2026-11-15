@@ -15,10 +15,6 @@ Jeśli wybrany element to aplikacja komputerowa, nie będzie żadnych szczegół
     
     
     <string name="trailers">Przyczepy</string>
-
-    <!--Leanback UI-->
-    <string name="leanback">Użyj interfejsu użytkownika Leanback</string>
-    <string name="leanback_summary">Wybierz, aby wyświetlać aplikacje w interfejsie użytkownika Leanback</string>
     
     
     

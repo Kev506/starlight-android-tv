@@ -16,10 +16,6 @@ Se o item selecionado for um aplicativo para desktop, não haverá detalhes para
     
     
     <string name="trailers">Reboques</string>
-
-    <!--Leanback UI-->
-    <string name="leanback">Use a IU Leanback</string>
-    <string name="leanback_summary">Selecione para exibir aplicativos na UI Leanback</string>
     
     
     

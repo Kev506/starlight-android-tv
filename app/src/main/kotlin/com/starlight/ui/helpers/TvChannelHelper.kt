@@ -4,7 +4,6 @@ import android.annotation.SuppressLint
 import android.content.ContentUris
 import android.content.Context
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.database.sqlite.SQLiteException
 import android.graphics.Bitmap
 import android.graphics.Canvas
@@ -29,8 +28,13 @@ import com.starlight.nvstream.http.ComputerDetails
 import com.starlight.nvstream.http.NvApp
 import com.starlight.preferences.PreferenceKeys
 import com.starlight.ui.content.PosterContentProvider
-import com.starlight.utils.LimeLog
+import com.starlight.utils.LimeLog.info
+import com.starlight.utils.LimeLog.warning
 import com.starlight.utils.Starlight
+import com.starlight.utils.Starlight.Companion.isClassicAndroidTV
+import com.starlight.utils.Starlight.Companion.isGoogleTV
+import com.starlight.utils.Starlight.Companion.isProjectivyInstalled
+import com.starlight.utils.Starlight.Companion.isTvDevice
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -42,7 +46,10 @@ class TvChannelHelper(private val activity: ComponentActivity) {
     // Helper function to request channel on home screen
     @Suppress("DEPRECATION")
     fun requestChannelOnHomeScreen(computer: ComputerDetails) {
-        if (!isAndroidTV or isGoogleTV or isGoogleTVStreamer) return
+        val isAllowedGTV = isTvDevice() || isGoogleTV() && isProjectivyInstalled()
+        val isNormalATV = isTvDevice() && isClassicAndroidTV()
+
+        if (!isNormalATV && !isAllowedGTV) return
 
         val channelId = getChannelId(computer.uuid!!) ?: return
         val intent = Intent(TvContractCompat.ACTION_REQUEST_CHANNEL_BROWSABLE)
@@ -50,18 +57,28 @@ class TvChannelHelper(private val activity: ComponentActivity) {
         try {
             activity.startActivityForResult(intent, 0)
         } catch (ignored: Exception) {
-            LimeLog.warning("Unable to request channel on home screen: $ignored")
+            warning("Unable to request channel on home screen: $ignored")
         }
     }
 
-    // Helper function to create a TV channel
+    // Helper function to create a TV channel silently
     fun createTvChannel(computer: ComputerDetails) {
-        if (!isAndroidTV or isGoogleTV or isGoogleTVStreamer) return
+        val isAllowedGTV = isTvDevice() || isGoogleTV() && isProjectivyInstalled()
+        val isNormalATV = isTvDevice() && isClassicAndroidTV()
+
+        if (!isNormalATV && !isAllowedGTV) return
+
+        // Name for Projectivity Launcher channel on Google TV
+        val name = buildString {
+            append(activity.getString(R.string.pc2))
+            append(": ")
+            append(computer.name)
+        }
 
         // Build the channel
         val builder = Channel.Builder()
             .setType(TvContractCompat.Channels.TYPE_PREVIEW)
-            .setDisplayName(computer.name)
+            .setDisplayName(if (isAllowedGTV) name else computer.name)
             .setInternalProviderId(computer.uuid)
             .setAppLinkIntent(ServerHelper.createPcShortcutIntent(activity, computer))
         val channelId = getChannelId(computer.uuid!!)
@@ -77,12 +94,21 @@ class TvChannelHelper(private val activity: ComponentActivity) {
                 TvContractCompat.Channels.CONTENT_URI, builder.build().toContentValues()
             )
         } catch (e: IllegalArgumentException) {
-            LimeLog.warning("Unable to create channel: $e")
+            warning("Unable to create channel: $e")
             return
         }
         if (channelUri != null) {
             val id = ContentUris.parseId(channelUri)
             updateChannelIcon(id)
+
+            if (isAllowedGTV) {
+                try {
+                    TvContractCompat.requestChannelBrowsable(activity, id)
+                    info("Default channel created and marked browsable silently: $id")
+                } catch (e: Exception) {
+                    warning("Could not set channel as browsable: $e")
+                }
+            }
         }
     }
 
@@ -101,14 +127,14 @@ class TvChannelHelper(private val activity: ComponentActivity) {
                     outputStream.flush()
                 }
             } catch (_: SQLiteException) {
-                LimeLog.warning("Failed to store logo due to SQLiteException")
+                warning("Failed to store logo due to SQLiteException")
             } catch (_: IOException) {
-                LimeLog.warning("Failed to store logo due to IOException")
+                warning("Failed to store logo due to IOException")
             } finally {
                 logo.recycle()
             }
         }
-            ?: LimeLog.warning("Channel icon drawable not found.")
+            ?: warning("Channel icon drawable not found.")
     }
 
     // Helper function to convert drawable to bitmap
@@ -124,7 +150,10 @@ class TvChannelHelper(private val activity: ComponentActivity) {
     // Helper function to add a game to a channel
     @SuppressLint("RestrictedApi")
     suspend fun addGameToChannel(computer: ComputerDetails, app: NvApp) {
-        if (!isAndroidTV or isGoogleTV or isGoogleTVStreamer) return
+        val isAllowedGTV = isTvDevice() || isGoogleTV() && isProjectivyInstalled()
+        val isNormalATV = isTvDevice() && isClassicAndroidTV()
+
+        if (!isNormalATV && !isAllowedGTV) return
 
         val channelId = getChannelId(computer.uuid!!) ?: return
         val builder = PreviewProgram.Builder()
@@ -150,8 +179,8 @@ class TvChannelHelper(private val activity: ComponentActivity) {
                 TvContractCompat.PreviewPrograms.CONTENT_URI,
                 builder.build().toContentValues()
             )
-            // Show toast notification (only for non-Google TV devices)
-            if (!isGoogleTV or !isGoogleTVStreamer) {
+            // Show toast notification (only for Android TV devices or supported launchers on GTV)
+            if (isAllowedGTV or isNormalATV) {
                 withContext(Dispatchers.Main) {
                     Toast.makeText(
                         activity,
@@ -161,7 +190,7 @@ class TvChannelHelper(private val activity: ComponentActivity) {
                 }
             }
         } catch (e: IllegalArgumentException) {
-            LimeLog.warning("Unable to add program to channel: $e")
+            warning("Unable to add program to channel: $e")
             return
         }
         TvContractCompat.requestChannelBrowsable(activity, channelId)
@@ -170,7 +199,10 @@ class TvChannelHelper(private val activity: ComponentActivity) {
     // Helper function to add a game to watch next
     @SuppressLint("RestrictedApi")
     fun addGameToWatchNext(computer: ComputerDetails, app: NvApp) {
-        if (!isAndroidTV or isGoogleTV or isGoogleTVStreamer) return
+        val isAllowedGTV = isTvDevice() || isGoogleTV() && isProjectivyInstalled()
+        val isNormalATV = isTvDevice() && isClassicAndroidTV()
+
+        if (!isNormalATV && !isAllowedGTV) return
 
         val builder = WatchNextProgram.Builder()
         builder.setType(TvContractCompat.WatchNextPrograms.TYPE_GAME)
@@ -269,7 +301,7 @@ class TvChannelHelper(private val activity: ComponentActivity) {
                     shortDescription = translatedText
                 }
                 .addOnFailureListener { exception ->
-                    LimeLog.info("Translation failed: " + exception.message)
+                    info("Translation failed: " + exception.message)
                     shortDescription = fullDescription
                 }
         } else {
@@ -286,7 +318,10 @@ class TvChannelHelper(private val activity: ComponentActivity) {
 
     // Helper function to delete a channel
     fun deleteChannel(computer: ComputerDetails) {
-        if (isAndroidTV or !isGoogleTV or !isGoogleTVStreamer) return
+        val isAllowedGTV = isTvDevice() || isGoogleTV() && isProjectivyInstalled()
+        val isNormalATV = isTvDevice() && isClassicAndroidTV()
+
+        if (!isNormalATV && !isAllowedGTV) return
 
         val channelId = getChannelId(computer.uuid!!) ?: return
         activity.contentResolver.delete(TvContractCompat.buildChannelUri(channelId), null, null)
@@ -294,7 +329,10 @@ class TvChannelHelper(private val activity: ComponentActivity) {
 
     // Helper function to delete a program
     fun deleteProgram(computer: ComputerDetails, app: NvApp) {
-        if (!isAndroidTV or isGoogleTV or isGoogleTVStreamer) return
+        val isAllowedGTV = isTvDevice() || isGoogleTV() && isProjectivyInstalled()
+        val isNormalATV = isTvDevice() && isClassicAndroidTV()
+
+        if (!isNormalATV && !isAllowedGTV) return
 
         val channelId = getChannelId(computer.uuid!!) ?: return
         val programId = getProgramId(channelId, "" + app.id.toString())
@@ -307,8 +345,8 @@ class TvChannelHelper(private val activity: ComponentActivity) {
             null
         )
 
-        // Show toast notification (only for non-Google TV devices)
-        if (!isGoogleTV or !isGoogleTVStreamer) {
+        // Show toast notification (only for Android TV devices or supported launchers on GTV)
+        if (isAllowedGTV or isNormalATV) {
             Starlight.applicationScope.launch(Dispatchers.Main) {
                 val message = app.appName + activity.getString(R.string.removed_from_favorites)
                 Toast.makeText(activity, message, Toast.LENGTH_SHORT).show()
@@ -319,7 +357,10 @@ class TvChannelHelper(private val activity: ComponentActivity) {
     // Helper function to delete a watch next program
     @SuppressLint("RestrictedApi")
     fun deleteWatchNext(app: NvApp) {
-        if (!isAndroidTV or isGoogleTV or isGoogleTVStreamer) return
+        val isAllowedGTV = isTvDevice() || isGoogleTV() && isProjectivyInstalled()
+        val isNormalATV = isTvDevice() && isClassicAndroidTV()
+
+        if (!isNormalATV && !isAllowedGTV) return
 
         val programId = getWatchNextPrograms(activity, "" + app.id.toString()) ?: return
         activity.contentResolver.delete(
@@ -331,7 +372,10 @@ class TvChannelHelper(private val activity: ComponentActivity) {
     // Helper function to delete a watch next program
     @SuppressLint("RestrictedApi")
     fun deleteWatchNextById(appId: Int) {
-        if (!isAndroidTV or isGoogleTV or isGoogleTVStreamer) return
+        val isAllowedGTV = isTvDevice() || isGoogleTV() && isProjectivyInstalled()
+        val isNormalATV = isTvDevice() && isClassicAndroidTV()
+
+        if (!isNormalATV && !isAllowedGTV) return
 
         val programId = getWatchNextPrograms(activity, "" + appId.toString()) ?: return
         activity.contentResolver.delete(
@@ -391,9 +435,9 @@ class TvChannelHelper(private val activity: ComponentActivity) {
                                     null
                                 )
                                 if (countDeleted > 0) {
-                                    LimeLog.info("Watch next program has been deleted")
+                                    info("Watch next program has been deleted")
                                 } else {
-                                    LimeLog.warning("Watch next program has not been deleted")
+                                    warning("Watch next program has not been deleted")
                                 }
                             }
                         }
@@ -434,9 +478,9 @@ class TvChannelHelper(private val activity: ComponentActivity) {
                             null
                         )
                         if (countDeleted > 0) {
-                            LimeLog.info("Preview program has been deleted")
+                            info("Preview program has been deleted")
                         } else {
-                            LimeLog.warning("Preview program has not been deleted")
+                            warning("Preview program has not been deleted")
                         }
                     }
                 }
@@ -445,18 +489,6 @@ class TvChannelHelper(private val activity: ComponentActivity) {
 
         return null
     }
-
-    // Helper function to check if the device is a Google TV
-    private val isGoogleTV: Boolean
-        get() = Starlight.getDeviceName() == "Google Chromecast"
-
-    // Helper function to check if the device is a Google TV Streamer
-    private val isGoogleTVStreamer: Boolean
-        get() = Starlight.getDeviceName() == "Google TV Streamer"
-
-    // Helper function to check if the device is an Android TV
-    private val isAndroidTV: Boolean
-        get() = activity.packageManager.hasSystemFeature(PackageManager.FEATURE_LEANBACK)
 
     companion object {
 

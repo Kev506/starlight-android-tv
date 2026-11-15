@@ -67,7 +67,6 @@ import com.starlight.ui.composables.AppDrawer
 import com.starlight.ui.dialogs.AlertDialog
 import com.starlight.ui.dialogs.ProgressDialog
 import com.starlight.ui.helpers.AddComputerHelper
-import com.starlight.ui.helpers.AppViewHelper
 import com.starlight.ui.helpers.ComputerHelper
 import com.starlight.ui.helpers.DataCollectionHelper
 import com.starlight.ui.helpers.FavoritesHelper
@@ -107,13 +106,11 @@ import kotlin.time.Duration.Companion.milliseconds
 
 
 class MainView : ComponentActivity(), OptionsHelper.OptionsCallback,
-    AppViewHelper.AppViewCallBack,
     FavoritesHelper.FavsScreenCallBack, HomeScreenHelper.HomeScreenCallBack,
     ComputerHelper.ComposeCallback, AddComputerHelper.ComposeCallback {
 
     private val viewModel: MainViewModel by viewModels()
     private var selectedApp: AppComputerObject? = null
-    private var appViewHelper: AppViewHelper? = null
     private var homeViewHelper: HomeScreenHelper? = null
     private var favsHelper: FavoritesHelper? = null
     private var computer: ComputerHelper? = null
@@ -161,7 +158,6 @@ class MainView : ComponentActivity(), OptionsHelper.OptionsCallback,
             var isSideMenuOpen by remember { mutableStateOf(false) }
             val showLoader by viewModel.showAppLoaderState.observeAsState(false)
             val isMenuRequired by viewModel.isMenuRequired.observeAsState(true)
-            val appViewHelper by viewModel.appViewHelper.observeAsState()
             val homeViewHelper by viewModel.homeViewHelper.observeAsState()
             val favsHelper by viewModel.favsHelper.observeAsState()
             val isBackInProgress by viewModel.isBackInProgress.observeAsState(false)
@@ -207,7 +203,6 @@ class MainView : ComponentActivity(), OptionsHelper.OptionsCallback,
 
             this@MainView.computer = computer
             this@MainView.dataLoader = dataLoader
-            this@MainView.appViewHelper = appViewHelper
             this@MainView.homeViewHelper = homeViewHelper
             this@MainView.favsHelper = favsHelper
             this@MainView.tvHelper = tvHelper
@@ -219,8 +214,6 @@ class MainView : ComponentActivity(), OptionsHelper.OptionsCallback,
                         mainContentRequester.requestFocus()
                     }
                 }
-
-                viewModel.setIsLeanbackEnabled(currentConfig.leanback)
 
                 if (viewModel.name == "Sunshine") {
                     viewModel.setHasFavorites(currentConfig.sunFavorites.isNotEmpty())
@@ -283,9 +276,7 @@ class MainView : ComponentActivity(), OptionsHelper.OptionsCallback,
                                         LoadingOverlay(isLoading = showLoader)
                                     }
 
-                                    MainNavigation(
-                                        isLeanbackEnabled = viewModel.getIsLeanbackEnabled()
-                                    )
+                                    MainNavigation()
                                 }
                             }
                         )
@@ -434,9 +425,7 @@ class MainView : ComponentActivity(), OptionsHelper.OptionsCallback,
 
     // Update favorites button visibility
     private fun updateFavoritesButtonVisibility() {
-        if (viewModel.getIsLeanbackEnabled()) {
-            viewModel.setFavoritesVisibility(viewModel.getHasFavorites())
-        }
+        viewModel.setFavoritesVisibility(viewModel.getHasFavorites())
     }
 
     override fun onConfigurationChanged(newConfig: Configuration) {
@@ -450,10 +439,6 @@ class MainView : ComponentActivity(), OptionsHelper.OptionsCallback,
             }
 
             "FavoritesScreen" -> {
-                viewModel.triggerReload()
-            }
-
-            "AppViewScreen" -> {
                 viewModel.triggerReload()
             }
 
@@ -483,15 +468,6 @@ class MainView : ComponentActivity(), OptionsHelper.OptionsCallback,
         viewModel.showHiddenApps = savedInstanceState.getBoolean("HIDDEN")
     }
 
-    // Reload AppViewScreen
-    override fun reloadAppViewScreen() {
-        viewModel.reloaded.observe(this) { reloaded ->
-            if (!reloaded) {
-                viewModel.setReloaded(true)
-            }
-        }
-    }
-
     // Load details screen
     override fun loadAppDetails(
         app: AppComputerObject,
@@ -517,17 +493,6 @@ class MainView : ComponentActivity(), OptionsHelper.OptionsCallback,
     override fun reloadMainViewScreen(hidden: Boolean) {
         viewModel.showHiddenApps = hidden
 
-        viewModel.triggerReload()
-
-        viewModel.reloaded.observe(this) { reloaded ->
-            if (!reloaded) {
-                viewModel.setReloaded(true)
-            }
-        }
-    }
-
-    override fun reloadAppViewScreen(hidden: Boolean) {
-        viewModel.showHiddenApps = hidden
         viewModel.triggerReload()
 
         viewModel.reloaded.observe(this) { reloaded ->
@@ -591,9 +556,6 @@ class MainView : ComponentActivity(), OptionsHelper.OptionsCallback,
         }
 
         when (screenState) {
-            "AppViewScreen" -> {
-                appViewContextMenu(selectedApp, menu!!)
-            }
 
             "MainScreen" -> {
                 menu!!.setHeaderIcon(ResourcesCompat.getDrawable(resources, icon, null))
@@ -813,38 +775,6 @@ class MainView : ComponentActivity(), OptionsHelper.OptionsCallback,
         }
     }
 
-    // Helper function for adding app grid context menu items
-    private fun appViewContextMenu(
-        selectedApp: AppComputerObject?,
-        menu: ContextMenu
-    ) {
-        if (appViewHelper?.lastRunningAppId != 0) {
-            if (appViewHelper?.lastRunningAppId == selectedApp!!.app?.id) {
-                menu.add(Menu.NONE, START_OR_RESUME_ID, 1, R.string.applist_menu_resume)
-                menu.add(Menu.NONE, QUIT_ID, 2, R.string.applist_menu_quit)
-            } else {
-                menu.add(Menu.NONE, START_WITH_QUIT, 1, R.string.applist_menu_quit_and_start)
-            }
-        }
-
-        if (appViewHelper?.lastRunningAppId == 0) {
-            menu.add(Menu.NONE, VIEW_DETAILS_ID, 3, R.string.applist_menu_details)
-        }
-
-        menu.add(Menu.NONE, FULL_APP_LIST_ID, 4, R.string.pcview_menu_app_list)
-
-        val shouldShowHideApp =
-            appViewHelper?.lastRunningAppId != selectedApp!!.app?.id || appViewHelper?.hiddenAppIds!!.contains(
-                selectedApp.app?.id!!
-            )
-        if (shouldShowHideApp) {
-            menu.add(Menu.NONE, HIDE_APP_ID, 5, R.string.applist_menu_hide_app)
-                .setCheckable(true).isChecked = appViewHelper?.hiddenAppIds!!.contains(
-                selectedApp.app?.id!!
-            )
-        }
-    }
-
     override fun onContextItemSelected(item: MenuItem): Boolean {
 
         viewModel.selectedApp.observe(this) { selectedApp ->
@@ -854,9 +784,6 @@ class MainView : ComponentActivity(), OptionsHelper.OptionsCallback,
         val screenState = viewModel.getScreenState()
 
         return when (screenState) {
-            "AppViewScreen" -> {
-                appViewSelectedContextMenu(item)
-            }
 
             "MainScreen" -> {
                 mainScreenSelectedContextMenu(item)
@@ -1145,73 +1072,6 @@ class MainView : ComponentActivity(), OptionsHelper.OptionsCallback,
         }
     }
 
-    // Helper function for selected app grid context menu items
-    private fun appViewSelectedContextMenu(item: MenuItem): Boolean {
-        return when (item.itemId) {
-            START_WITH_QUIT -> {
-                viewModel.setSelectedApp(selectedApp!!)
-                viewModel.setDialogValue(true)
-                viewModel.setDialogMessage(getString(R.string.applist_quit_confirmation))
-                viewModel.setDialogTitle(getString(R.string.confirm_quit))
-                viewModel.setDialogImage(R.drawable.baseline_stop_circle_24)
-                viewModel.setCancelButtonLabel(getString(R.string.cancel))
-                viewModel.setIsCancelRequired(true)
-                viewModel.setIsNeutralRequired(false)
-                viewModel.setConfirmButtonLabel(getString(R.string.quit))
-                viewModel.setIsQuitting(false)
-                viewModel.setStartWithQuit(true)
-                true
-            }
-
-            START_OR_RESUME_ID -> {
-                selectedApp!!.app?.let {
-                    appViewHelper?.handleStartOrResume(selectedApp!!)
-                }
-                true
-            }
-
-            QUIT_ID -> {
-                appViewHelper?.suspendGridUpdates = true
-                viewModel.setSelectedApp(selectedApp!!)
-                viewModel.setDialogValue(true)
-                viewModel.setDialogMessage(getString(R.string.applist_quit_confirmation))
-                viewModel.setDialogTitle(getString(R.string.confirm_quit))
-                viewModel.setDialogImage(R.drawable.baseline_stop_circle_24)
-                viewModel.setCancelButtonLabel(getString(R.string.cancel))
-                viewModel.setIsCancelRequired(true)
-                viewModel.setIsNeutralRequired(false)
-                viewModel.setConfirmButtonLabel(getString(R.string.quit))
-                viewModel.setIsQuitting(true)
-                viewModel.setStartWithQuit(false)
-                true
-            }
-
-            FULL_APP_LIST_ID -> {
-                appViewHelper?.refreshAppList()
-                true
-            }
-
-            VIEW_DETAILS_ID -> {
-                appViewHelper?.showDetails(
-                    selectedApp,
-                    viewModel.managerBinder,
-                    viewModel.computer,
-                    viewModel.computer?.uuid
-                )
-                true
-            }
-
-            HIDE_APP_ID -> {
-                lifecycleScope.launch {
-                    appViewHelper?.handleHideApp(selectedApp!!, item.isChecked)
-                }
-                true
-            }
-
-            else -> super.onContextItemSelected(item)
-        }
-    }
-
     // Helper function to check if the database exists
     private fun doesDatabaseExist(context: Context): Boolean {
         val dbFile: File = context.getDatabasePath(GameDataBaseManager.DB_NAME)
@@ -1228,8 +1088,9 @@ class MainView : ComponentActivity(), OptionsHelper.OptionsCallback,
         viewModel.setIsMenuRequired(false)
     }
 
-    override fun startDataCollection(uuid: String) {
+    override fun startDataCollection(uuid: String, pairState: Boolean) {
         viewModel.uuidString = uuid
+        viewModel.pairState = pairState
         viewModel.getNavController()?.navigate(Screens.DataCollectionScreen.route) {
             launchSingleTop = true
         }

@@ -1,0 +1,8 @@
+- Added queries permissions to manifest to check package info.
+- Added experimental support for Projectivity Launcher on Google TV devices.
+- Using Projectivity Launcher on Google TV devices, now allows channels and watch next.
+- Improved how channels are added on Android TV and Google TV devices with Projectivity Launcher installed.
+- Removed redundant shortcut additions.
+- Added null safety checks on watch next for stale items.
+- Removed AppViewScreen grid layout and related code as considered redundant and default to Leanback.
+- Minor fixes and improvements.

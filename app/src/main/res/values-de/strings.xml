@@ -15,10 +15,6 @@ Wenn es sich bei dem ausgewählten Element um eine Desktop-Anwendung handelt, we
     
     
     <string name="trailers">Anhänger</string>
-
-    <!--Leanback UI-->
-    <string name="leanback">Verwenden Sie die Leanback-Benutzeroberfläche</string>
-    <string name="leanback_summary">Wählen Sie diese Option aus, um Apps in der Leanback-Benutzeroberfläche anzuzeigen</string>
     
     
     

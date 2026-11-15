@@ -17,10 +17,6 @@ Ha a kiválasztott elem egy asztali alkalmazás, akkor nem lesznek megjeleníthe
     
     
     <string name="trailers">Pótkocsik</string>
-
-    <!--Leanback UI-->
-    <string name="leanback">Használja a Leanback felhasználói felületet</string>
-    <string name="leanback_summary">Válassza az alkalmazások Leanback felhasználói felületen való megjelenítéséhez</string>
     
     
     

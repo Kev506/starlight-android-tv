@@ -76,7 +76,10 @@ import com.starlight.utils.Constants.DATABASE_PREF
 import com.starlight.utils.Constants.ENABLE_HDR_PREF_STRING
 import com.starlight.utils.Constants.SETUP_GUIDE_URL
 import com.starlight.utils.Starlight.Companion.dataStore
-import com.starlight.utils.Starlight.Companion.getDeviceName
+import com.starlight.utils.Starlight.Companion.isClassicAndroidTV
+import com.starlight.utils.Starlight.Companion.isGoogleTV
+import com.starlight.utils.Starlight.Companion.isProjectivyInstalled
+import com.starlight.utils.Starlight.Companion.isTvDevice
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -130,17 +133,12 @@ fun OptionsScreenContent(
     val isDatabaseSelected = remember { mutableStateOf(false) }
     val isCleanSweep = remember { mutableStateOf(false) }
 
-    val isGoogleTV = remember {
-        getDeviceName() == "Google Chromecast"
-    }
-
-    val isGoogleTVStreamer = remember {
-        getDeviceName() == "Google TV Streamer"
-    }
-
     val focusScale by animateFloatAsState(
         targetValue = if (focused) 1.12f else 1.1f
     )
+
+    val isAllowedGTV = remember { isTvDevice() || isGoogleTV() && isProjectivyInstalled() }
+    val isNormalATV = remember { isTvDevice() && isClassicAndroidTV() }
 
     LaunchedEffect(data.size) {
         if (data.isNotEmpty()) {
@@ -277,7 +275,7 @@ fun OptionsScreenContent(
                                             viewModel.setDialogImage(R.drawable.baseline_delete_sweep_24)
                                             viewModel.setDialogTitle(resources.getString(R.string.clear_favorites))
                                             viewModel.setDialogMessage(
-                                                if (isGoogleTV or isGoogleTVStreamer) {
+                                                if (!isAllowedGTV or !isNormalATV) {
                                                     resources.getString(R.string.are_you_sure_you_want_to_clear_all_favorites)
                                                 } else {
                                                     resources.getString(R.string.clear_favs_msg)

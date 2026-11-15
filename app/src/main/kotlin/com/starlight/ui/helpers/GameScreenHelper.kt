@@ -79,6 +79,7 @@ import com.starlight.utils.LimeLog.info
 import com.starlight.utils.LimeLog.warning
 import com.starlight.utils.Starlight.Companion.applicationScope
 import com.starlight.utils.Starlight.Companion.dataStore
+import com.starlight.utils.Starlight.Companion.isTvDevice
 import com.starlight.utils.Starlight.Companion.quitGameJob
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -260,11 +261,6 @@ class GameScreenHelper(
         // Check if the app ID is valid
         viewModel.appId?.toIntOrNull()?.let { checkAppId(it) }
 
-        // Report this shortcut being used
-        applicationScope.launch(Dispatchers.Main) {
-            reportShortcutUsed()
-        }
-
         // Initialize the MediaCodec helper before creating the decoder
         MediaCodecHelper.initialize(activity, dataStoreConfiguration.renderer)
 
@@ -373,7 +369,11 @@ class GameScreenHelper(
             .supportedVideoFormats(supportedVideoFormats)
             .attachedGamepadMask(gamepadMask)
             .clientRefreshRateX100((displayRefreshRate * 100).toInt())
-            .audioConfiguration(AudioRendererFactory.getEffectiveAudioConfiguration(dataStoreConfiguration))
+            .audioConfiguration(
+                AudioRendererFactory.getEffectiveAudioConfiguration(
+                    dataStoreConfiguration
+                )
+            )
             .colorSpace(decoderRenderer?.preferredColorSpace() ?: StarBridge.COLORSPACE_REC_709)
             .colorRange(decoderRenderer?.preferredColorRange() ?: StarBridge.COLOR_RANGE_LIMITED)
             .persistGamepadsAfterDisconnect(!dataStoreConfiguration.multiController)
@@ -514,13 +514,6 @@ class GameScreenHelper(
         applicationScope.launch(Dispatchers.Main) {
             viewModel.setProgressDialog(true)
             viewModel.setProgressMessage(activity.getString(R.string.conn_establishing_msg))
-        }
-    }
-
-    // Helper function to report a shortcut being used
-    private fun reportShortcutUsed() {
-        viewModel.computer?.let {
-            shortcutHelper.reportComputerShortcutUsed(it)
         }
     }
 
@@ -715,10 +708,8 @@ class GameScreenHelper(
 
     // Helper function to update the PiP auto-enter state
     private fun updatePipAutoEnter() {
-        if (!dataStoreConfiguration.enablePip) {
-            return
-        }
-        val autoEnter = connected && suppressPipRefCount == 0
+        val autoEnter = !isTvDevice() && dataStoreConfiguration.enablePip && connected && suppressPipRefCount == 0
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             activity.setPictureInPictureParams(getPictureInPictureParams(autoEnter))
         } else {
@@ -1454,7 +1445,13 @@ class GameScreenHelper(
             else -> {
                 // Up, Down, and Hover events are specific to the action index
                 val toolType = convertToolTypeToStylusToolType(event, event.actionIndex)
-                return toolType != StarBridge.LI_TOOL_TYPE_UNKNOWN && sendPenEventForPointer(view, event, eventType, toolType, event.actionIndex)
+                return toolType != StarBridge.LI_TOOL_TYPE_UNKNOWN && sendPenEventForPointer(
+                    view,
+                    event,
+                    eventType,
+                    toolType,
+                    event.actionIndex
+                )
                 // Not a stylus event
             }
         }
@@ -2174,7 +2171,6 @@ class GameScreenHelper(
         // Offload background tasks to a coroutine for better performance
         applicationScope.launch(Dispatchers.IO) {
             shortcutHelper.getFavorites(viewModel.pcName!!)
-            shortcutHelper.reportComputerShortcutUsed(viewModel.computer!!)
 
             // Confirm if app is favorite to update the shortcut
             viewModel.app?.let {
@@ -2183,7 +2179,9 @@ class GameScreenHelper(
                     if (isSunshine) ShortcutHelper.TvSunFavAppIds else ShortcutHelper.TvFavAppIds
                 for ((_, id) in relevantFavAppIds) {
                     if (id == viewModel.appId?.toInt()) {
-                        shortcutHelper.reportGameAddedToHome(viewModel.computer, viewModel.app)
+                        withContext(Dispatchers.Main) {
+                            shortcutHelper.reportGameAddedToHome(viewModel.computer, viewModel.app)
+                        }
                     }
                 }
             }
@@ -2356,7 +2354,7 @@ class GameScreenHelper(
     fun quitGame() {
         quitGameJob = applicationScope.launch(Dispatchers.Main) {
             shortcutHelper.quitGame(
-                activity,  this@GameScreenHelper, viewModel.computer!!, viewModel.app!!,
+                activity, this@GameScreenHelper, viewModel.computer!!, viewModel.app!!,
                 viewModel.managerBinder!!, viewModel
             )
         }

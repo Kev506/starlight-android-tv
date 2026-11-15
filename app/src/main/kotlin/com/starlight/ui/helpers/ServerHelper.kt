@@ -123,7 +123,7 @@ object ServerHelper {
             }
         } else {
             viewModel.getNavController()?.navigate(Screens.GameStreamingScreen.route) {
-                popUpTo(if (viewModel.getIsLeanbackEnabled()) Screens.MainScreen.route else Screens.AppViewScreen.route) {
+                popUpTo(Screens.MainScreen.route) {
                     inclusive = false
                     saveState = true
                 }

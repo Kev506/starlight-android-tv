@@ -17,10 +17,6 @@ Nếu mục đã chọn là ứng dụng máy tính để bàn, sẽ không có 
     
     
     <string name="trailers">Trailer</string>
-
-    <!--Leanback UI-->
-    <string name="leanback">Sử dụng giao diện người dùng Leanback</string>
-    <string name="leanback_summary">Chọn để hiển thị các ứng dụng trong Leanback UI</string>
     
     
     
