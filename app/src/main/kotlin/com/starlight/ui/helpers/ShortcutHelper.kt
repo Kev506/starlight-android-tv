@@ -44,7 +44,8 @@ class ShortcutHelper(private val context: ComponentActivity) {
 
     // Helper function to report game added to home
     suspend fun reportGameAddedToHome(computer: ComputerDetails?, app: NvApp?) {
-        tvChannelHelper.addGameToChannel(computer!!, app!!)
+        tvChannelHelper.createTvChannel(computer!!)
+        tvChannelHelper.addGameToChannel(computer, app!!)
     }
 
 

@@ -62,7 +62,7 @@ class DataCollectionHelper(var viewModel: MainViewModel, var uiContext: Componen
                     // Add the channel
                     withContext(Dispatchers.Main) {
                         shortcutHelper.createMainShortcut(
-                            viewModel.computer ?: return@withContext,
+                            computer,
                             viewModel.pairState
                         )
                     }

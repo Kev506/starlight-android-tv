@@ -21,6 +21,7 @@ import com.starlight.utils.Starlight.Companion.applicationScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.io.IOException
 import java.util.UUID
 
@@ -165,26 +166,28 @@ class TvHomeHelper(
             viewModel.setAppRunning(false)
             managerBinder?.stopPolling()
 
-            try {
-                val nvApp =
-                    PreferenceKeys.getParcelable(stringPreferencesKey("App"), null, activity)
+            withContext(Dispatchers.IO) {
+                try {
+                    val nvApp =
+                        PreferenceKeys.getParcelable(stringPreferencesKey("App"), null, activity)
 
-                val programId = tvChannelHelper?.getWatchNextPrograms(
-                    activity,
-                    "" + nvApp!!.id
-                )
-                if (programId?.id != null) {
-                    quitWatchNextApp(nvApp)
+                    val programId = tvChannelHelper?.getWatchNextPrograms(
+                        activity,
+                        "" + nvApp!!.id
+                    )
+                    if (programId?.id != null) {
+                        quitWatchNextApp(nvApp)
+                    }
+                } catch (e: NullPointerException) {
+                    e.printStackTrace()
                 }
-            } catch (e: NullPointerException) {
-                e.printStackTrace()
             }
         }
     }
 
     // Helper function to quit the watch next app if it exists
     private fun quitWatchNextApp(selectedApp: NvApp?): Job {
-        return applicationScope.launch(Dispatchers.Main) {
+        return applicationScope.launch(Dispatchers.IO) {
             tvChannelHelper?.deleteWatchNext(
                 selectedApp!!
             )

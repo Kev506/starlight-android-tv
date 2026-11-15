@@ -219,7 +219,7 @@ fun GameScreen(
                     shortcutHelper.addWatchNextShortcut(
                         activity = activity,
                         gameScreenHelper = gameStreamHelper,
-                        viewModel,
+                        viewModel = viewModel,
                         computer = viewModel.computer!!,
                         app = viewModel.app!!
                     )
