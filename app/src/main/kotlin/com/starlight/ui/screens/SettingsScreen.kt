@@ -96,7 +96,6 @@ import com.starlight.utils.Constants.FULL_RANGE_PREF_STRING
 import com.starlight.utils.Constants.GAMEPAD_TOUCHPAD_AS_MOUSE_PREF_STRING
 import com.starlight.utils.Constants.LANGUAGE_PREF_STRING
 import com.starlight.utils.Constants.LATENCY_TOAST_PREF_STRING
-import com.starlight.utils.Constants.LEANBACK_PREF_STRING
 import com.starlight.utils.Constants.ML_DOWNLOADED
 import com.starlight.utils.Constants.MOUSE_EMULATION_STRING
 import com.starlight.utils.Constants.MOUSE_NAV_BUTTONS_STRING
@@ -104,7 +103,6 @@ import com.starlight.utils.Constants.MULTI_CONTROLLER_PREF_STRING
 import com.starlight.utils.Constants.PRIVACY_URL
 import com.starlight.utils.Constants.REDUCE_REFRESH_RATE_PREF_STRING
 import com.starlight.utils.Constants.RESOLUTION_PREF_STRING
-import com.starlight.utils.Constants.SMALL_ICONS_PREF_STRING
 import com.starlight.utils.Constants.STATS_PREF_STRING
 import com.starlight.utils.Constants.STRETCH_PREF_STRING
 import com.starlight.utils.Constants.TROUBLESHOOTING_URL
@@ -160,7 +158,6 @@ fun SettingsScreen(viewModel: MainViewModel) {
     val unsupportedFps = remember { mutableStateOf("") }
     val selectedLanguage = remember { mutableStateOf("") }
     val showLoader by viewModel.showLoaderState.observeAsState(false)
-    val isMainView by viewModel.isMainView.observeAsState(false)
     val lifecycleOwner = LocalLifecycleOwner.current
     val coroutineScope = rememberCoroutineScope()
     val config by context.dataStoreConfigFlow.collectAsStateWithLifecycle(initialValue = null)
@@ -1924,136 +1921,6 @@ fun SettingsScreen(viewModel: MainViewModel) {
                                             Toast.LENGTH_SHORT
                                         ).show()
                                     }
-                            },
-                            selected = false,
-                            scale = ListItemDefaults.scale(
-                                focusedScale = 1f,
-                                selectedScale = 1f
-                            ),
-                            colors = ListItemDefaults.colors(
-                                focusedContainerColor = Color(0x6633B5E5),
-                                pressedContainerColor = Color.Black,
-                                pressedContentColor = White
-                            )
-                        )
-                    }
-                }
-                if (!currentConfig.leanback) {
-                    item(
-                        key = "checkbox_small_icon_mode",
-                        contentType = "checkbox_small_icon_mode"
-                    ) {
-                        ListItem(
-                            overlineContent = {
-                                Text(
-                                    stringResource(R.string.title_checkbox_small_icon_mode),
-                                    modifier = Modifier.padding(bottom = 10.dp),
-                                    color = Color(0xFFCAEFF4),
-                                    fontSize = 16.sp
-                                )
-                            },
-                            headlineContent = {
-                                Text(
-                                    stringResource(R.string.summary_checkbox_small_icon_mode),
-                                    color = White,
-                                    fontSize = 14.sp
-                                )
-                            },
-                            trailingContent = {
-                                Switch(
-                                    checked = currentConfig.smallIconMode,
-                                    onCheckedChange = {},
-                                    colors = SwitchDefaults.colors(
-                                        checkedThumbColor = Color(0xFF25B9EF),
-                                        checkedTrackColor = Color(0xFFC0E6EC),
-                                        uncheckedThumbColor = Color(0xFF858484),
-                                        uncheckedTrackColor = Color(0xFFBDBDBD)
-                                    )
-                                )
-                            },
-                            onClick = {
-                                if (currentConfig.smallIconMode) {
-                                    coroutineScope.launch(Dispatchers.IO) {
-                                        context.dataStore.edit { preferences ->
-                                            preferences[booleanPreferencesKey(
-                                                SMALL_ICONS_PREF_STRING
-                                            )] = false
-                                        }
-                                    }
-                                } else {
-                                    coroutineScope.launch(Dispatchers.IO) {
-                                        context.dataStore.edit { preferences ->
-                                            preferences[booleanPreferencesKey(
-                                                SMALL_ICONS_PREF_STRING
-                                            )] = true
-                                        }
-                                    }
-                                }
-                                viewModel.triggerReload()
-                            },
-                            selected = false,
-                            scale = ListItemDefaults.scale(
-                                focusedScale = 1f,
-                                selectedScale = 1f
-                            ),
-                            colors = ListItemDefaults.colors(
-                                focusedContainerColor = Color(0x6633B5E5),
-                                pressedContainerColor = Color.Black,
-                                pressedContentColor = White
-                            )
-                        )
-                    }
-                }
-                if (!isMainView) {
-                    item(
-                        key = "checkbox_leanback",
-                        contentType = "checkbox_leanback"
-                    ) {
-                        ListItem(
-                            overlineContent = {
-                                Text(
-                                    stringResource(R.string.leanback),
-                                    modifier = Modifier.padding(bottom = 10.dp),
-                                    color = Color(0xFFCAEFF4),
-                                    fontSize = 16.sp
-                                )
-                            },
-                            headlineContent = {
-                                Text(
-                                    stringResource(R.string.leanback_summary),
-                                    color = White,
-                                    fontSize = 14.sp
-                                )
-                            },
-                            trailingContent = {
-                                Switch(
-                                    checked = currentConfig.leanback,
-                                    onCheckedChange = {},
-                                    colors = SwitchDefaults.colors(
-                                        checkedThumbColor = Color(0xFF25B9EF),
-                                        checkedTrackColor = Color(0xFFC0E6EC),
-                                        uncheckedThumbColor = Color(0xFF858484),
-                                        uncheckedTrackColor = Color(0xFFBDBDBD)
-                                    )
-                                )
-                            },
-                            onClick = {
-                                if (currentConfig.leanback) {
-                                    coroutineScope.launch(Dispatchers.IO) {
-                                        context.dataStore.edit { preferences ->
-                                            preferences[booleanPreferencesKey(LEANBACK_PREF_STRING)] =
-                                                false
-                                        }
-                                    }
-                                } else {
-                                    coroutineScope.launch(Dispatchers.IO) {
-                                        context.dataStore.edit { preferences ->
-                                            preferences[booleanPreferencesKey(LEANBACK_PREF_STRING)] =
-                                                true
-                                        }
-                                    }
-                                }
-                                viewModel.triggerReload()
                             },
                             selected = false,
                             scale = ListItemDefaults.scale(

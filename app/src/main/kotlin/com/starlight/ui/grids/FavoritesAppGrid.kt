@@ -240,7 +240,7 @@ fun FavoritesAppGridContent(
         }
 
         LifecycleResumeEffect(key1 = lifecycleOwner) {
-           coroutineScope.launch(Dispatchers.IO) {
+            coroutineScope.launch(Dispatchers.IO) {
                 UiHelper.reportDecoderCrash(activity, viewModel)
             }
 
@@ -337,7 +337,7 @@ fun FavoritesAppGridContent(
                                     favsScreenHelper.stopComputerUpdates()
                                     composeView.showContextMenu()
 
-                                   coroutineScope.launch(Dispatchers.IO) {
+                                    coroutineScope.launch(Dispatchers.IO) {
                                         context.dataStore.edit { preferences ->
                                             preferences[intPreferencesKey(KEY_FAV_SELECTED_POSITION)] =
                                                 index
@@ -356,7 +356,7 @@ fun FavoritesAppGridContent(
                                         )
                                     }
 
-                                   coroutineScope.launch(Dispatchers.IO) {
+                                    coroutineScope.launch(Dispatchers.IO) {
                                         context.dataStore.edit { preferences ->
                                             preferences[intPreferencesKey(KEY_FAV_SELECTED_POSITION)] =
                                                 index
@@ -448,7 +448,7 @@ fun FavoritesAppGridContent(
                         if (isQuitting) {
                             viewModel.setIsQuitting(false)
                             viewModel.setDialogValue(false)
-                           coroutineScope.launch {
+                            coroutineScope.launch {
                                 selectedApp!!.app?.let {
                                     computer?.let { gameComputer ->
                                         managerBinder?.let { binder ->
@@ -468,7 +468,7 @@ fun FavoritesAppGridContent(
                             viewModel.setStartWithQuit(false)
                             viewModel.setDialogValue(false)
                             ServerHelper.isAppRunning = isAppRunning
-                           coroutineScope.launch {
+                            coroutineScope.launch {
                                 selectedApp!!.app?.let {
                                     computer?.let { gameComputer ->
                                         managerBinder?.let { binder ->
@@ -491,7 +491,7 @@ fun FavoritesAppGridContent(
                             )
                         } else if (isCrash) {
                             viewModel.setIsCrash(false)
-                           coroutineScope.launch(Dispatchers.IO) {
+                            coroutineScope.launch(Dispatchers.IO) {
                                 context.dataStore.edit { preferences ->
                                     preferences[intPreferencesKey(PREF_KEY_LAST_NOTIFIED_CRASH_COUNT)] =
                                         crashCount

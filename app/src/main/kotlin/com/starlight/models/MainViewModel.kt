@@ -12,7 +12,6 @@ import com.starlight.computers.ComputerManagerService.ComputerManagerBinder
 import com.starlight.navigation.Screens
 import com.starlight.nvstream.http.ComputerDetails
 import com.starlight.nvstream.http.NvApp
-import com.starlight.ui.helpers.AppViewHelper
 import com.starlight.ui.helpers.ComputerHelper
 import com.starlight.ui.helpers.DataCollectionHelper
 import com.starlight.ui.helpers.FavoritesHelper
@@ -97,10 +96,6 @@ class MainViewModel(private val state: SavedStateHandle) : ViewModel() {
     // MutableLiveData for tracking computer details
     val getComputer: LiveData<ComputerDetails>
         field = MutableLiveData<ComputerDetails>()
-
-    // MutableLiveData for tracking app view helper
-    val appViewHelper: LiveData<AppViewHelper>
-        field = MutableLiveData<AppViewHelper>()
 
     // MutableLiveData for tracking home screen helper
     val homeViewHelper: LiveData<HomeScreenHelper>
@@ -333,10 +328,6 @@ class MainViewModel(private val state: SavedStateHandle) : ViewModel() {
     // LiveData for drawer can focus
     val currentRoute: LiveData<String>
         field = MutableLiveData(Screens.MainScreen.route)
-
-    // LiveData for leanback enabled
-    val isLeanbackEnabled: LiveData<Boolean>
-        field = MutableLiveData(false)
 
     // LiveData for stats enabled
     val isStatsEnabled: LiveData<Boolean>
@@ -737,10 +728,6 @@ class MainViewModel(private val state: SavedStateHandle) : ViewModel() {
         isGridMoving.value = moving
     }
 
-    fun setAppViewHelper(appViewHelper: AppViewHelper) {
-        this.appViewHelper.value = appViewHelper
-    }
-
     fun setHomeViewHelper(homeViewHelper: HomeScreenHelper) {
         this.homeViewHelper.value = homeViewHelper
     }
@@ -765,20 +752,12 @@ class MainViewModel(private val state: SavedStateHandle) : ViewModel() {
         isOffline.value = value
     }
 
-    fun setIsLeanbackEnabled(value: Boolean) {
-        isLeanbackEnabled.value = value
-    }
-
     fun setHasFavorites(value: Boolean) {
         hasFavorites.value = value
     }
 
     fun getHasFavorites(): Boolean {
         return hasFavorites.value ?: false
-    }
-
-    fun getIsLeanbackEnabled(): Boolean {
-        return isLeanbackEnabled.value ?: false
     }
 
     fun setIsStatsEnabled(value: Boolean) {

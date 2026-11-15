@@ -3,6 +3,8 @@ package com.starlight.utils
 import android.app.ActivityManager
 import android.app.Application
 import android.content.Context
+import android.content.pm.PackageInfo
+import android.content.pm.PackageManager
 import android.os.Build
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
@@ -127,28 +129,43 @@ class Starlight : Application() {
         // Job and scope for quitting the game
         var quitGameJob: Job? = null
 
-        // Helper function to get the device name
-        fun getDeviceName(): String {
-            val manufacturer = Build.MANUFACTURER
-            val model = Build.MODEL
-            return if (model.startsWith(manufacturer)) {
-                capitalize(model)
-            } else {
-                capitalize(manufacturer) + " " + model
+        fun isTvDevice(): Boolean {
+            return instance.packageManager.hasSystemFeature(PackageManager.FEATURE_LEANBACK)
+        }
+
+        fun isGoogleTV(): Boolean {
+            return isTvDevice() && try {
+                instance.packageManager.getPackageInfoCompat(
+                    "com.google.android.apps.tv.launcherx",
+                    0
+                )
+                true
+            } catch (_: PackageManager.NameNotFoundException) {
+                false
             }
         }
 
-        // Helper function to capitalize a string
-        private fun capitalize(s: String?): String {
-            if (s.isNullOrEmpty()) {
-                return ""
-            }
-            val first = s[0]
-            return if (Character.isUpperCase(first)) {
-                s
-            } else {
-                first.uppercaseChar().toString() + s.substring(1)
+        fun isClassicAndroidTV(): Boolean {
+            return isTvDevice() && !isGoogleTV()
+        }
+
+        fun isProjectivyInstalled(): Boolean {
+            return try {
+                instance.packageManager.getPackageInfoCompat("com.spocky.projengmenu", 0)
+                true
+            } catch (_: PackageManager.NameNotFoundException) {
+                false
             }
         }
+
+        private fun PackageManager.getPackageInfoCompat(
+            packageName: String,
+            flags: Int = 0
+        ): PackageInfo =
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                getPackageInfo(packageName, PackageManager.PackageInfoFlags.of(flags.toLong()))
+            } else {
+                @Suppress("DEPRECATION") getPackageInfo(packageName, flags)
+            }
     }
 }

@@ -21,7 +21,6 @@ import com.starlight.utils.Starlight.Companion.applicationScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import java.io.IOException
 import java.util.UUID
 
@@ -87,7 +86,12 @@ class TvHomeHelper(
         if (validateInput(viewModel.uuidString, viewModel.appId)) {
             if (!viewModel.appId.isNullOrEmpty()) {
                 viewModel.app =
-                    NvApp(viewModel.appName!!, viewModel.appId!!.toInt(), viewModel.isHdrSupported, true)
+                    NvApp(
+                        viewModel.appName!!,
+                        viewModel.appId!!.toInt(),
+                        viewModel.isHdrSupported,
+                        true
+                    )
             }
             viewModel.setProgressDialog(true)
         }
@@ -161,8 +165,10 @@ class TvHomeHelper(
             viewModel.setAppRunning(false)
             managerBinder?.stopPolling()
 
-            withContext(Dispatchers.IO) {
-                val nvApp = PreferenceKeys.getParcelable(stringPreferencesKey("App"), null, activity)
+            try {
+                val nvApp =
+                    PreferenceKeys.getParcelable(stringPreferencesKey("App"), null, activity)
+
                 val programId = tvChannelHelper?.getWatchNextPrograms(
                     activity,
                     "" + nvApp!!.id
@@ -170,13 +176,15 @@ class TvHomeHelper(
                 if (programId?.id != null) {
                     quitWatchNextApp(nvApp)
                 }
+            } catch (e: NullPointerException) {
+                e.printStackTrace()
             }
         }
     }
 
     // Helper function to quit the watch next app if it exists
     private fun quitWatchNextApp(selectedApp: NvApp?): Job {
-        return applicationScope.launch(Dispatchers.IO) {
+        return applicationScope.launch(Dispatchers.Main) {
             tvChannelHelper?.deleteWatchNext(
                 selectedApp!!
             )
@@ -224,10 +232,10 @@ class TvHomeHelper(
 
     // Helper function to handle app launch
     @SuppressLint("RestrictedApi")
-    private fun handleAppLaunch(details: ComputerDetails, managerBinder: ComputerManagerService.ComputerManagerBinder?) {
-
-        val shortcutHelper = ShortcutHelper(activity)
-        hostComputer?.let { shortcutHelper.reportComputerShortcutUsed(it) }
+    private fun handleAppLaunch(
+        details: ComputerDetails,
+        managerBinder: ComputerManagerService.ComputerManagerBinder?
+    ) {
 
         applicationScope.launch(Dispatchers.Main) {
             if (details.runningGameId == 0 || details.runningGameId == (viewModel.app

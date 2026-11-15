@@ -15,10 +15,6 @@ Seçilen öğe bir masaüstü uygulaması ise, görüntülenecek bilgi olmayacak
     
     
     <string name="trailers">Römorklar</string>
-
-    <!--Leanback UI-->
-    <string name="leanback">Leanback kullanıcı arayüzünü kullanın</string>
-    <string name="leanback_summary">Uygulamaları Leanback kullanıcı arayüzünde görüntülemek için seçin</string>
     
     
     

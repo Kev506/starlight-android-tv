@@ -35,10 +35,8 @@ import com.starlight.R
 import com.starlight.activities.MainView
 import com.starlight.models.MainViewModel
 import com.starlight.preferences.DataStoreConfiguration
-import com.starlight.preferences.PreferenceKeys.fromPreferences
 import com.starlight.ui.helpers.GameScreenHelper
 import com.starlight.ui.helpers.OptionsHelper
-import com.starlight.utils.Constants.APP_VIEW_KEY_SELECTED_POSITION
 import com.starlight.utils.Constants.KEY_FAV_SELECTED_POSITION
 import com.starlight.utils.Constants.KEY_SELECTED_POSITION
 import com.starlight.utils.Constants.LAST_KEY_DOWN_TIME
@@ -157,7 +155,7 @@ fun Modifier.handleKeyEvent(
                     is MainView -> {
                         when (screenState) {
                             "HelpScreen" -> {
-                                 viewModel.setIsMenuRequired(true)
+                                viewModel.setIsMenuRequired(true)
 
                                 viewModel.getNavController()!!
                                     .popBackStack()
@@ -433,35 +431,6 @@ fun Modifier.handleMainBackEvent(
                                 }
                             }
 
-                            "AppViewScreen" -> {
-                                when {
-                                    index != 0 -> {
-                                        coroutineScope.launch {
-                                            scrollState.scrollToItem(0)
-
-                                            focusRequester[0].requestFocus()
-
-                                            coroutineScope.launch(Dispatchers.IO) {
-                                                parent.dataStore.edit { preferences ->
-                                                    preferences[intPreferencesKey(
-                                                        APP_VIEW_KEY_SELECTED_POSITION
-                                                    )] = 0
-                                                }
-                                            }
-                                        }
-                                        return@onKeyEvent true
-                                    }
-
-                                    !isSideMenuOpen -> {
-                                        viewModel.setBackInProgress(false)
-                                        viewModel.setIsSideMenuOpen(true)
-                                        viewModel.setItemSelected(0)
-
-                                        return@onKeyEvent true
-                                    }
-                                }
-                            }
-
                             "VideoScreen" -> {
                                 when {
                                     index != 0 -> {
@@ -588,36 +557,6 @@ fun Modifier.handleMainMenuBackEvent(
                                 }
                             }
 
-                            "AppViewScreen" -> {
-                                when {
-                                    isSideMenuOpen -> {
-
-                                        coroutineScope.launch(Dispatchers.IO) {
-                                            parent.dataStore.edit { preferences ->
-                                                preferences[intPreferencesKey(
-                                                    APP_VIEW_KEY_SELECTED_POSITION
-                                                )] = 0
-                                            }
-                                        }
-
-                                        if (viewModel.getLanguageChanged()) {
-                                            viewModel.setLanguageChanged(false)
-                                            viewModel.getNavController()!!.popBackStack()
-                                            viewModel.setScreenState("ComputerScreen")
-                                            viewModel.setIsMainView(false)
-                                            viewModel.setBackInProgress(false)
-                                            viewModel.setItemSelected(0)
-                                        } else {
-                                            viewModel.getNavController()!!.popBackStack()
-                                            viewModel.setScreenState("ComputerScreen")
-                                            viewModel.setIsMainView(false)
-                                            viewModel.setBackInProgress(false)
-                                            viewModel.setItemSelected(0)
-                                        }
-                                    }
-                                }
-                            }
-
                             "VideoScreen" -> {
                                 when {
                                     isSideMenuOpen -> {
@@ -665,16 +604,11 @@ fun Modifier.handleMainNavigation(
     focusRequester: Array<FocusRequester>
 ): Modifier = this.onPreviewKeyEvent { event ->
 
-    val config = fromPreferences(parent)
     val screenState = viewModel.getScreenState()
-    val gridCells = if (config.smallIconMode) 8 else 7
     val mainCells = 7
     val videoCells = 4
 
     if (event.type == KeyEventType.KeyDown) {
-        val isFirstInRow = index % gridCells == 0
-        val isLastInRow = (index % gridCells == gridCells - 1) ||
-                (index == scrollState.layoutInfo.totalItemsCount - 1)
 
         val videoFirstInRow = index % videoCells == 0
         val videoLastInRow = (index % videoCells == videoCells - 1) ||
@@ -708,23 +642,6 @@ fun Modifier.handleMainNavigation(
 
                             "FavoritesScreen" -> {
                                 if (mainFirstInRow) {
-                                    if (index == 0) {
-                                        viewModel.setBackInProgress(false)
-                                        viewModel.setIsSideMenuOpen(true)
-                                        return@onPreviewKeyEvent true
-                                    } else {
-                                        coroutineScope.launch {
-                                            val target = index - 1
-                                            scrollState.animateScrollToItem(target)
-                                            focusRequester[target].requestFocus()
-                                        }
-                                        return@onPreviewKeyEvent true
-                                    }
-                                }
-                            }
-
-                            "AppViewScreen" -> {
-                                if (isFirstInRow) {
                                     if (index == 0) {
                                         viewModel.setBackInProgress(false)
                                         viewModel.setIsSideMenuOpen(true)
@@ -803,25 +720,6 @@ fun Modifier.handleMainNavigation(
                                 }
                             }
 
-                            "AppViewScreen" -> {
-                                if (isLastInRow) {
-                                    if (index < scrollState.layoutInfo.totalItemsCount - 1) {
-                                        coroutineScope.launch {
-                                            val target = index + 1
-                                            scrollState.animateScrollToItem(target)
-                                            focusRequester[target].requestFocus()
-                                        }
-                                        return@onPreviewKeyEvent true
-                                    } else {
-                                        coroutineScope.launch {
-                                            scrollState.animateScrollToItem(0)
-                                            focusRequester[0].requestFocus()
-                                        }
-                                        return@onPreviewKeyEvent true
-                                    }
-                                }
-                            }
-
                             "VideoScreen" -> {
                                 if (videoLastInRow) {
                                     if (index < scrollState.layoutInfo.totalItemsCount - 1) {
@@ -860,16 +758,6 @@ fun Modifier.handleMainNavigation(
                             }
 
                             "FavoritesScreen" -> {
-                                if (index == scrollState.layoutInfo.totalItemsCount - 1) {
-                                    coroutineScope.launch {
-                                        scrollState.animateScrollToItem(0)
-                                        focusRequester[0].requestFocus()
-                                    }
-                                    return@onPreviewKeyEvent true
-                                }
-                            }
-
-                            "AppViewScreen" -> {
                                 if (index == scrollState.layoutInfo.totalItemsCount - 1) {
                                     coroutineScope.launch {
                                         scrollState.animateScrollToItem(0)

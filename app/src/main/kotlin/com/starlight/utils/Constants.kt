@@ -45,7 +45,6 @@ object Constants {
     const val VIDEO_SELECTED_POSITION = "video_position"
     const val KEY_SELECTED_POSITION = "selected_position"
     const val KEY_FAV_SELECTED_POSITION = "favs_selected_position"
-    const val APP_VIEW_KEY_SELECTED_POSITION = "appview_selected_position"
 
     const val START_OR_RESUME_ID = 1
     const val QUIT_ID = 2
@@ -137,11 +136,9 @@ object Constants {
     const val ANALOG_SCROLLING_PREF_STRING = "analog_scrolling"
     const val FRAME_PACING_PREF_STRING = "frame_pacing"
     const val AUDIO_CONFIG_PREF_STRING = "list_audio_config"
-    const val SMALL_ICONS_PREF_STRING = "checkbox_small_icon_mode"
     const val RESOLUTION_PREF_STRING = "list_resolution"
     const val FPS_PREF_STRING = "list_fps"
     const val BITRATE_PREF_STRING = "seekbar_bitrate_kbps"
-    const val LEANBACK_PREF_STRING = "checkbox_leanback"
     const val LANGUAGE_PREF_STRING = "list_languages"
     const val UNLOCK_FPS_STRING = "checkbox_unlock_fps"
     const val STATS_PREF_STRING = "checkbox_enable_stats"
@@ -157,8 +154,6 @@ object Constants {
         get() = Locale.getDefault().language
 
     const val DEFAULT_ML_DOWNLOADED = false
-    const val SMALL_ICONS_DEFAULT = false
-    const val LEAN_BACK_DEFAULT = false
     const val DEFAULT_STRETCH = false
     const val DEFAULT_DISABLE_TOASTS = false
     const val DEFAULT_HOST_AUDIO = false

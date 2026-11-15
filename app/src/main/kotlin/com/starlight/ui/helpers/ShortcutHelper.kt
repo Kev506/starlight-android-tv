@@ -1,11 +1,7 @@
 package com.starlight.ui.helpers
 
-import android.content.pm.ShortcutInfo
-import android.content.pm.ShortcutManager
-import android.graphics.drawable.Icon
 import androidx.activity.ComponentActivity
 import androidx.datastore.preferences.core.stringPreferencesKey
-import com.starlight.R
 import com.starlight.computers.ComputerManagerService
 import com.starlight.models.MainViewModel
 import com.starlight.nvstream.http.ComputerDetails
@@ -13,13 +9,14 @@ import com.starlight.nvstream.http.NvApp
 import com.starlight.preferences.PreferenceKeys
 import com.starlight.utils.Constants
 import com.starlight.utils.Starlight
+import com.starlight.utils.Starlight.Companion.isClassicAndroidTV
+import com.starlight.utils.Starlight.Companion.isTvDevice
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 
 class ShortcutHelper(private val context: ComponentActivity) {
 
-    private val sm: ShortcutManager = context.getSystemService(ShortcutManager::class.java)
     private val tvChannelHelper: TvChannelHelper = TvChannelHelper(context)
 
     // Get the favorites
@@ -45,49 +42,20 @@ class ShortcutHelper(private val context: ComponentActivity) {
         return PreferenceKeys.getArrayList(stringPreferencesKey(key), context)
     }
 
-    // Helper function to reap shortcuts for dynamic add
-    private fun reapShortcutsForDynamicAdd() {
-        val dynamicShortcuts = sm.dynamicShortcuts
-        while (dynamicShortcuts.size >= sm.maxShortcutCountPerActivity) {
-            // Find the shortcut with the highest rank using 'maxByOrNull'
-            val shortcutToRemove = dynamicShortcuts.maxByOrNull { it.rank }
-
-            // Remove the shortcut with the highest rank if found
-            shortcutToRemove?.let {
-                sm.removeDynamicShortcuts(listOf(it.id))
-            }
-        }
-    }
-
-    // Helper function to get all shortcuts
-    private val allShortcuts: List<ShortcutInfo>
-        get() = sm.dynamicShortcuts + sm.pinnedShortcuts
-
-    // Helper function to get info for ID
-    private fun getInfoForId(id: String): ShortcutInfo? = allShortcuts.find { it.id == id }
-
-    // Helper function to check if existing dynamic shortcut
-    private fun isExistingDynamicShortcut(id: String): Boolean =
-        sm.dynamicShortcuts.any { it.id == id }
-
-    // Helper function to report computer shortcut used
-    fun reportComputerShortcutUsed(computer: ComputerDetails) {
-        computer.uuid?.let {
-            if (getInfoForId(it) != null) {
-                sm.reportShortcutUsed(it)
-            }
-        }
-    }
-
     // Helper function to report game added to home
     suspend fun reportGameAddedToHome(computer: ComputerDetails?, app: NvApp?) {
-        tvChannelHelper.createTvChannel(computer!!)
-        tvChannelHelper.addGameToChannel(computer, app!!)
+        tvChannelHelper.addGameToChannel(computer!!, app!!)
     }
 
 
     // Helper function to add game to watch next
-    fun addWatchNextShortcut(activity: ComponentActivity, gameScreenHelper: GameScreenHelper, viewModel: MainViewModel, computer: ComputerDetails, app: NvApp) {
+    fun addWatchNextShortcut(
+        activity: ComponentActivity,
+        gameScreenHelper: GameScreenHelper,
+        viewModel: MainViewModel,
+        computer: ComputerDetails,
+        app: NvApp
+    ) {
         tvChannelHelper.addGameToWatchNext(computer, app)
         gameScreenHelper.stopConnection()
         if (viewModel.getTVScreenState()) {
@@ -104,68 +72,24 @@ class ShortcutHelper(private val context: ComponentActivity) {
     }
 
     // Helper function to create shortcut
-    fun createAppViewShortcut(computer: ComputerDetails, forceAdd: Boolean, newlyPaired: Boolean) {
+    fun createMainShortcut(computer: ComputerDetails, newlyPaired: Boolean) {
+        val isNormalATV = isTvDevice() && isClassicAndroidTV()
 
-        val sinfo = ShortcutInfo.Builder(context, computer.uuid)
-            .setIntent(ServerHelper.createPcShortcutIntent(context, computer))
-            .setShortLabel(computer.name!!)
-            .setLongLabel(computer.name!!)
-            .setIcon(Icon.createWithResource(context, R.mipmap.ic_pc_scut))
-            .build()
-
-        val existingSinfo = getInfoForId(computer.uuid!!)
-        if (existingSinfo != null) {
-            sm.updateShortcuts(listOf(sinfo))
-            sm.enableShortcuts(listOf(computer.uuid))
-        }
-
-        if (!isExistingDynamicShortcut(computer.uuid!!)) {
-            if (forceAdd || sm.dynamicShortcuts.size < sm.maxShortcutCountPerActivity) {
-                reapShortcutsForDynamicAdd()
-                sm.addDynamicShortcuts(listOf(sinfo))
-            }
-        }
         if (newlyPaired) {
             tvChannelHelper.createTvChannel(computer)
-            tvChannelHelper.requestChannelOnHomeScreen(computer)
+            if (isNormalATV) {
+                tvChannelHelper.requestChannelOnHomeScreen(computer)
+            }
         }
     }
 
-    // Helper function to create pc shortcut
-    fun createAppViewShortcutForOnlineHost(details: ComputerDetails) {
-        createAppViewShortcut(details, forceAdd = false, newlyPaired = false)
-    }
-
-    // Helper function to get shortcut ID for game
-    private fun getShortcutIdForGame(computer: ComputerDetails, app: NvApp): String {
-        return computer.uuid + app.id
-    }
-
-    // Helper function to disable computer shortcut
-    fun disableComputerShortcut(computer: ComputerDetails, reason: CharSequence?) {
+    fun disableComputerShortcut(computer: ComputerDetails) {
         tvChannelHelper.deleteChannel(computer)
-
-        // Combine shortcut removal operations
-        val shortcutIdsToDisable = mutableListOf<String>()
-        getInfoForId(computer.uuid!!)?.let { shortcutIdsToDisable.add(computer.uuid!!) }
-
-        // Filter out the computer's shortcuts
-        shortcutIdsToDisable.addAll(allShortcuts.filter { it.id.startsWith(computer.uuid!!) }
-            .map { it.id })
-
-        // Disable all shortcuts at once
-        if (shortcutIdsToDisable.isNotEmpty()) {
-            sm.disableShortcuts(shortcutIdsToDisable, reason)
-        }
     }
 
     // Helper function to disable app shortcut
-    fun disableAppShortcut(computer: ComputerDetails, app: NvApp, reason: CharSequence?) {
+    fun disableAppShortcut(computer: ComputerDetails, app: NvApp) {
         tvChannelHelper.deleteProgram(computer, app)
-        val id = getShortcutIdForGame(computer, app)
-        if (getInfoForId(id) != null) {
-            sm.disableShortcuts(listOf(id), reason)
-        }
     }
 
     // Helper function to remove watch next shortcut
@@ -176,14 +100,6 @@ class ShortcutHelper(private val context: ComponentActivity) {
     // Helper function to remove watch next shortcut
     fun removeWatchNextShortcutById(appId: Int) {
         tvChannelHelper.deleteWatchNextById(appId)
-    }
-
-    // Helper function to enable app shortcut
-    fun enableAppShortcut(computer: ComputerDetails, app: NvApp) {
-        val id = getShortcutIdForGame(computer, app)
-        if (getInfoForId(id) != null) {
-            sm.enableShortcuts(listOf(id))
-        }
     }
 
     // Helper function to quit game

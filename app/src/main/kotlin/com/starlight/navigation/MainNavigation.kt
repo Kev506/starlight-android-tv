@@ -35,7 +35,6 @@ import com.starlight.preferences.PreferenceKeys.dataStoreConfigFlow
 import com.starlight.ui.grids.FavoritesAppGrid
 import com.starlight.ui.grids.HomeAppGrid
 import com.starlight.ui.screens.AddComputerScreen
-import com.starlight.ui.screens.AppViewScreen
 import com.starlight.ui.screens.ComputerScreen
 import com.starlight.ui.screens.DataCollectionScreen
 import com.starlight.ui.screens.FavoritesScreen
@@ -46,7 +45,6 @@ import com.starlight.ui.screens.HomeScreen
 import com.starlight.ui.screens.OptionsScreen
 import com.starlight.ui.screens.SettingsScreen
 import com.starlight.ui.screens.VideoGridScreen
-import com.starlight.utils.Constants.APP_VIEW_KEY_SELECTED_POSITION
 import com.starlight.utils.Constants.KEY_FAV_SELECTED_POSITION
 import com.starlight.utils.Constants.KEY_SELECTED_POSITION
 import com.starlight.utils.Starlight.Companion.dataStore
@@ -56,9 +54,7 @@ import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun MainNavigation(
-    isLeanbackEnabled: Boolean
-) {
+fun MainNavigation() {
 
     val activity = LocalActivity.current as ComponentActivity
     val viewModel = viewModel<MainViewModel>()
@@ -162,24 +158,6 @@ fun MainNavigation(
                     }
                 }
             )
-        }
-
-        composable(Screens.AppViewScreen.route) {
-            viewModel.setScreenState("AppViewScreen")
-
-            LaunchedEffect(Unit) {
-                viewModel.setBackInProgress(true)
-            }
-
-            key(refreshId) {
-                CompositionLocalProvider(LocalBringIntoViewSpec provides tvBringIntoViewSpec) {
-                    AppViewScreen(
-                        viewModel = viewModel,
-                        computer = viewModel.computer,
-                        uuid = viewModel.uuidString!!
-                    )
-                }
-            }
         }
 
         composable(Screens.DetailsScreen.route) {
@@ -312,20 +290,6 @@ fun MainNavigation(
                         }
                     }
                 }
-
-                if (!isLeanbackEnabled) {
-                    if (currentConfig.appViewSelectedPosition != 0) {
-                        LaunchedEffect(Unit) {
-                           coroutineScope.launch(Dispatchers.IO) {
-                                activity.dataStore.edit { preferences ->
-                                    preferences[intPreferencesKey(APP_VIEW_KEY_SELECTED_POSITION)] =
-                                        0
-                                }
-                            }
-                        }
-                    }
-                }
-
                 activity.finishAffinity()
             }
         }

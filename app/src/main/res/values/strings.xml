@@ -17,10 +17,6 @@
     <string name="igdb_launcher" translatable="false">Loading IGDB</string>
     <string name="igdb" translatable="false">IGDB</string>
     <string name="trailers">Trailers</string>
-
-    <!--Leanback UI-->
-    <string name="leanback">Use Leanback UI</string>
-    <string name="leanback_summary">Select to display apps in the Leanback UI</string>
     <string name="creator" translatable="false" tools:ignore="UnusedResources">Starlight</string>
     <string name="pc1" translatable="false" tools:ignore="UnusedResources">Sunshine</string>
     <string name="pc2" translatable="false">Starlight</string>

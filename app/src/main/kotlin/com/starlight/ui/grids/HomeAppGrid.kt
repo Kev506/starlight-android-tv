@@ -209,7 +209,6 @@ fun HomeAppGridContent(
     var focusTrigger by remember { mutableIntStateOf(0) }
     var isGridReady by remember { mutableStateOf(false) }
     val config by context.dataStoreConfigFlow.collectAsStateWithLifecycle(initialValue = null)
-
     val gridState = rememberLazyGridState()
 
     config?.let { currentConfig ->
@@ -247,7 +246,7 @@ fun HomeAppGridContent(
         }
 
         LifecycleResumeEffect(key1 = lifecycleOwner) {
-           coroutineScope.launch(Dispatchers.IO) {
+            coroutineScope.launch(Dispatchers.IO) {
                 UiHelper.reportDecoderCrash(activity, viewModel)
             }
 
@@ -376,7 +375,7 @@ fun HomeAppGridContent(
                                     homeScreenHelper.stopComputerUpdates()
                                     composeView.showContextMenu()
 
-                                   coroutineScope.launch(Dispatchers.IO) {
+                                    coroutineScope.launch(Dispatchers.IO) {
                                         context.dataStore.edit { preferences ->
                                             preferences[intPreferencesKey(KEY_SELECTED_POSITION)] =
                                                 index
@@ -395,7 +394,7 @@ fun HomeAppGridContent(
                                             uuid = uuid
                                         )
                                     }
-                                   coroutineScope.launch(Dispatchers.IO) {
+                                    coroutineScope.launch(Dispatchers.IO) {
                                         context.dataStore.edit { preferences ->
                                             preferences[intPreferencesKey(KEY_SELECTED_POSITION)] =
                                                 index
@@ -489,7 +488,7 @@ fun HomeAppGridContent(
                         if (isQuitting) {
                             viewModel.setIsQuitting(false)
                             viewModel.setDialogValue(false)
-                           coroutineScope.launch {
+                            coroutineScope.launch {
                                 selectedApp!!.app?.let {
                                     computer?.let { gameComputer ->
                                         managerBinder?.let { binder ->
@@ -509,7 +508,7 @@ fun HomeAppGridContent(
                             viewModel.setStartWithQuit(false)
                             viewModel.setDialogValue(false)
                             ServerHelper.isAppRunning = isAppRunning
-                           coroutineScope.launch {
+                            coroutineScope.launch {
                                 selectedApp!!.app?.let {
                                     computer?.let { gameComputer ->
                                         managerBinder?.let { binder ->
@@ -532,7 +531,7 @@ fun HomeAppGridContent(
                             )
                         } else if (isCrash) {
                             viewModel.setIsCrash(false)
-                           coroutineScope.launch(Dispatchers.IO) {
+                            coroutineScope.launch(Dispatchers.IO) {
                                 context.dataStore.edit { preferences ->
                                     preferences[intPreferencesKey(PREF_KEY_LAST_NOTIFIED_CRASH_COUNT)] =
                                         crashCount

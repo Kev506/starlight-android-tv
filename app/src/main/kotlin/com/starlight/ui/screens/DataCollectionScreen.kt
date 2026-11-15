@@ -128,7 +128,7 @@ fun DataCollectionScreenContent(
     val coroutineScope = rememberCoroutineScope()
 
     LifecycleResumeEffect(key1 = lifecycleOwner) {
-       coroutineScope.launch(Dispatchers.IO) {
+        coroutineScope.launch(Dispatchers.IO) {
             UiHelper.reportDecoderCrash(activity, viewModel)
         }
 

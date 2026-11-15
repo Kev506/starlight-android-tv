@@ -17,10 +17,6 @@ Dacă elementul selectat este o aplicație desktop, nu vor exista detalii de afi
     
     
     <string name="trailers">Remorci</string>
-
-    <!--Leanback UI-->
-    <string name="leanback">Utilizați interfața de utilizare Leanback</string>
-    <string name="leanback_summary">Selectați pentru a afișa aplicațiile în interfața de utilizare Leanback</string>
     
     
     

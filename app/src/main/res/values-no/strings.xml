@@ -15,10 +15,6 @@ Hvis det valgte elementet er et skrivebordsprogram, vil det ikke være noen deta
     
     
     <string name="trailers">Tilhengere</string>
-
-    <!--Leanback UI-->
-    <string name="leanback">Bruk Leanback UI</string>
-    <string name="leanback_summary">Velg for å vise apper i Leanback-grensesnittet</string>
     
     
     

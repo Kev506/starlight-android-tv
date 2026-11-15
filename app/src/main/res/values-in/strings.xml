@@ -16,10 +16,6 @@ Jika item yang dipilih adalah aplikasi desktop, tidak akan ada detail yang ditam
     
     
     <string name="trailers">Trailer</string>
-
-    <!--Leanback UI-->
-    <string name="leanback">Gunakan UI Bersandar</string>
-    <string name="leanback_summary">Pilih untuk menampilkan aplikasi di Leanback UI</string>
     
     
     

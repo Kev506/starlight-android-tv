@@ -15,10 +15,6 @@ Om det valda objektet är ett skrivbordsprogram kommer det inte att finnas någr
     
     
     <string name="trailers">Släpvagnar</string>
-
-    <!--Leanback UI-->
-    <string name="leanback">Använd Leanback UI</string>
-    <string name="leanback_summary">Välj för att visa appar i Leanback-gränssnittet</string>
     
     
     

@@ -17,10 +17,6 @@ Se l\'elemento selezionato è un\'applicazione desktop, non saranno disponibili 
     
     
     <string name="trailers">Rimorchi</string>
-
-    <!--Leanback UI-->
-    <string name="leanback">Utilizza l\'interfaccia utente Leanback</string>
-    <string name="leanback_summary">Selezionare per visualizzare le app nell\'interfaccia utente Leanback</string>
     
     
     

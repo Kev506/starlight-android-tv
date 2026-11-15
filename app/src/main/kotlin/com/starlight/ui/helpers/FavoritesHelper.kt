@@ -29,7 +29,10 @@ import com.starlight.utils.ExtendedServiceConnection
 import com.starlight.utils.LimeLog
 import com.starlight.utils.LimeLog.info
 import com.starlight.utils.Starlight.Companion.applicationScope
-import com.starlight.utils.Starlight.Companion.getDeviceName
+import com.starlight.utils.Starlight.Companion.isClassicAndroidTV
+import com.starlight.utils.Starlight.Companion.isGoogleTV
+import com.starlight.utils.Starlight.Companion.isProjectivyInstalled
+import com.starlight.utils.Starlight.Companion.isTvDevice
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -78,15 +81,6 @@ class FavoritesHelper(
 
                     viewModel.computer = localBinder.getComputer(viewModel.uuidString!!)
                     viewModel.uniqueIdString = localBinder.uniqueId
-
-                    withContext(Dispatchers.Main) {
-                        shortcutHelper.createAppViewShortcut(
-                            viewModel.computer ?: return@withContext,
-                            true,
-                            viewModel.pairState
-                        )
-                        shortcutHelper.reportComputerShortcutUsed(viewModel.computer!!)
-                    }
 
                     appViewListRowAdapter = try {
                         AppAdapter(
@@ -148,8 +142,7 @@ class FavoritesHelper(
                 applicationScope.launch(Dispatchers.Main) {
 
                     shortcutHelper.disableComputerShortcut(
-                        details,
-                        uiContext.resources.getString(R.string.scut_not_paired)
+                        details
                     )
 
                     Toast.makeText(
@@ -362,7 +355,6 @@ class FavoritesHelper(
                             }
                         }
                     }
-                    shortcutHelper.enableAppShortcut(viewModel.computer!!, app)
                     updated = true
                 }
             }
@@ -387,8 +379,7 @@ class FavoritesHelper(
                                 existingApp.app?.let {
                                     shortcutHelper.disableAppShortcut(
                                         viewModel.computer!!,
-                                        it,
-                                        "App removed from PC"
+                                        it
                                     )
                                 }
                                 withContext(Dispatchers.IO) {
@@ -410,8 +401,7 @@ class FavoritesHelper(
                                 existingApp.app?.let {
                                     shortcutHelper.disableAppShortcut(
                                         viewModel.computer!!,
-                                        it,
-                                        "App removed from PC"
+                                        it
                                     )
                                 }
                                 withContext(Dispatchers.IO) {
@@ -479,13 +469,16 @@ class FavoritesHelper(
 
     // Helper method to handle the toggle favorite action
     fun handleToggleFavorite(isChecked: Boolean, app: AppComputerObject?) {
+        val isAllowedGTV = isTvDevice() || isGoogleTV() && isProjectivyInstalled()
+        val isNormalATV = isTvDevice() && isClassicAndroidTV()
+
         if (viewModel.name != "Sunshine") {
             if (isChecked) {
                 app?.app?.let {
                     try {
                         favAppIds.removeIf { it.id == app.app!!.id }
                         appViewListRowAdapter?.removeAppById(app.app!!.id)
-                        if (isGoogleTV or isGoogleTVStreamer) {
+                        if (!isAllowedGTV && !isNormalATV) {
                             Toast.makeText(
                                 uiContext,
                                 app.app?.appName + " " + uiContext.getString(R.string.app_removed_from_favorites),
@@ -494,8 +487,7 @@ class FavoritesHelper(
                         } else {
                             shortcutHelper.disableAppShortcut(
                                 viewModel.computer!!,
-                                app.app!!,
-                                "removed from favorites"
+                                app.app!!
                             )
                             (uiContext as? FavsScreenCallBack)?.reloadMainViewScreen()
                         }
@@ -527,7 +519,7 @@ class FavoritesHelper(
                     try {
                         sunFavAppIds.removeIf { it.id == app.app!!.id }
                         appViewListRowAdapter?.removeAppById(app.app!!.id)
-                        if (isGoogleTV or isGoogleTVStreamer) {
+                        if (!isAllowedGTV && !isNormalATV) {
                             Toast.makeText(
                                 uiContext,
                                 app.app?.appName + " " + uiContext.getString(R.string.app_removed_from_favorites),
@@ -536,8 +528,7 @@ class FavoritesHelper(
                         } else {
                             shortcutHelper.disableAppShortcut(
                                 viewModel.computer!!,
-                                app.app!!,
-                                "removed from favorites"
+                                app.app!!
                             )
                             (uiContext as? FavsScreenCallBack)?.reloadMainViewScreen()
                         }
@@ -592,14 +583,6 @@ class FavoritesHelper(
 
         return@withContext image!!
     }
-
-    // Helper function to check if the device is a Google TV
-    private val isGoogleTV: Boolean
-        get() = getDeviceName() == "Google Chromecast"
-
-    // Helper function to check if the device is a Google TV Streamer
-    private val isGoogleTVStreamer: Boolean
-        get() = getDeviceName() == "Google TV Streamer"
 
     interface FavsScreenCallBack {
         fun reloadMainViewScreen()

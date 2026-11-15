@@ -15,10 +15,6 @@ Pokud je vybraná položka desktopová aplikace, nebudou k dispozici žádné po
     
     
     <string name="trailers">Přívěsy</string>
-
-    <!--Leanback UI-->
-    <string name="leanback">Použijte uživatelské rozhraní Leanback</string>
-    <string name="leanback_summary">Vyberte pro zobrazení aplikací v uživatelském rozhraní Leanback</string>
     
     
     

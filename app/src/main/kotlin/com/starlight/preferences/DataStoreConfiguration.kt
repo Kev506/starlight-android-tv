@@ -22,7 +22,6 @@ import com.starlight.nvstream.jni.StarBridge
 import com.starlight.utils.Constants.AAUDIO_PREF_STRING
 import com.starlight.utils.Constants.ABSOLUTE_MOUSE_MODE_PREF_STRING
 import com.starlight.utils.Constants.ANALOG_SCROLLING_PREF_STRING
-import com.starlight.utils.Constants.APP_VIEW_KEY_SELECTED_POSITION
 import com.starlight.utils.Constants.AUDIO_CONFIG_PREF_STRING
 import com.starlight.utils.Constants.AUDIO_OUTPUT_MODE_PREF_STRING
 import com.starlight.utils.Constants.BIND_ALL_USB_STRING
@@ -101,8 +100,6 @@ import com.starlight.utils.Constants.KEY_FAV_SELECTED_POSITION
 import com.starlight.utils.Constants.KEY_SELECTED_POSITION
 import com.starlight.utils.Constants.LANGUAGE_PREF_STRING
 import com.starlight.utils.Constants.LATENCY_TOAST_PREF_STRING
-import com.starlight.utils.Constants.LEANBACK_PREF_STRING
-import com.starlight.utils.Constants.LEAN_BACK_DEFAULT
 import com.starlight.utils.Constants.ML_DOWNLOADED
 import com.starlight.utils.Constants.MOUSE_EMULATION_STRING
 import com.starlight.utils.Constants.MOUSE_NAV_BUTTONS_STRING
@@ -118,8 +115,6 @@ import com.starlight.utils.Constants.PREF_KEY_LAST_NOTIFIED_CRASH_COUNT
 import com.starlight.utils.Constants.REDUCE_REFRESH_RATE_PREF_STRING
 import com.starlight.utils.Constants.RENDERER_PREF
 import com.starlight.utils.Constants.RESOLUTION_PREF_STRING
-import com.starlight.utils.Constants.SMALL_ICONS_DEFAULT
-import com.starlight.utils.Constants.SMALL_ICONS_PREF_STRING
 import com.starlight.utils.Constants.SQUARISH_SCREEN_ASPECT_RATIO_THRESHOLD
 import com.starlight.utils.Constants.STANDARD_RESOLUTION
 import com.starlight.utils.Constants.STATS_ENABLED
@@ -176,9 +171,7 @@ data class DataStoreConfiguration(
     val stretchVideo: Boolean = DEFAULT_STRETCH,
     val playHostAudio: Boolean = DEFAULT_HOST_AUDIO,
     val disableWarnings: Boolean = DEFAULT_DISABLE_TOASTS,
-    val leanback: Boolean = LEAN_BACK_DEFAULT,
     val enableHdr: Boolean = DEFAULT_ENABLE_HDR,
-    val smallIconMode: Boolean = SMALL_ICONS_DEFAULT,
     val multiController: Boolean = DEFAULT_MULTI_CONTROLLER,
     val usbDriver: Boolean = DEFAULT_USB_DRIVER,
     val flipFaceButtons: Boolean = DEFAULT_FLIP_FACE_BUTTONS,
@@ -228,7 +221,6 @@ data class DataStoreConfiguration(
     val selectedPosition: Int = 0,
     val videoPosition: Int = 0,
     val favSelectedPosition: Int = 0,
-    val appViewSelectedPosition: Int = 0,
     val crashCount: Int = 0,
     val lastNotifiedCrashCount: Int = 0,
     val glesValue: Int = 0,
@@ -268,11 +260,8 @@ object PreferenceKeys {
                 fpsStr
             ),
             videoSr = this[booleanPreferencesKey(VIDEO_SR_STRING)] ?: DEFAULT_VIDEO_SR,
-            leanback = this[booleanPreferencesKey(LEANBACK_PREF_STRING)] ?: LEAN_BACK_DEFAULT,
             enableHdr = (this[booleanPreferencesKey(ENABLE_HDR_PREF_STRING)] ?: DEFAULT_ENABLE_HDR)
                     && !isShieldAtvFirmwareWithBrokenHdr,
-            smallIconMode = this[booleanPreferencesKey(SMALL_ICONS_PREF_STRING)]
-                ?: SMALL_ICONS_DEFAULT,
             multiController = this[booleanPreferencesKey(MULTI_CONTROLLER_PREF_STRING)]
                 ?: DEFAULT_MULTI_CONTROLLER,
             usbDriver = this[booleanPreferencesKey(USB_DRIVER_PREF_SRING)] ?: DEFAULT_USB_DRIVER,
@@ -351,7 +340,6 @@ object PreferenceKeys {
             selectedPosition = this[intPreferencesKey(KEY_SELECTED_POSITION)] ?: 0,
             videoPosition = this[intPreferencesKey(VIDEO_SELECTED_POSITION)] ?: 0,
             favSelectedPosition = this[intPreferencesKey(KEY_FAV_SELECTED_POSITION)] ?: 0,
-            appViewSelectedPosition = this[intPreferencesKey(APP_VIEW_KEY_SELECTED_POSITION)] ?: 0,
             glesValue = this[intPreferencesKey(GLES_PREF_STRING)] ?: 0,
             aaudio = this[booleanPreferencesKey(AAUDIO_PREF_STRING)] ?: DEFAULT_AAUDIO,
             areCaptionsVisible = this[booleanPreferencesKey(DEFAULT_CAPTIONS_STRING)]
@@ -371,7 +359,7 @@ object PreferenceKeys {
             }.stateIn(
                 scope = applicationScope,
                 started = SharingStarted.Eagerly,
-                initialValue = DataStoreConfiguration(leanback = false)
+                initialValue = DataStoreConfiguration(language = "en")
             ).also { _cachedConfigFlow = it }
         }
 

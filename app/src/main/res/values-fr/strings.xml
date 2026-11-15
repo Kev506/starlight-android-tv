@@ -17,10 +17,6 @@ S\'il s\'agit d\'une application de bureau, aucun détail ne sera affiché.</str
     
     
     <string name="trailers">Remorques</string>
-
-    <!--Leanback UI-->
-    <string name="leanback">Utiliser l\'interface utilisateur Leanback</string>
-    <string name="leanback_summary">Sélectionnez pour afficher les applications dans l\'interface utilisateur Leanback</string>
     
     
     

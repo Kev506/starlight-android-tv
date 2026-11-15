@@ -17,7 +17,10 @@ import com.starlight.utils.Constants.FAVORITES_PREF
 import com.starlight.utils.Constants.SUN_FAVORITES_PREF
 import com.starlight.utils.LimeLog
 import com.starlight.utils.Starlight.Companion.applicationScope
-import com.starlight.utils.Starlight.Companion.getDeviceName
+import com.starlight.utils.Starlight.Companion.isClassicAndroidTV
+import com.starlight.utils.Starlight.Companion.isGoogleTV
+import com.starlight.utils.Starlight.Companion.isProjectivyInstalled
+import com.starlight.utils.Starlight.Companion.isTvDevice
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -56,7 +59,7 @@ class OptionsHelper(
                 )
             )
 
-            if (!viewModel.getIsComputerScreen() && prefConfig.leanback) {
+            if (!viewModel.getIsComputerScreen()) {
                 val launcherName = viewModel.name
                 if ((launcherName != "Sunshine" && favAppIds.isNotEmpty()) ||
                     (launcherName == "Sunshine" && sunFavAppIds.isNotEmpty())
@@ -131,14 +134,16 @@ class OptionsHelper(
     }
 
     fun handleClearFavorites() {
+        val isAllowedGTV = isTvDevice() || isGoogleTV() && isProjectivyInstalled()
+        val isNormalATV = isTvDevice() && isClassicAndroidTV()
 
         val isSunshine = viewModel.name == "Sunshine"
         val dynamicList = if (isSunshine) sunFavAppIds else favAppIds
         val key = if (isSunshine) SUN_FAVORITES_PREF else FAVORITES_PREF
 
-        applicationScope.launch {
+        applicationScope.launch(Dispatchers.Main) {
             dynamicList.forEach { app ->
-                if (!isGoogleTV && !isGoogleTVStreamer) {
+                if (isAllowedGTV or isNormalATV) {
                     try {
                         tvChannelHelper?.deleteProgram(viewModel.computer!!, app)
                     } catch (e: Exception) {
@@ -147,11 +152,8 @@ class OptionsHelper(
                 }
             }
             dynamicList.clear()
-
-            withContext(Dispatchers.Main) {
-                (uiContext as? OptionsCallback)?.onFavoritesCleared()
-                loadDataAsync()
-            }
+            (uiContext as? OptionsCallback)?.onFavoritesCleared()
+            loadDataAsync()
 
             deleteArrayList(key)
         }
@@ -160,12 +162,6 @@ class OptionsHelper(
     suspend fun deleteArrayList(key: String) {
         PreferenceKeys.deleteArrayList(stringPreferencesKey(key), uiContext)
     }
-
-    private val isGoogleTV: Boolean
-        get() = getDeviceName() == "Google Chromecast"
-
-    private val isGoogleTVStreamer: Boolean
-        get() = getDeviceName() == "Google TV Streamer"
 
     interface OptionsCallback {
         fun onFavoritesCleared()
