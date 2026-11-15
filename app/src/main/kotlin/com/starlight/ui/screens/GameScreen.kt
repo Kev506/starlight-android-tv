@@ -22,7 +22,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.remember
@@ -72,8 +71,6 @@ import com.starlight.ui.streamview.StreamView
 import com.starlight.ui.themes.StarlightTheme
 import com.starlight.utils.LimeLog.info
 import com.starlight.utils.LimeLog.warning
-import com.starlight.utils.Starlight.Companion.isClassicAndroidTV
-import com.starlight.utils.Starlight.Companion.isTvDevice
 import kotlinx.coroutines.launch
 
 /**
@@ -143,7 +140,7 @@ fun GameScreen(
         val tvHelper by viewModel.tvHelper.observeAsState()
         val view = LocalView.current
         val streamFocusRequester = remember { FocusRequester() }
-        val isNormalATV = remember { isTvDevice() && isClassicAndroidTV() }
+        //val isNormalATV = remember { isTvDevice() && isClassicAndroidTV() }
 
         gameStreamHelper.dataStoreConfiguration = currentConfig
 
@@ -180,7 +177,7 @@ fun GameScreen(
         }
 
         // Unbind the TvHelperService if launched from the Home channel launcher
-        LaunchedEffect (key1 = lifecycleOwner) {
+        LaunchedEffect(key1 = lifecycleOwner) {
             if (tvHelper?.serviceConnection != null) {
                 activity.unbindService(tvHelper?.serviceConnection!!)
                 info("TvHelperService unbound")
@@ -214,33 +211,30 @@ fun GameScreen(
             }
         }
 
-        // TODO ADD TO ACTIVITY
         LifecycleEventEffect(event = Lifecycle.Event.ON_STOP, lifecycleOwner = lifecycleOwner) {
             val elapsedSeconds = viewModel.getElapsedSessionTimeSeconds()
 
-            //if (isNormalATV) {
-                if (elapsedSeconds >= 300) {
-                    if (!isQuitting) {
-                        shortcutHelper.addWatchNextShortcut(
-                            activity = activity,
-                            gameScreenHelper = gameStreamHelper,
-                            viewModel,
-                            computer = viewModel.computer!!,
-                            app = viewModel.app!!
-                        )
+            if (elapsedSeconds >= 300) {
+                if (!isQuitting) {
+                    shortcutHelper.addWatchNextShortcut(
+                        activity = activity,
+                        gameScreenHelper = gameStreamHelper,
+                        viewModel,
+                        computer = viewModel.computer!!,
+                        app = viewModel.app!!
+                    )
 
-                        coroutineScope.launch {
-                            PreferenceKeys.putParcelableObject(
-                                key = stringPreferencesKey("App"),
-                                nvApp = viewModel.app,
-                                context = context
-                            )
-                        }
+                    coroutineScope.launch {
+                        PreferenceKeys.putParcelableObject(
+                            key = stringPreferencesKey("App"),
+                            nvApp = viewModel.app,
+                            context = context
+                        )
                     }
-                } else {
-                    viewModel.clearSessionTimer()
                 }
-            //}
+            } else {
+                viewModel.clearSessionTimer()
+            }
         }
 
         LifecycleResumeEffect(key1 = lifecycleOwner) {
