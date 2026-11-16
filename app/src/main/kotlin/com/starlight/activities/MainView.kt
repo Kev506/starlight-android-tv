@@ -393,44 +393,41 @@ class MainView : ComponentActivity(), OptionsHelper.OptionsCallback,
 
     override fun onStop() {
         super.onStop()
+
+        if (viewModel.getScreenState() == "GameStreamingScreen") {
+            val elapsedSeconds = viewModel.getElapsedSessionTimeSeconds()
+
+            if (elapsedSeconds >= 300) {
+                viewModel.isQuitting.value?.let {
+                    if (!it) {
+                        shortcutHelper.addWatchNextShortcut(
+                            activity = this,
+                            gameScreenHelper = gameScreenHelper!!,
+                            viewModel = viewModel,
+                            computer = viewModel.computer!!,
+                            app = viewModel.app!!
+                        )
+
+                        applicationScope.launch {
+                            PreferenceKeys.putParcelableObject(
+                                key = stringPreferencesKey("App"),
+                                nvApp = viewModel.app,
+                                context = applicationContext
+                            )
+                        }
+                    }
+                }
+            } else {
+                viewModel.clearSessionTimer()
+            }
+        }
+
         if (viewModel.getTVScreenState()) {
             viewModel.setProgressDialog(false)
             viewModel.setResumeSession(false)
             viewModel.setAppRunning(false)
             viewModel.setTVScreenState(false)
             finish()
-        }
-    }
-
-    override fun onUserLeaveHint() {
-        super.onUserLeaveHint()
-
-        if (viewModel.getScreenState() != "GameStreamingScreen") return
-
-        val elapsedSeconds = viewModel.getElapsedSessionTimeSeconds()
-
-        if (elapsedSeconds >= 300) {
-            viewModel.isQuitting.value?.let {
-                if (!it) {
-                    shortcutHelper.addWatchNextShortcut(
-                        activity = this,
-                        gameScreenHelper = gameScreenHelper!!,
-                        viewModel = viewModel,
-                        computer = viewModel.computer!!,
-                        app = viewModel.app!!
-                    )
-
-                    applicationScope.launch {
-                        PreferenceKeys.putParcelableObject(
-                            key = stringPreferencesKey("App"),
-                            nvApp = viewModel.app,
-                            context = applicationContext
-                        )
-                    }
-                }
-            }
-        } else {
-            viewModel.clearSessionTimer()
         }
     }
 
