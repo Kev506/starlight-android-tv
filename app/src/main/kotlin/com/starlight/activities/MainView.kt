@@ -42,6 +42,7 @@ import androidx.compose.ui.unit.dp
 import androidx.core.content.res.ResourcesCompat
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.tv.material3.Surface
@@ -60,6 +61,7 @@ import com.starlight.navigation.Screens
 import com.starlight.navigation.TvNavigation
 import com.starlight.nvstream.http.ComputerDetails
 import com.starlight.nvstream.http.PairingManager
+import com.starlight.preferences.PreferenceKeys
 import com.starlight.preferences.PreferenceKeys.dataStoreConfigFlow
 import com.starlight.ui.adapters.AppAdapter.Companion.favAppIds
 import com.starlight.ui.adapters.AppAdapter.Companion.sunFavAppIds
@@ -70,9 +72,11 @@ import com.starlight.ui.helpers.AddComputerHelper
 import com.starlight.ui.helpers.ComputerHelper
 import com.starlight.ui.helpers.DataCollectionHelper
 import com.starlight.ui.helpers.FavoritesHelper
+import com.starlight.ui.helpers.GameScreenHelper
 import com.starlight.ui.helpers.HomeScreenHelper
 import com.starlight.ui.helpers.OptionsHelper
 import com.starlight.ui.helpers.ServerHelper
+import com.starlight.ui.helpers.ShortcutHelper
 import com.starlight.ui.helpers.TvHomeHelper
 import com.starlight.ui.modifiers.LoadingOverlay
 import com.starlight.ui.modifiers.handleKeyEvent
@@ -96,6 +100,7 @@ import com.starlight.utils.Constants.VIEW_DETAILS_ID
 import com.starlight.utils.Constants.WOL_ID
 import com.starlight.utils.LimeLog
 import com.starlight.utils.LimeLog.info
+import com.starlight.utils.Starlight.Companion.applicationScope
 import com.starlight.utils.Starlight.Companion.dataStore
 import com.starlight.utils.Starlight.Companion.quitGameJob
 import kotlinx.coroutines.Dispatchers
@@ -110,12 +115,14 @@ class MainView : ComponentActivity(), OptionsHelper.OptionsCallback,
     ComputerHelper.ComposeCallback, AddComputerHelper.ComposeCallback {
 
     private val viewModel: MainViewModel by viewModels()
+    private var shortcutHelper = ShortcutHelper(this)
     private var selectedApp: AppComputerObject? = null
     private var homeViewHelper: HomeScreenHelper? = null
     private var favsHelper: FavoritesHelper? = null
     private var computer: ComputerHelper? = null
     private var dataLoader: DataCollectionHelper? = null
     private var tvHelper: TvHomeHelper? = null
+    private var gameScreenHelper: GameScreenHelper? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -159,6 +166,7 @@ class MainView : ComponentActivity(), OptionsHelper.OptionsCallback,
             val showLoader by viewModel.showAppLoaderState.observeAsState(false)
             val isMenuRequired by viewModel.isMenuRequired.observeAsState(true)
             val homeViewHelper by viewModel.homeViewHelper.observeAsState()
+            val gameScreenHelper by viewModel.gameScreenHelper.observeAsState()
             val favsHelper by viewModel.favsHelper.observeAsState()
             val isBackInProgress by viewModel.isBackInProgress.observeAsState(false)
             val dataLoader by viewModel.dataCollectionHelper.observeAsState()
@@ -206,6 +214,7 @@ class MainView : ComponentActivity(), OptionsHelper.OptionsCallback,
             this@MainView.homeViewHelper = homeViewHelper
             this@MainView.favsHelper = favsHelper
             this@MainView.tvHelper = tvHelper
+            this@MainView.gameScreenHelper = gameScreenHelper
 
             config?.let { currentConfig ->
 
@@ -382,7 +391,7 @@ class MainView : ComponentActivity(), OptionsHelper.OptionsCallback,
         }
     }
 
-    override fun onStop() {
+   override fun onStop() {
         super.onStop()
         if (viewModel.getTVScreenState()) {
             viewModel.setProgressDialog(false)
@@ -393,6 +402,38 @@ class MainView : ComponentActivity(), OptionsHelper.OptionsCallback,
         }
     }
 
+   override fun onUserLeaveHint() {
+        super.onUserLeaveHint()
+
+        if (viewModel.getScreenState() == "GameStreamingScreen" && !isInPictureInPictureMode) {
+            val elapsedSeconds = viewModel.getElapsedSessionTimeSeconds()
+
+            if (elapsedSeconds >= 300) {
+                viewModel.isQuitting.value?.let {
+                    if (!it) {
+                        shortcutHelper.addWatchNextShortcut(
+                            activity = this,
+                            gameScreenHelper = gameScreenHelper!!,
+                            viewModel = viewModel,
+                            computer = viewModel.computer!!,
+                            app = viewModel.app!!
+                        )
+
+                        applicationScope.launch {
+                            PreferenceKeys.putParcelableObject(
+                                key = stringPreferencesKey("App"),
+                                nvApp = viewModel.app,
+                                context = applicationContext
+                            )
+                        }
+                    }
+                }
+            } else {
+                viewModel.clearSessionTimer()
+            }
+        }
+    }
+   
     override fun onDestroy() {
         super.onDestroy()
         viewModel.setIsMainView(false)

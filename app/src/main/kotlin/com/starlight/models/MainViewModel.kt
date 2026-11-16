@@ -15,6 +15,7 @@ import com.starlight.nvstream.http.NvApp
 import com.starlight.ui.helpers.ComputerHelper
 import com.starlight.ui.helpers.DataCollectionHelper
 import com.starlight.ui.helpers.FavoritesHelper
+import com.starlight.ui.helpers.GameScreenHelper
 import com.starlight.ui.helpers.HomeScreenHelper
 import com.starlight.ui.helpers.OptionsHelper.TvItem
 import com.starlight.ui.helpers.TvHomeHelper
@@ -100,6 +101,10 @@ class MainViewModel(private val state: SavedStateHandle) : ViewModel() {
     // MutableLiveData for tracking home screen helper
     val homeViewHelper: LiveData<HomeScreenHelper>
         field = MutableLiveData<HomeScreenHelper>()
+
+    // MutableLiveData for tracking game screen helper
+    val gameScreenHelper: LiveData<GameScreenHelper>
+        field = MutableLiveData<GameScreenHelper>()
 
     // MutableLiveData for tracking favorites helper
     val favsHelper: LiveData<FavoritesHelper>
@@ -730,6 +735,10 @@ class MainViewModel(private val state: SavedStateHandle) : ViewModel() {
 
     fun setHomeViewHelper(homeViewHelper: HomeScreenHelper) {
         this.homeViewHelper.value = homeViewHelper
+    }
+
+    fun setGameScreenHelper(gameScreenHelper: GameScreenHelper) {
+        this.gameScreenHelper.value = gameScreenHelper
     }
 
     fun setFavsHelper(favsHelper: FavoritesHelper) {
