@@ -42,8 +42,6 @@ import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.app.PictureInPictureModeChangedInfo
 import androidx.core.util.Consumer
 import androidx.datastore.preferences.core.stringPreferencesKey
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.compose.LifecycleEventEffect
 import androidx.lifecycle.compose.LifecycleResumeEffect
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -118,6 +116,8 @@ fun GameScreen(
             )
         }
 
+        viewModel.setGameScreenHelper(gameStreamHelper)
+
         val showLoader by viewModel.showProgressDialog.observeAsState(false)
         val showDialog by viewModel.openAlertDialog.observeAsState(false)
         val isQuitting by viewModel.isQuitting.observeAsState(false)
@@ -140,7 +140,6 @@ fun GameScreen(
         val tvHelper by viewModel.tvHelper.observeAsState()
         val view = LocalView.current
         val streamFocusRequester = remember { FocusRequester() }
-        //val isNormalATV = remember { isTvDevice() && isClassicAndroidTV() }
 
         gameStreamHelper.dataStoreConfiguration = currentConfig
 
@@ -208,32 +207,6 @@ fun GameScreen(
                         warning("Error unbinding service connect $e")
                     }
                 }
-            }
-        }
-
-        LifecycleEventEffect(event = Lifecycle.Event.ON_STOP, lifecycleOwner = lifecycleOwner) {
-            val elapsedSeconds = viewModel.getElapsedSessionTimeSeconds()
-
-            if (elapsedSeconds >= 300) {
-                if (!isQuitting) {
-                    shortcutHelper.addWatchNextShortcut(
-                        activity = activity,
-                        gameScreenHelper = gameStreamHelper,
-                        viewModel = viewModel,
-                        computer = viewModel.computer!!,
-                        app = viewModel.app!!
-                    )
-
-                    coroutineScope.launch {
-                        PreferenceKeys.putParcelableObject(
-                            key = stringPreferencesKey("App"),
-                            nvApp = viewModel.app,
-                            context = context
-                        )
-                    }
-                }
-            } else {
-                viewModel.clearSessionTimer()
             }
         }
 
