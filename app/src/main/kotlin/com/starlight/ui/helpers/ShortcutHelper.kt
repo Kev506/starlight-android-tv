@@ -121,11 +121,9 @@ class ShortcutHelper(private val context: ComponentActivity) {
                 ServerHelper.isAppRunning = false
                 ServerHelper.doQuit(
                     activity, computer!!, app!!,
-                    managerBinder!!, quitJob(app)
+                    managerBinder!!, quitJob(app), viewModel
                 )
-                if (viewModel.getTVScreenState()) {
-                    activity.finish()
-                } else {
+                if (!viewModel.getTVScreenState()) {
                     if (viewModel.isFavs) {
                         viewModel.setScreenState("FavoritesScreen")
                         viewModel.getNavController()?.popBackStack()

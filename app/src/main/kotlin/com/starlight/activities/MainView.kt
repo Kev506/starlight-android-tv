@@ -26,6 +26,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -183,6 +184,7 @@ class MainView : ComponentActivity(), OptionsHelper.OptionsCallback,
             val title by viewModel.dialogTitle.observeAsState("")
             val buttonLabel by viewModel.cancelButtonText.observeAsState("")
             val icon by viewModel.image.observeAsState(R.drawable.baseline_error_outline_24)
+            val coroutineScope = rememberCoroutineScope()
             val context = LocalContext.current
             val composeView = LocalView.current
 
@@ -339,13 +341,14 @@ class MainView : ComponentActivity(), OptionsHelper.OptionsCallback,
                                         viewModel.setIsQuitting(false)
                                         viewModel.setTvAlertDialog(false)
                                         ServerHelper.isAppRunning = isAppRunning
-                                        lifecycleScope.launch {
+                                        coroutineScope.launch {
                                             ServerHelper.doQuit(
                                                 parent = this@MainView,
                                                 computer = tvHelper?.hostComputer!!,
                                                 app = viewModel.app!!,
                                                 binder = tvHelper?.managerBinder!!,
-                                                onComplete = tvHelper?.quitAndStartJob()
+                                                onComplete = tvHelper?.quitAndStartJob(),
+                                                viewModel = viewModel
                                             )
                                         }
                                     } else {

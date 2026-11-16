@@ -139,7 +139,8 @@ object ServerHelper {
         computer: ComputerDetails,
         app: NvApp,
         binder: ComputerManagerService.ComputerManagerBinder,
-        onComplete: Job?
+        onComplete: Job?,
+        viewModel: MainViewModel
     ) {
 
         val quittingMessage = if (isAppRunning) {
@@ -192,6 +193,10 @@ object ServerHelper {
 
             withContext(Dispatchers.Main) {
                 Toast.makeText(parent, message, Toast.LENGTH_LONG).show()
+
+                if (viewModel.getTVScreenState()) {
+                    parent.finish()
+                }
             }
         }
     }

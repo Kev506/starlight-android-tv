@@ -497,7 +497,8 @@ fun HomeAppGridContent(
                                                 computer = gameComputer,
                                                 app = it,
                                                 binder = binder,
-                                                onComplete = homeScreenHelper.quitJob(selectedApp!!)
+                                                onComplete = homeScreenHelper.quitJob(selectedApp!!),
+                                                viewModel = viewModel
                                             )
                                         }
                                     }
@@ -517,7 +518,8 @@ fun HomeAppGridContent(
                                                 computer = gameComputer,
                                                 app = it,
                                                 binder = binder,
-                                                onComplete = homeScreenHelper.quitJob(selectedApp!!)
+                                                onComplete = homeScreenHelper.quitJob(selectedApp!!),
+                                                viewModel = viewModel
                                             )
                                         }
                                     }

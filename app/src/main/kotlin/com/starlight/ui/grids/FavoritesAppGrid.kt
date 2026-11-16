@@ -457,7 +457,8 @@ fun FavoritesAppGridContent(
                                                 computer = gameComputer,
                                                 app = it,
                                                 binder = binder,
-                                                onComplete = favsScreenHelper.quitJob(selectedApp!!)
+                                                onComplete = favsScreenHelper.quitJob(selectedApp!!),
+                                                viewModel = viewModel
                                             )
                                         }
                                     }
@@ -477,7 +478,8 @@ fun FavoritesAppGridContent(
                                                 computer = gameComputer,
                                                 app = it,
                                                 binder = binder,
-                                                onComplete = favsScreenHelper.quitJob(selectedApp!!)
+                                                onComplete = favsScreenHelper.quitJob(selectedApp!!),
+                                                viewModel = viewModel
                                             )
                                         }
                                     }
