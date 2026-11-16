@@ -405,6 +405,8 @@ class MainView : ComponentActivity(), OptionsHelper.OptionsCallback,
     override fun onUserLeaveHint() {
         super.onUserLeaveHint()
 
+        if (viewModel.getScreenState() != "GameStreamingScreen") return
+
         val elapsedSeconds = viewModel.getElapsedSessionTimeSeconds()
 
         if (elapsedSeconds >= 300) {
