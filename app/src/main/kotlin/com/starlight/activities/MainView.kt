@@ -402,38 +402,38 @@ class MainView : ComponentActivity(), OptionsHelper.OptionsCallback,
         }
     }
 
-    override fun onUserLeaveHint() {
+   override fun onUserLeaveHint() {
         super.onUserLeaveHint()
 
-        if (viewModel.getScreenState() != "GameStreamingScreen") return
+        if (viewModel.getScreenState() == "GameStreamingScreen" && !isInPictureInPictureMode) {
+            val elapsedSeconds = viewModel.getElapsedSessionTimeSeconds()
 
-        val elapsedSeconds = viewModel.getElapsedSessionTimeSeconds()
-
-        if (elapsedSeconds >= 300) {
-            viewModel.isQuitting.value?.let {
-                if (!it) {
-                    shortcutHelper.addWatchNextShortcut(
-                        activity = this,
-                        gameScreenHelper = gameScreenHelper!!,
-                        viewModel = viewModel,
-                        computer = viewModel.computer!!,
-                        app = viewModel.app!!
-                    )
-
-                    applicationScope.launch {
-                        PreferenceKeys.putParcelableObject(
-                            key = stringPreferencesKey("App"),
-                            nvApp = viewModel.app,
-                            context = applicationContext
+            if (elapsedSeconds >= 300) {
+                viewModel.isQuitting.value?.let {
+                    if (!it) {
+                        shortcutHelper.addWatchNextShortcut(
+                            activity = this,
+                            gameScreenHelper = gameScreenHelper!!,
+                            viewModel = viewModel,
+                            computer = viewModel.computer!!,
+                            app = viewModel.app!!
                         )
+
+                        applicationScope.launch {
+                            PreferenceKeys.putParcelableObject(
+                                key = stringPreferencesKey("App"),
+                                nvApp = viewModel.app,
+                                context = applicationContext
+                            )
+                        }
                     }
                 }
+            } else {
+                viewModel.clearSessionTimer()
             }
-        } else {
-            viewModel.clearSessionTimer()
         }
     }
-
+   
     override fun onDestroy() {
         super.onDestroy()
         viewModel.setIsMainView(false)
