@@ -394,7 +394,7 @@ class MainView : ComponentActivity(), OptionsHelper.OptionsCallback,
     override fun onStop() {
         super.onStop()
 
-        if (viewModel.getScreenState() == "GameStreamingScreen") {
+        if (viewModel.getScreenState() == "GameStreamingScreen" && !isInPictureInPictureMode) {
             val elapsedSeconds = viewModel.getElapsedSessionTimeSeconds()
 
             if (elapsedSeconds >= 300) {
@@ -415,6 +415,8 @@ class MainView : ComponentActivity(), OptionsHelper.OptionsCallback,
                                 context = applicationContext
                             )
                         }
+
+                        viewModel.clearSessionTimer()
                     }
                 }
             } else {
