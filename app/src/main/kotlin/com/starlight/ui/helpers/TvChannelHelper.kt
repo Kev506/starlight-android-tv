@@ -33,11 +33,12 @@ import com.starlight.utils.LimeLog.warning
 import com.starlight.utils.Starlight
 import com.starlight.utils.Starlight.Companion.isClassicAndroidTV
 import com.starlight.utils.Starlight.Companion.isGoogleTV
-import com.starlight.utils.normalizeLanguageCode
 import com.starlight.utils.Starlight.Companion.isProjectivyInstalled
 import com.starlight.utils.Starlight.Companion.isTvDevice
+import com.starlight.utils.normalizeLanguageCode
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
 import java.io.File
 import java.io.IOException
@@ -199,7 +200,7 @@ class TvChannelHelper(private val activity: AppCompatActivity) {
 
     // Helper function to add a game to watch next
     @SuppressLint("RestrictedApi")
-    fun addGameToWatchNext(computer: ComputerDetails, app: NvApp) {
+    suspend fun addGameToWatchNext(computer: ComputerDetails, app: NvApp) {
         val isAllowedGTV = isTvDevice() || isGoogleTV() && isProjectivyInstalled()
         val isNormalATV = isTvDevice() && isClassicAndroidTV()
 
@@ -269,9 +270,9 @@ class TvChannelHelper(private val activity: AppCompatActivity) {
     }
 
     // Helper function to get the game description
-    private fun getGameDescription(app: NvApp): String {
+    private suspend fun getGameDescription(app: NvApp): String {
 
-        val prefs = PreferenceKeys.fromPreferences(activity)
+        val prefs = PreferenceKeys.fromPreferencesAsync(activity)
 
         val db = GameDataBaseManager.getInstance(activity)
 
@@ -288,8 +289,15 @@ class TvChannelHelper(private val activity: AppCompatActivity) {
 
         var shortDescription = fullDescription.take(150) + " ....."
 
+        if (prefs.language != "default" && prefs.language != "en") {
+            if (!appData.translatedText.isNullOrEmpty()) {
+                shortDescription = appData.translatedText!!
+                return shortDescription
+            }
+        }
+
         // Translate if necessary and model is available
-        if (prefs.language != "default" && prefs.language != "en" && prefs.mlDownloaded) {
+        if (prefs.mlDownloaded) {
             val options = prefs.language.let {
                 TranslatorOptions.Builder()
                     .setSourceLanguage(TranslateLanguage.ENGLISH)
@@ -304,7 +312,7 @@ class TvChannelHelper(private val activity: AppCompatActivity) {
                 .addOnFailureListener { exception ->
                     info("Translation failed: " + exception.message)
                     shortDescription = fullDescription
-                }
+                }.await()
         } else {
             shortDescription = fullDescription
         }

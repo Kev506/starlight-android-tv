@@ -444,7 +444,7 @@ class IgdbRepository(
         val language = normalizeLanguageCode(prefs.language)
         val isModelDownloaded = prefs.mlDownloaded
 
-        if (language == "default" || language == "en") return ""
+        if (language == "default" || language == "en") return description
 
         if (isModelDownloaded) {
             val targetLang = normalizeLanguageCode(language)
@@ -455,13 +455,13 @@ class IgdbRepository(
             translator = Translation.getClient(options)
 
             return try {
-                translator?.translate(description)?.await() ?: ""
+                translator?.translate(description)?.await() ?: description
             } catch (e: MlKitException) {
                 warning("Translation exception: ${e.message}")
-                ""
+                description
             }
         } else {
-            return ""
+            return description
         }
     }
 

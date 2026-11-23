@@ -8,7 +8,7 @@ import com.starlight.nvstream.http.ComputerDetails
 import com.starlight.nvstream.http.NvApp
 import com.starlight.preferences.PreferenceKeys
 import com.starlight.utils.Constants
-import com.starlight.utils.Starlight
+import com.starlight.utils.Starlight.Companion.applicationScope
 import com.starlight.utils.Starlight.Companion.isClassicAndroidTV
 import com.starlight.utils.Starlight.Companion.isTvDevice
 import kotlinx.coroutines.Dispatchers
@@ -57,7 +57,9 @@ class ShortcutHelper(private val context: AppCompatActivity) {
         computer: ComputerDetails,
         app: NvApp
     ) {
-        tvChannelHelper.addGameToWatchNext(computer, app)
+        applicationScope.launch(Dispatchers.Main) {
+            tvChannelHelper.addGameToWatchNext(computer, app)
+        }
         gameScreenHelper.stopConnection()
         if (viewModel.getTVScreenState()) {
             activity.finish()
@@ -116,7 +118,7 @@ class ShortcutHelper(private val context: AppCompatActivity) {
         gameScreenHelper.stopConnection()
         viewModel.setPerfOverlay(false)
 
-        return Starlight.applicationScope.launch(Dispatchers.Main) {
+        return applicationScope.launch(Dispatchers.Main) {
             if (viewModel.getIsStopped()) {
                 ServerHelper.isAppRunning = false
                 ServerHelper.doQuit(
@@ -139,7 +141,7 @@ class ShortcutHelper(private val context: AppCompatActivity) {
 
     // Helper function to remove watch next shortcut
     private fun quitJob(selectedApp: NvApp?): Job {
-        return Starlight.applicationScope.launch(Dispatchers.Main) {
+        return applicationScope.launch(Dispatchers.Main) {
             removeWatchNextShortcut(
                 selectedApp!!
             )
