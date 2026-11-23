@@ -4,8 +4,13 @@ import android.content.ContentValues
 import android.database.sqlite.SQLiteDatabase
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import androidx.activity.ComponentActivity
+import androidx.appcompat.app.AppCompatActivity
 import com.google.gson.Gson
+import com.google.mlkit.common.MlKitException
+import com.google.mlkit.nl.translate.TranslateLanguage
+import com.google.mlkit.nl.translate.Translation
+import com.google.mlkit.nl.translate.Translator
+import com.google.mlkit.nl.translate.TranslatorOptions
 import com.starlight.R
 import com.starlight.games.GameDataBaseManager.Companion.GAME_VIDEOS_COLUMN_NAME
 import com.starlight.games.api.RetrofitClient
@@ -13,6 +18,7 @@ import com.starlight.models.IgdbGame
 import com.starlight.models.IgdbVideo
 import com.starlight.nvstream.http.ComputerDetails
 import com.starlight.nvstream.http.NvApp
+import com.starlight.preferences.PreferenceKeys
 import com.starlight.ui.grids.assets.CachedAppAssetLoader
 import com.starlight.ui.grids.assets.DiskAssetLoader
 import com.starlight.ui.grids.assets.MemoryAssetLoader
@@ -24,8 +30,10 @@ import com.starlight.utils.LimeLog.severe
 import com.starlight.utils.LimeLog.warning
 import com.starlight.utils.NativeKeyLoader
 import com.starlight.utils.Starlight.Companion.applicationScope
+import com.starlight.utils.normalizeLanguageCode
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
@@ -43,12 +51,13 @@ import kotlin.math.ceil
  */
 
 class IgdbRepository(
-    private val activity: ComponentActivity,
+    private val activity: AppCompatActivity,
     computer: ComputerDetails,
     uuidString: String
 ) {
 
     private var loader: CachedAppAssetLoader? = null
+    private var translator: Translator? = null
 
     init {
         dbHandler = GameDataBaseManager.getInstance(activity.applicationContext)
@@ -95,12 +104,20 @@ class IgdbRepository(
     }
 
     private fun saveDefaultGameInfo(app: NvApp) {
+        val prefs = PreferenceKeys.fromPreferences(activity)
+        val language = prefs.language
+
         val values = ContentValues().apply {
+            put(GameDataBaseManager.GAME_DETAILS_COLUMN_NAME, activity.getString(R.string.No_Details_en))
             put(GameDataBaseManager.GAME_TABLE_ID, app.id)
             app.appName?.let {
                 put(GameDataBaseManager.GAME_NAME_COLUMN_NAME, capitalizeSentences(sanitizeAppNames(it)))
             }
-            put(GameDataBaseManager.GAME_DETAILS_COLUMN_NAME, activity.getString(R.string.No_Details))
+            if (language != "default" && language != "en") {
+                put(GameDataBaseManager.GAME_TRANSTEXT_COLUMN_NAME, activity.getString(R.string.No_Details))
+            } else {
+                put(GameDataBaseManager.GAME_TRANSTEXT_COLUMN_NAME, "")
+            }
         }
         insertOrUpdateGame(values)
     }
@@ -111,6 +128,9 @@ class IgdbRepository(
         clientId: String,
         accessToken: String
     ) {
+        val prefs = PreferenceKeys.fromPreferences(activity)
+        val language = prefs.language
+
         val searchNameQuery = app.appName ?: ""
         val values = ContentValues().apply {
             put(GameDataBaseManager.GAME_TABLE_ID, app.id)
@@ -138,19 +158,39 @@ class IgdbRepository(
                 mapIgdbGameToValues(igdbGame, values)
             } else {
                 warning("IGDB: No titles matched search textual query parameters: $searchNameQuery")
-                values.put(GameDataBaseManager.GAME_DETAILS_COLUMN_NAME, activity.getString(R.string.No_Details))
+                values.put(GameDataBaseManager.GAME_DETAILS_COLUMN_NAME, activity.getString(R.string.No_Details_en))
+                if (language != "default" && language != "en") {
+                    values.put(GameDataBaseManager.GAME_TRANSTEXT_COLUMN_NAME, activity.getString(R.string.No_Details))
+                } else {
+                    values.put(GameDataBaseManager.GAME_TRANSTEXT_COLUMN_NAME, "")
+                }
             }
         } catch (e: Exception) {
             warning("IGDB: Request failed ${e.message}")
-            values.put(GameDataBaseManager.GAME_DETAILS_COLUMN_NAME, activity.getString(R.string.No_Details))
+            values.put(GameDataBaseManager.GAME_DETAILS_COLUMN_NAME, activity.getString(R.string.No_Details_en))
+            if (language != "default" && language != "en") {
+                values.put(GameDataBaseManager.GAME_TRANSTEXT_COLUMN_NAME, activity.getString(R.string.No_Details))
+            } else {
+                values.put(GameDataBaseManager.GAME_TRANSTEXT_COLUMN_NAME, "")
+            }
         } finally {
             insertOrUpdateGame(values)
             fetchAndStoreCoverArt(app, values)
         }
     }
 
-    private fun mapIgdbGameToValues(game: IgdbGame, values: ContentValues) {
+    private suspend fun mapIgdbGameToValues(game: IgdbGame, values: ContentValues) {
+        val prefs = PreferenceKeys.fromPreferences(activity)
+        val language = prefs.language
+
         values.put(GameDataBaseManager.GAME_DETAILS_COLUMN_NAME, game.summary ?: "")
+
+        val translatedSummary = fetchTranslatedDetails(game.summary ?: "")
+        if (language != "default" && language != "en") {
+            values.put(GameDataBaseManager.GAME_TRANSTEXT_COLUMN_NAME, translatedSummary)
+        } else {
+            values.put(GameDataBaseManager.GAME_TRANSTEXT_COLUMN_NAME, "")
+        }
 
         game.totalRating?.let { rawRating ->
             if (rawRating > 0.0) {
@@ -193,7 +233,7 @@ class IgdbRepository(
         val publisher = game.involvedCompanies
             ?.firstOrNull { it.publisher }
             ?.company?.name
-        
+
         publisher?.let {
             values.put(GameDataBaseManager.GAME_DEVELOPERS_COLUMN_NAME, "Publisher: ${capitalizeSentences(it)}")
         }
@@ -229,7 +269,7 @@ class IgdbRepository(
         val imageId = game.artworks?.firstOrNull()?.imageId
             ?: game.screenshots?.firstOrNull()?.imageId
             ?: game.cover?.imageId
-        
+
         return if (imageId != null) "$baseImageUrl$imageId.jpg" else ""
     }
 
@@ -395,6 +435,33 @@ class IgdbRepository(
                     insertOrUpdateGame(values)
                 }
             }
+        }
+    }
+
+    // Translate description for the given model
+    private suspend fun fetchTranslatedDetails(description: String): String {
+        val prefs = PreferenceKeys.fromPreferences(activity)
+        val language = normalizeLanguageCode(prefs.language)
+        val isModelDownloaded = prefs.mlDownloaded
+
+        if (language == "default" || language == "en") return description
+
+        if (isModelDownloaded) {
+            val targetLang = normalizeLanguageCode(language)
+            val options = TranslatorOptions.Builder()
+                .setSourceLanguage(TranslateLanguage.ENGLISH)
+                .setTargetLanguage(targetLang)
+                .build()
+            translator = Translation.getClient(options)
+
+            return try {
+                translator?.translate(description)?.await() ?: description
+            } catch (e: MlKitException) {
+                warning("Translation exception: ${e.message}")
+                description
+            }
+        } else {
+            return description
         }
     }
 

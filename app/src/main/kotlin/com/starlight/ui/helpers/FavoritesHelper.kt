@@ -4,7 +4,7 @@ import android.content.ComponentName
 import android.content.Context
 import android.os.IBinder
 import android.widget.Toast
-import androidx.activity.ComponentActivity
+import androidx.appcompat.app.AppCompatActivity
 import androidx.datastore.preferences.core.stringPreferencesKey
 import com.starlight.R
 import com.starlight.computers.ComputerManagerListener
@@ -19,7 +19,6 @@ import com.starlight.nvstream.http.NvHTTP
 import com.starlight.nvstream.http.PairingManager
 import com.starlight.preferences.PreferenceKeys
 import com.starlight.ui.adapters.AppAdapter
-import com.starlight.ui.adapters.AppAdapter.Companion.allApps
 import com.starlight.ui.adapters.AppAdapter.Companion.favAppIds
 import com.starlight.ui.adapters.AppAdapter.Companion.sunFavAppIds
 import com.starlight.utils.AppComputerObject
@@ -52,7 +51,7 @@ import kotlin.time.Duration.Companion.milliseconds
 class FavoritesHelper(
     var viewModel: MainViewModel,
     var gameViewModel: GameViewModel,
-    var uiContext: ComponentActivity,
+    var uiContext: AppCompatActivity,
     uuid: String,
     name: String,
     pair: Boolean,
@@ -85,7 +84,7 @@ class FavoritesHelper(
                     appViewListRowAdapter = try {
                         AppAdapter(
                             viewModel.computer!!, localBinder.uniqueId,
-                            viewModel.showHiddenApps, uiContext
+                            viewModel.showHiddenApps, uiContext, viewModel
                         )
                     } catch (e: Exception) {
                         e.printStackTrace()
@@ -308,7 +307,7 @@ class FavoritesHelper(
                 }
             }
             if (updated) {
-                appViewListRowAdapter!!.updateItems(allApps!!.toMutableList(), hiddenAppIds)
+                appViewListRowAdapter!!.updateItems(viewModel.allApps.toMutableList(), hiddenAppIds)
             }
         }
 

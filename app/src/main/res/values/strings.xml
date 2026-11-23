@@ -11,6 +11,10 @@
         If you added the game manually, please check the title and clear-update the database.
         If the selected item is a desktop application, there will be no details to display.
     </string>
+    <string name="No_Details_en" translatable="false"> Sorry no details to display.
+        If you added the game manually, please check the title and clear-update the database.
+        If the selected item is a desktop application, there will be no details to display.
+    </string>
     <string name="provider" translatable="false">IGDB</string>
     <string name="trailer" translatable="false">Trailer</string>
     <string name="igdb_Viewer" translatable="false">IGDB Viewer</string>
@@ -410,4 +414,9 @@
     <string name="audio_output_mode_eac3_force">Dolby Digital Plus / E-AC-3 5.1 (force, experimental)</string>
     <string name="encoded_audio_fallback_to_pcm">Encoded audio output is unavailable, continuing with PCM audio.</string>
     <string name="switch_to_encoded">Encoded audio output is available, switching to encoded audio.</string>
+    <string name="crashlytics_will_stop_on_next_app_launch">Crashlytics will stop on next app launch</string>
+    <string name="crashlytics_will_start_on_next_app_launch">Crashlytics will start on next app launch</string>
+    <string name="clear_translations">This will clear translations that exist, download the new model and trigger the Database update. Are you sure you want to clear translations?</string>
+    <string name="clear_translations_title">Clear Translations</string>
+    <string name="old_translation">Old translation model deleted</string>
 </resources>

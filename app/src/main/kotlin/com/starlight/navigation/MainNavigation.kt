@@ -1,7 +1,7 @@
 package com.starlight.navigation
 
-import androidx.activity.ComponentActivity
 import androidx.activity.compose.LocalActivity
+import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.SizeTransform
@@ -10,7 +10,6 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.gestures.BringIntoViewSpec
 import androidx.compose.foundation.gestures.LocalBringIntoViewSpec
 import androidx.compose.runtime.Composable
@@ -48,21 +47,22 @@ import com.starlight.ui.screens.VideoGridScreen
 import com.starlight.utils.Constants.KEY_FAV_SELECTED_POSITION
 import com.starlight.utils.Constants.KEY_SELECTED_POSITION
 import com.starlight.utils.Starlight.Companion.dataStore
+import com.starlight.utils.normalizeLanguageCode
 import com.starlight.video_player.player.ui.screens.YouTubePlayerScreen
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun MainNavigation() {
 
-    val activity = LocalActivity.current as ComponentActivity
+    val activity = LocalActivity.current as AppCompatActivity
     val viewModel = viewModel<MainViewModel>()
     val refreshId by viewModel.refreshId.observeAsState(0)
     val navController = rememberNavController()
-    viewModel.setNavController(navController)
     val coroutineScope = rememberCoroutineScope()
     val context = LocalContext.current
+
+    viewModel.setNavController(navController)
 
     val tvBringIntoViewSpec = remember {
         object : BringIntoViewSpec {
@@ -96,7 +96,8 @@ fun MainNavigation() {
             key(refreshId) {
                 CompositionLocalProvider(LocalBringIntoViewSpec provides tvBringIntoViewSpec) {
                     ComputerScreen(
-                        viewModel = viewModel
+                        viewModel = viewModel,
+                        computerList = viewModel.computers
                     )
                 }
             }
@@ -133,7 +134,8 @@ fun MainNavigation() {
                             HomeAppGrid(
                                 viewModel = viewModel,
                                 computer = viewModel.computer,
-                                uuid = viewModel.uuidString!!
+                                uuid = viewModel.uuidString!!,
+                                items = viewModel.itemList
                             )
                         }
                     }
@@ -153,7 +155,8 @@ fun MainNavigation() {
                         FavoritesAppGrid(
                             viewModel = viewModel,
                             computer = viewModel.computer,
-                            uuid = viewModel.uuidString!!
+                            uuid = viewModel.uuidString!!,
+                            items = viewModel.itemList
                         )
                     }
                 }
@@ -205,7 +208,8 @@ fun MainNavigation() {
 
             CompositionLocalProvider(LocalBringIntoViewSpec provides tvBringIntoViewSpec) {
                 OptionsScreen(
-                    viewModel = viewModel
+                    viewModel = viewModel,
+                    tvItems = viewModel.tvItems
                 )
             }
         }
@@ -241,7 +245,7 @@ fun MainNavigation() {
                 YouTubePlayerScreen(
                     videoId = videoId,
                     areCaptionsVisible = currentConfig.areCaptionsVisible,
-                    language = currentConfig.language,
+                    language = normalizeLanguageCode(currentConfig.language),
                     setBackInProgress = { inProgress ->
                         viewModel.setBackInProgress(inProgress)
                     }
@@ -256,7 +260,7 @@ fun MainNavigation() {
 
             CompositionLocalProvider(LocalBringIntoViewSpec provides tvBringIntoViewSpec) {
                 VideoGridScreen(
-                    videosFromDb = viewModel.videos,
+                    videosFromDb = viewModel.videoItems,
                     onVideoSelectedToPlay = {
                         navController.navigate(Screens.TrailerPlayerScreen.route)
                         viewModel.setVideoId(it)

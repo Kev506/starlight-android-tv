@@ -4,7 +4,7 @@ import android.content.ContentResolver
 import android.content.Context
 import android.database.sqlite.SQLiteException
 import android.net.Uri
-import androidx.activity.ComponentActivity
+import androidx.appcompat.app.AppCompatActivity
 import com.google.mlkit.nl.translate.TranslateLanguage
 import com.google.mlkit.nl.translate.Translation
 import com.google.mlkit.nl.translate.Translator
@@ -14,19 +14,20 @@ import com.starlight.preferences.PreferenceKeys
 import com.starlight.utils.AppComputerObject
 import com.starlight.utils.LimeLog.info
 import com.starlight.utils.Starlight.Companion.applicationScope
+import com.starlight.utils.normalizeLanguageCode
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.io.File
 import java.util.Locale
 
-class GameData(private val context: Context, activity: ComponentActivity) {
+class GameData(private val context: Context, activity: AppCompatActivity) {
 
     private var translator: Translator? = null
-    private var componentActivity: ComponentActivity? = null
+    private var appCompatActivity: AppCompatActivity? = null
     private var game = GameDetails()
 
     init {
-        componentActivity = activity
+        appCompatActivity = activity
 
         applicationScope.launch(Dispatchers.Main) {
            setUpTranslator()
@@ -41,7 +42,7 @@ class GameData(private val context: Context, activity: ComponentActivity) {
         if (prefs.mlDownloaded) {
             val options = TranslatorOptions.Builder()
                 .setSourceLanguage(TranslateLanguage.ENGLISH)
-                .setTargetLanguage(prefs.language)
+                .setTargetLanguage(normalizeLanguageCode(prefs.language))
                 .build()
             translator = Translation.getClient(options)
         }
@@ -70,6 +71,7 @@ class GameData(private val context: Context, activity: ComponentActivity) {
                         game.fallbackCoverArt = appData.fallbackCoverArt
                         game.video = appData.video
                         game.slug = appData.slug
+                        game.translatedText = appData.translatedText
 
                     } catch (e: SQLiteException) {
                         info("$TAG Data Load Failed: ${e.message}")

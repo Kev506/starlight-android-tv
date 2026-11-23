@@ -16,6 +16,7 @@ Se l\'elemento selezionato è un\'applicazione desktop, non saranno disponibili 
     
     
     
+    
     <string name="trailers">Rimorchi</string>
     
     
@@ -410,4 +411,9 @@ Anche l\'utilizzo del software desktop remoto può causare questo errore. Prova 
     <string name="audio_output_mode_eac3_force">Dolby Digital Plus / E-AC-3 5.1 (forzato, sperimentale)</string>
     <string name="encoded_audio_fallback_to_pcm">L\'uscita audio codificata non è disponibile. Si continua con l\'audio PCM.</string>
     <string name="switch_to_encoded">È disponibile l\'uscita audio codificata, si passa all\'audio codificato.</string>
+    <string name="crashlytics_will_stop_on_next_app_launch">Crashlytics si interromperà al prossimo avvio dell\'app.</string>
+    <string name="crashlytics_will_start_on_next_app_launch">Crashlytics si avvierà al prossimo avvio dell\'app.</string>
+    <string name="clear_translations">Questa operazione cancellerà le traduzioni esistenti, scaricherà il nuovo modello e avvierà l\'aggiornamento del database. Sei sicuro di voler cancellare le traduzioni\?</string>
+    <string name="clear_translations_title">Traduzioni chiare</string>
+    <string name="old_translation">Vecchio modello di traduzione eliminato</string>
 </resources>

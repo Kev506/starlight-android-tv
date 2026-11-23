@@ -14,6 +14,7 @@ Om det valda objektet är ett skrivbordsprogram kommer det inte att finnas någr
     
     
     
+    
     <string name="trailers">Släpvagnar</string>
     
     
@@ -408,4 +409,9 @@ Användning av fjärrskrivbordsprogram kan också orsaka detta fel. Testa att st
     <string name="audio_output_mode_eac3_force">Dolby Digital Plus / E-AC-3 5.1 (forcerad, experimentell)</string>
     <string name="encoded_audio_fallback_to_pcm">Kodad ljudutgång är inte tillgänglig. Fortsätter med PCM-ljud.</string>
     <string name="switch_to_encoded">Kodad ljudutgång är tillgänglig och växlar till kodat ljud.</string>
+    <string name="crashlytics_will_stop_on_next_app_launch">Crashlytics kommer att stoppas vid nästa appstart</string>
+    <string name="crashlytics_will_start_on_next_app_launch">Crashlytics startar vid nästa applansering</string>
+    <string name="clear_translations">Detta rensar befintliga översättningar, laddar ner den nya modellen och utlöser databasuppdateringen. Är du säker på att du vill rensa översättningarna\?</string>
+    <string name="clear_translations_title">Tydliga översättningar</string>
+    <string name="old_translation">Gammal översättningsmodell borttagen</string>
 </resources>

@@ -14,6 +14,7 @@
     
     
     
+    
     <string name="trailers">Прицепы</string>
     
     
@@ -408,4 +409,9 @@
     <string name="audio_output_mode_eac3_force">Dolby Digital Plus / E-AC-3 5.1 (force, experimental)</string>
     <string name="encoded_audio_fallback_to_pcm">Закодированный аудиовыход недоступен. Продолжаем воспроизведение аудио в формате PCM.</string>
     <string name="switch_to_encoded">Доступен вывод закодированного звука, переключение на закодированный звук.</string>
+    <string name="crashlytics_will_stop_on_next_app_launch">Приложение Crashlytics прекратит работу при следующем запуске.</string>
+    <string name="crashlytics_will_start_on_next_app_launch">Crashlytics начнет работу при следующем запуске приложения.</string>
+    <string name="clear_translations">Это удалит существующие переводы, загрузит новую модель и запустит обновление базы данных. Вы уверены, что хотите удалить переводы\?</string>
+    <string name="clear_translations_title">Четкие переводы</string>
+    <string name="old_translation">Старая модель перевода удалена.</string>
 </resources>

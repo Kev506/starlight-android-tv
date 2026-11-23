@@ -20,6 +20,7 @@ import com.starlight.ui.helpers.HomeScreenHelper
 import com.starlight.ui.helpers.OptionsHelper.TvItem
 import com.starlight.ui.helpers.TvHomeHelper
 import com.starlight.utils.AppComputerObject
+import com.starlight.utils.ComputerObject
 import com.starlight.utils.Constants.APPID
 import com.starlight.utils.Constants.APPNAME
 import com.starlight.utils.Constants.CAN_GO_BACK
@@ -36,6 +37,7 @@ import com.starlight.utils.Constants.URL
 import com.starlight.utils.Constants.UUID
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlin.collections.mutableListOf
 
 // Helper class for managing state and live data in the ViewModel
 class MainViewModel(private val state: SavedStateHandle) : ViewModel() {
@@ -348,9 +350,25 @@ class MainViewModel(private val state: SavedStateHandle) : ViewModel() {
 
     // Items list for the OptionsScreen
     val items = mutableStateListOf<TvItem>()
+    val tvItems: List<TvItem> = items
 
     // Videos list for the VideoScreen
-    val videos = mutableListOf<DbVideoItem>()
+    val videos = mutableStateListOf<DbVideoItem>()
+    val videoItems: List<DbVideoItem> = videos
+
+    // Items list for the grid
+    val appItems = mutableStateListOf<AppComputerObject>()
+    val itemList: List<AppComputerObject> = appItems
+
+    // All apps list for the grid
+    val allApps = mutableListOf<AppComputerObject>()
+
+    // Computer objects list for the grids
+    val computerObjects = mutableListOf<ComputerObject>()
+
+    // Computers list for the grids
+    val computerItems = mutableStateListOf<ComputerObject>()
+    val computers: List<ComputerObject> = computerItems
 
     // Create a bundle for parcelable or serializable objects
     var bundle = Bundle()

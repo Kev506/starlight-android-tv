@@ -3,8 +3,8 @@ package com.starlight.ui.grids
 import android.annotation.SuppressLint
 import android.app.Service
 import android.content.Intent
-import androidx.activity.ComponentActivity
 import androidx.activity.compose.LocalActivity
+import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.focusGroup
@@ -79,7 +79,6 @@ import com.starlight.models.MainViewModel
 import com.starlight.nvstream.http.ComputerDetails
 import com.starlight.preferences.PreferenceKeys.dataStoreConfigFlow
 import com.starlight.preferences.PreferenceKeys.getArrayList
-import com.starlight.ui.adapters.AppAdapter
 import com.starlight.ui.adapters.AppAdapter.Companion.favAppIds
 import com.starlight.ui.adapters.AppAdapter.Companion.loader
 import com.starlight.ui.adapters.AppAdapter.Companion.sunFavAppIds
@@ -112,10 +111,11 @@ import kotlin.time.Duration.Companion.milliseconds
 fun HomeAppGrid(
     viewModel: MainViewModel,
     computer: ComputerDetails?,
-    uuid: String
+    uuid: String,
+    items: List<AppComputerObject>
 ) {
 
-    val activity = LocalActivity.current as? ComponentActivity ?: return
+    val activity = LocalActivity.current as? AppCompatActivity ?: return
 
     val gameViewModel = viewModel<GameViewModel> {
         val repository = GameData(
@@ -160,8 +160,6 @@ fun HomeAppGrid(
         }
     }
 
-    val items = remember { AppAdapter.itemList }
-
     HomeAppGridContent(
         data = items,
         homeScreenHelper = homeScreenHelper,
@@ -182,8 +180,8 @@ fun HomeAppGridContent(
 ) {
     val focusManager = LocalFocusManager.current
     val composeView = LocalView.current
-    val activity = LocalActivity.current as ComponentActivity
-    val focusRequesters = remember(data.size) { Array(data.size) { FocusRequester() } }
+    val activity = LocalActivity.current as AppCompatActivity
+    val focusRequesters = remember(key1 = data.size) { Array(data.size) { FocusRequester() } }
     val isSideMenuOpen by viewModel.isSideMenuOpen.observeAsState(false)
     val selectedApp by viewModel.selectedApp.observeAsState(null)
     val reloaded by viewModel.reloaded.observeAsState(false)
@@ -213,7 +211,7 @@ fun HomeAppGridContent(
 
     config?.let { currentConfig ->
 
-        LaunchedEffect(data.size, isSideMenuOpen, focusTrigger) {
+        LaunchedEffect(key1 = data.size, key2 = isSideMenuOpen, key3 = focusTrigger) {
             if (!isSideMenuOpen && data.isNotEmpty()) {
                 if (reloaded) yield() else delay(100.milliseconds)
                 val target =

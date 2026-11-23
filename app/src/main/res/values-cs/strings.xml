@@ -14,6 +14,7 @@ Pokud je vybraná položka desktopová aplikace, nebudou k dispozici žádné po
     
     
     
+    
     <string name="trailers">Přívěsy</string>
     
     
@@ -408,4 +409,9 @@ Tuto chybu může způsobit také použití softwaru pro vzdálenou plochu. Zkus
     <string name="audio_output_mode_eac3_force">Dolby Digital Plus / E-AC-3 5.1 (vynucený, experimentální)</string>
     <string name="encoded_audio_fallback_to_pcm">Kódovaný zvukový výstup není k dispozici. Pokračování se zvukem PCM.</string>
     <string name="switch_to_encoded">K dispozici je kódovaný zvukový výstup, přepínání na kódovaný zvuk.</string>
+    <string name="crashlytics_will_stop_on_next_app_launch">Crashlytics se zastaví při dalším spuštění aplikace.</string>
+    <string name="crashlytics_will_start_on_next_app_launch">Crashlytics se spustí při dalším spuštění aplikace</string>
+    <string name="clear_translations">Tímto se vymažou existující překlady, stáhne nový model a spustí se aktualizace databáze. Opravdu chcete vymazat překlady\?</string>
+    <string name="clear_translations_title">Jasné překlady</string>
+    <string name="old_translation">Starý překladový model smazán</string>
 </resources>

@@ -2,8 +2,8 @@ package com.starlight.ui.screens
 
 import android.app.Service
 import android.content.Intent
-import androidx.activity.ComponentActivity
 import androidx.activity.compose.LocalActivity
+import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.background
 import androidx.compose.foundation.focusGroup
 import androidx.compose.foundation.layout.Arrangement
@@ -72,7 +72,6 @@ import com.starlight.computers.ComputerManagerService
 import com.starlight.models.MainViewModel
 import com.starlight.navigation.Screens
 import com.starlight.nvstream.jni.StarBridge
-import com.starlight.ui.adapters.PcAdapter
 import com.starlight.ui.dialogs.AlertDialog
 import com.starlight.ui.dialogs.ProgressDialog
 import com.starlight.ui.helpers.ComputerHelper
@@ -98,12 +97,12 @@ data class CardItem(
 
 @Composable
 fun ComputerScreen(
-    viewModel: MainViewModel
+    viewModel: MainViewModel,
+    computerList: List<ComputerObject>
 ) {
 
-    val computerList = remember { PcAdapter.computers }
     var cardItem by remember { mutableStateOf(CardItem()) }
-    val activity = LocalActivity.current as ComponentActivity
+    val activity = LocalActivity.current as AppCompatActivity
     val lifecycleOwner = LocalLifecycleOwner.current
     val resources = LocalResources.current
 
@@ -185,7 +184,7 @@ fun ComputerScreenContent(
     val focusRequesters = remember(data.size) { Array(data.size) { FocusRequester() } }
     val noPcFound by viewModel.noPcFoundState.observeAsState(true)
     var focused by remember { mutableStateOf(false) }
-    val activity = LocalActivity.current as ComponentActivity
+    val activity = LocalActivity.current as AppCompatActivity
     val doNetTest by viewModel.doNetTest.observeAsState(false)
     val isPairing by viewModel.isPairing.observeAsState(false)
     val isCrash by viewModel.isCrash.observeAsState(false)
@@ -216,6 +215,30 @@ fun ComputerScreenContent(
     val savedStateHandle = viewModel.getNavController()?.currentBackStackEntry?.savedStateHandle
 
     LifecycleResumeEffect(key1 = lifecycleOwner) {
+
+        coroutineScope.launch(Dispatchers.Main) {
+            delay(200.milliseconds)
+            if (viewModel.computerChanged) {
+                viewModel.computerChanged = false
+                viewModel.computer?.let {
+                    computer?.startDataCollection(
+                        it,
+                        viewModel.pairState
+                    )
+                }
+            }
+
+            if (viewModel.isDatabaseCleared) {
+                viewModel.isDatabaseCleared = false
+                viewModel.computer?.let {
+                    computer?.startDataCollection(
+                        it,
+                        false
+                    )
+                }
+            }
+        }
+
         val openScreen = savedStateHandle?.get<Boolean>("open_screen") ?: false
 
         coroutineScope.launch(Dispatchers.IO) {
@@ -234,30 +257,7 @@ fun ComputerScreenContent(
         }
     }
 
-    LaunchedEffect(Unit) {
-        delay(200.milliseconds)
-        if (viewModel.computerChanged) {
-            viewModel.computerChanged = false
-            viewModel.computer?.let {
-                computer?.startDataCollection(
-                    it,
-                    viewModel.pairState
-                )
-            }
-        }
-
-        if (viewModel.isDatabaseCleared) {
-            viewModel.isDatabaseCleared = false
-            viewModel.computer?.let {
-                computer?.startDataCollection(
-                    it,
-                    false
-                )
-            }
-        }
-    }
-
-    LaunchedEffect(data.size, isSideMenuOpen) {
+    LaunchedEffect(key1 = data.size, key2 = isSideMenuOpen) {
         delay(200.milliseconds)
         if (!isSideMenuOpen && data.isNotEmpty()) {
             focusRequesters.getOrNull(0)?.requestFocus()

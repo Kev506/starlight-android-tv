@@ -15,6 +15,7 @@ Jika item yang dipilih adalah aplikasi desktop, tidak akan ada detail yang ditam
     
     
     
+    
     <string name="trailers">Trailer</string>
     
     
@@ -409,4 +410,9 @@ Menggunakan perangkat lunak desktop jarak jauh juga dapat menyebabkan kesalahan 
     <string name="audio_output_mode_eac3_force">Dolby Digital Plus / E-AC-3 5.1 (force, experimental)</string>
     <string name="encoded_audio_fallback_to_pcm">Output audio terenkode tidak tersedia. Melanjutkan dengan audio PCM.</string>
     <string name="switch_to_encoded">Output audio terenkripsi tersedia, beralih ke audio terenkripsi.</string>
+    <string name="crashlytics_will_stop_on_next_app_launch">Crashlytics akan berhenti pada peluncuran aplikasi berikutnya.</string>
+    <string name="crashlytics_will_start_on_next_app_launch">Crashlytics akan dimulai pada peluncuran aplikasi berikutnya.</string>
+    <string name="clear_translations">Ini akan menghapus terjemahan yang ada, mengunduh model baru, dan memicu pembaruan basis data. Apakah Anda yakin ingin menghapus terjemahan\?</string>
+    <string name="clear_translations_title">Terjemahan Jelas</string>
+    <string name="old_translation">Model terjemahan lama telah dihapus.</string>
 </resources>

@@ -352,6 +352,10 @@ object PreferenceKeys {
         return context.dataStoreConfigFlow.value
     }
 
+    suspend fun fromPreferencesAsync(context: Context): DataStoreConfiguration {
+        return context.dataStore.data.first().toConfig()
+    }
+
     val Context.dataStoreConfigFlow: StateFlow<DataStoreConfiguration>
         get() {
             return _cachedConfigFlow ?: this.dataStore.data.map { prefs ->
@@ -625,9 +629,6 @@ object PreferenceKeys {
             preferences[dynamicKey] ?: defaultValue
         }.first()
     }
-
-    val Context.listLanguageFlow: Flow<String>
-        get() = dataStoreConfigFlow.map { it.language }.distinctUntilChanged()
 
     val Context.unlockFpsFlow: Flow<Boolean>
         get() = dataStoreConfigFlow.map { it.unlockFps }.distinctUntilChanged()

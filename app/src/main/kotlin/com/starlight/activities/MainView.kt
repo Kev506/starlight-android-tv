@@ -11,9 +11,9 @@ import android.view.ContextMenu
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
-import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
+import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.focusable
@@ -111,7 +111,7 @@ import java.io.File
 import kotlin.time.Duration.Companion.milliseconds
 
 
-class MainView : ComponentActivity(), OptionsHelper.OptionsCallback,
+class MainView : AppCompatActivity(), OptionsHelper.OptionsCallback,
     FavoritesHelper.FavsScreenCallBack, HomeScreenHelper.HomeScreenCallBack,
     ComputerHelper.ComposeCallback, AddComputerHelper.ComposeCallback {
 
@@ -980,7 +980,7 @@ class MainView : ComponentActivity(), OptionsHelper.OptionsCallback,
                 selectedApp!!.app?.let {
                     favsHelper?.managerBinder?.let { binder ->
                         ServerHelper.doStartStream(
-                            this as ComponentActivity,
+                            this as AppCompatActivity,
                             it,
                             viewModel.computer!!,
                             binder,
@@ -1054,7 +1054,7 @@ class MainView : ComponentActivity(), OptionsHelper.OptionsCallback,
                 selectedApp!!.app?.let {
                     homeViewHelper?.managerBinder?.let { binder ->
                         ServerHelper.doStartStream(
-                            this as ComponentActivity,
+                            this as AppCompatActivity,
                             it,
                             viewModel.computer!!,
                             binder,

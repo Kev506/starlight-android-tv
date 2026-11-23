@@ -16,6 +16,7 @@ Dacă elementul selectat este o aplicație desktop, nu vor exista detalii de afi
     
     
     
+    
     <string name="trailers">Remorci</string>
     
     
@@ -410,4 +411,9 @@ Utilizarea software-ului pentru desktop la distanță poate provoca, de asemenea
     <string name="audio_output_mode_eac3_force">Dolby Digital Plus / E-AC-3 5.1 (forțat, experimental)</string>
     <string name="encoded_audio_fallback_to_pcm">Ieșirea audio codificată nu este disponibilă. Continuăm cu audio PCM.</string>
     <string name="switch_to_encoded">Ieșirea audio codificată este disponibilă, se comută la audio codificat.</string>
+    <string name="crashlytics_will_stop_on_next_app_launch">Crashlytics se va opri la următoarea lansare a aplicației.</string>
+    <string name="crashlytics_will_start_on_next_app_launch">Crashlytics va începe la următoarea lansare a aplicației</string>
+    <string name="clear_translations">Aceasta operațiune va șterge traducerile existente, va descărca noul model și va declanșa actualizarea bazei de date. Sigur doriți să ștergeți traducerile\?</string>
+    <string name="clear_translations_title">Traduceri clare</string>
+    <string name="old_translation">Modelul vechi de traducere a fost șters</string>
 </resources>

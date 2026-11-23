@@ -50,5 +50,8 @@ data class GameDetails(
     var video: String? = null,
 
     @SerializedName("Slug")
-    var slug: String? = null
+    var slug: String? = null,
+
+    @SerializedName("TranslatedText")
+    var translatedText: String? = null
 )

@@ -442,7 +442,7 @@ class Ac3AudioRenderer(
         var terminalReason: FailureReason? = FailureReason.NONE
 
         while (currentCoroutineContext().isActive) {
-            if (fallbackRequested !== FailureReason.NONE) {
+            if (fallbackRequested != FailureReason.NONE) {
                 terminalReason = fallbackRequested
                 break
             }
@@ -452,7 +452,7 @@ class Ac3AudioRenderer(
                 frame = accumulator.take()
 
                 if (!currentCoroutineContext().isActive || frame == null) {
-                    if (fallbackRequested !== FailureReason.NONE) {
+                    if (fallbackRequested != FailureReason.NONE) {
                         terminalReason = fallbackRequested
                     }
                     break
@@ -493,12 +493,12 @@ class Ac3AudioRenderer(
                 diagnostics.recordFrame(encodeElapsed, writeElapsed, accumulator.queueDepth)
 
             } catch (_: InterruptedException) {
-                if (fallbackRequested !== FailureReason.NONE) {
+                if (fallbackRequested != FailureReason.NONE) {
                     terminalReason = fallbackRequested
                 }
                 break
             } catch (_: CancellationException) {
-                if (fallbackRequested !== FailureReason.NONE) {
+                if (fallbackRequested != FailureReason.NONE) {
                     terminalReason = fallbackRequested
                 }
                 break
@@ -521,7 +521,7 @@ class Ac3AudioRenderer(
     @Synchronized
     private fun performFailure(reason: FailureReason?) {
         stateLock.withLock {
-            if (reason !== FailureReason.NONE && state == State.RUNNING_ENCODED) {
+            if (reason != FailureReason.NONE && state == State.RUNNING_ENCODED) {
                 performFallback(reason)
             }
         }
@@ -529,7 +529,7 @@ class Ac3AudioRenderer(
 
     private fun requestFallback(reason: FailureReason?) {
         if (state != State.RUNNING_ENCODED ||
-            fallbackRequested !== FailureReason.NONE
+            fallbackRequested != FailureReason.NONE
         ) {
             return
         }

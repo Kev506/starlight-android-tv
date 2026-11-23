@@ -2,7 +2,7 @@ package com.starlight.ui.helpers
 
 import android.content.Intent
 import android.widget.Toast
-import androidx.activity.ComponentActivity
+import androidx.appcompat.app.AppCompatActivity
 import com.starlight.R
 import com.starlight.activities.MainView
 import com.starlight.binding.PlatformBinding
@@ -34,7 +34,7 @@ object ServerHelper {
     }
 
     // Helper function to create a PC shortcut intent
-    fun createPcShortcutIntent(parent: ComponentActivity, computer: ComputerDetails): Intent {
+    fun createPcShortcutIntent(parent: AppCompatActivity, computer: ComputerDetails): Intent {
         val intent = Intent(parent, MainView::class.java).apply {
             putExtra("NAME", computer.name)
             putExtra("UUID", computer.uuid)
@@ -44,7 +44,7 @@ object ServerHelper {
     }
 
     // Helper function to create an app shortcut intent
-    fun createAppShortcutIntent(parent: ComponentActivity, computer: ComputerDetails, app: NvApp): Intent {
+    fun createAppShortcutIntent(parent: AppCompatActivity, computer: ComputerDetails, app: NvApp): Intent {
         val intent = Intent(parent, MainView::class.java).apply {
             putExtra("NAME", computer.name)
             putExtra("UUID", computer.uuid)
@@ -58,7 +58,7 @@ object ServerHelper {
 
     // Helper function to start a game
     fun doStartStream(
-        parent: ComponentActivity,
+        parent: AppCompatActivity,
         app: NvApp,
         computer: ComputerDetails,
         binder: ComputerManagerService.ComputerManagerBinder,
@@ -135,7 +135,7 @@ object ServerHelper {
 
     // Helper function to quit an app
     fun doQuit(
-        parent: ComponentActivity,
+        parent: AppCompatActivity,
         computer: ComputerDetails,
         app: NvApp,
         binder: ComputerManagerService.ComputerManagerBinder,
@@ -203,7 +203,7 @@ object ServerHelper {
 
     // Helper function to handle exceptions
     private fun handleHttpResponseException(
-        parent: ComponentActivity,
+        parent: AppCompatActivity,
         e: HostHttpResponseException
     ): String {
         return if (e.getErrorCode() == 599) {

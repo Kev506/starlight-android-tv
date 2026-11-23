@@ -2,8 +2,8 @@ package com.starlight.ui.composables
 
 import android.annotation.SuppressLint
 import android.os.Build
-import androidx.activity.ComponentActivity
 import androidx.activity.compose.LocalActivity
+import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -65,7 +65,7 @@ fun AppDrawer(
     modifier: Modifier = Modifier,
     content: @Composable () -> Unit
 ) {
-    val activity = LocalActivity.current as ComponentActivity
+    val activity = LocalActivity.current as AppCompatActivity
     val selectedItem by viewModel.menuItemSelected.observeAsState(0)
     val drawerState = rememberDrawerState(initialValue = Closed)
     val isSideMenuOpen by viewModel.isSideMenuOpen.observeAsState(false)

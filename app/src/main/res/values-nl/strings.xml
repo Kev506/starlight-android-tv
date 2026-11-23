@@ -16,6 +16,7 @@ Als het geselecteerde item een desktopapplicatie is, worden er geen details weer
     
     
     
+    
     <string name="trailers">Trailers</string>
     
     
@@ -410,4 +411,9 @@ Het gebruik van externe desktopsoftware kan deze fout ook veroorzaken. Probeer u
     <string name="audio_output_mode_eac3_force">Dolby Digital Plus / E-AC-3 5.1 (force, experimenteel)</string>
     <string name="encoded_audio_fallback_to_pcm">Gecodeerde audio-uitvoer is niet beschikbaar. Er wordt verdergegaan met PCM-audio.</string>
     <string name="switch_to_encoded">Gecodeerde audio-uitvoer is beschikbaar, overschakelen naar gecodeerde audio.</string>
+    <string name="crashlytics_will_stop_on_next_app_launch">Crashlytics stopt bij de volgende app-lancering.</string>
+    <string name="crashlytics_will_start_on_next_app_launch">Crashlytics wordt geactiveerd bij de volgende app-lancering.</string>
+    <string name="clear_translations">Hiermee worden bestaande vertalingen verwijderd, het nieuwe model gedownload en de database-update gestart. Weet u zeker dat u de vertalingen wilt verwijderen\?</string>
+    <string name="clear_translations_title">Duidelijke vertalingen</string>
+    <string name="old_translation">Oud vertaalmodel verwijderd</string>
 </resources>

@@ -8,8 +8,8 @@ import android.view.Surface
 import android.view.SurfaceHolder
 import android.view.ViewTreeObserver
 import android.view.WindowManager
-import androidx.activity.ComponentActivity
 import androidx.activity.compose.LocalActivity
+import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -90,7 +90,7 @@ fun GameScreen(
     app: NvApp,
 ) {
 
-    val activity = LocalActivity.current as ComponentActivity
+    val activity = LocalActivity.current as AppCompatActivity
     val context = LocalContext.current
     val shortcutHelper = remember { ShortcutHelper(activity) }
     val config by context.dataStoreConfigFlow.collectAsStateWithLifecycle(initialValue = null)
@@ -145,11 +145,11 @@ fun GameScreen(
 
         viewModel.setPerfOverlay(currentConfig.enablePerfOverlay)
 
-        LaunchedEffect(lifecycleOwner) {
+        LaunchedEffect(key1 = lifecycleOwner) {
             streamFocusRequester.requestFocus()
         }
 
-        DisposableEffect(activity) {
+        DisposableEffect(key1 = activity) {
             val listener = Consumer<PictureInPictureModeChangedInfo> { _ ->
                 gameStreamHelper.handlePictureInPictureModeChanges()
             }
@@ -157,7 +157,7 @@ fun GameScreen(
             onDispose { activity.removeOnPictureInPictureModeChangedListener(listener) }
         }
 
-        DisposableEffect(activity) {
+        DisposableEffect(key1 = activity) {
             val listener = Consumer<Configuration> { _ ->
                 gameStreamHelper.setPreferredOrientationForCurrentDisplay()
                 gameStreamHelper.virtualController?.refreshLayout()
@@ -166,7 +166,7 @@ fun GameScreen(
             onDispose { activity.removeOnConfigurationChangedListener(listener) }
         }
 
-        DisposableEffect(view) {
+        DisposableEffect(key1 = view) {
             val listener = ViewTreeObserver.OnWindowFocusChangeListener { hasFocus ->
                 gameStreamHelper.modifierFlags = 0
                 gameStreamHelper.inputCaptureProvider?.onWindowFocusChanged(hasFocus)

@@ -1,14 +1,12 @@
 package com.starlight.ui.screens
 
 import android.content.Context
-import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
 import android.view.Display
 import android.widget.Toast
-import androidx.activity.ComponentActivity
 import androidx.activity.compose.LocalActivity
-import androidx.compose.foundation.Image
+import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentWidth
@@ -32,10 +30,8 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Color.Companion.White
-import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalResources
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringArrayResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -60,11 +56,11 @@ import com.google.mlkit.common.model.RemoteModelManager
 import com.google.mlkit.nl.translate.TranslateRemoteModel
 import com.starlight.R
 import com.starlight.binding.video.MediaCodecHelper
+import com.starlight.games.GameDataBaseManager
 import com.starlight.models.MainViewModel
 import com.starlight.navigation.Screens
 import com.starlight.preferences.PreferenceKeys
 import com.starlight.preferences.PreferenceKeys.dataStoreConfigFlow
-import com.starlight.preferences.PreferenceKeys.listLanguageFlow
 import com.starlight.preferences.PreferenceKeys.rendererFlow
 import com.starlight.preferences.PreferenceKeys.resolutionFlow
 import com.starlight.preferences.PreferenceKeys.unlockFpsFlow
@@ -73,6 +69,7 @@ import com.starlight.ui.dialogs.ButtonListAlertDialog
 import com.starlight.ui.dialogs.DeadZoneDialog
 import com.starlight.ui.dialogs.DownloadDialog
 import com.starlight.ui.dialogs.SeekBarDialog
+import com.starlight.ui.helpers.UiHelper.setLocale
 import com.starlight.utils.Constants.AAUDIO_PREF_STRING
 import com.starlight.utils.Constants.ABSOLUTE_MOUSE_MODE_PREF_STRING
 import com.starlight.utils.Constants.AUDIO_CONFIG_PREF_STRING
@@ -82,7 +79,6 @@ import com.starlight.utils.Constants.BITRATE_PREF_STRING
 import com.starlight.utils.Constants.DEADZONE_PREF_STRING
 import com.starlight.utils.Constants.DEFAULT_ANALOG_STICK_FOR_SCROLLING
 import com.starlight.utils.Constants.DEFAULT_CAPTIONS_STRING
-import com.starlight.utils.Constants.DEFAULT_LANGUAGE
 import com.starlight.utils.Constants.DEFAULT_LANGUAGE_STRING
 import com.starlight.utils.Constants.DEFAULT_RENDERER_PREF
 import com.starlight.utils.Constants.DEFAULT_RESOLUTION
@@ -112,10 +108,11 @@ import com.starlight.utils.Constants.VIDEO_FORMAT_PREF_STRING
 import com.starlight.utils.Constants.VIDEO_SR_STRING
 import com.starlight.utils.LimeLog
 import com.starlight.utils.Starlight.Companion.dataStore
+import com.starlight.utils.normalizeLanguageCode
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlin.system.exitProcess
+import kotlinx.coroutines.withContext
 
 /**
  * Created by Kevin Andrews on 26/02/2026.
@@ -135,7 +132,6 @@ fun SettingsScreen(viewModel: MainViewModel) {
     val confirmButtonText = remember { mutableStateOf("") }
     val dismissButtonText = remember { mutableStateOf("") }
     val isCancelRequired = remember { mutableStateOf(false) }
-    val isStats = remember { mutableStateOf(false) }
     val isHelp = remember { mutableStateOf(false) }
     val isResolution = remember { mutableStateOf(false) }
     val isFps = remember { mutableStateOf(false) }
@@ -151,7 +147,7 @@ fun SettingsScreen(viewModel: MainViewModel) {
     val listState = rememberLazyListState()
     val context = LocalContext.current
     val resources = LocalResources.current
-    val activity = LocalActivity.current as? ComponentActivity
+    val activity = LocalActivity.current as? AppCompatActivity
     var maxSupportedResW by remember { mutableIntStateOf(1920) }
     var maxSupportedFps by remember { mutableFloatStateOf(60f) }
     var isDetectionFinished by remember { mutableStateOf(false) }
@@ -162,20 +158,8 @@ fun SettingsScreen(viewModel: MainViewModel) {
     val coroutineScope = rememberCoroutineScope()
     val config by context.dataStoreConfigFlow.collectAsStateWithLifecycle(initialValue = null)
     val unlockFpsValue by context.unlockFpsFlow.collectAsStateWithLifecycle(false)
-    val languageValue by context.listLanguageFlow.collectAsStateWithLifecycle(
-        DEFAULT_LANGUAGE_STRING
-    )
     val resolutionValue by context.resolutionFlow.collectAsStateWithLifecycle(DEFAULT_RESOLUTION)
     val renderer by context.rendererFlow.collectAsStateWithLifecycle(DEFAULT_RENDERER_PREF)
-
-    val isLanguageDefault = remember(languageValue) {
-
-        val isDefaultString = languageValue == DEFAULT_LANGUAGE_STRING
-        val currentLocale = DEFAULT_LANGUAGE
-        val isEnglish = currentLocale.contains("en")
-
-        isDefaultString && isEnglish
-    }
 
     val isApiLevelSupported = remember {
         Build.VERSION.SDK_INT >= Build.VERSION_CODES.S_V2
@@ -325,6 +309,8 @@ fun SettingsScreen(viewModel: MainViewModel) {
 
     config?.let { currentConfig ->
 
+        val oldLanguage = remember { currentConfig.language }
+
         LaunchedEffect(Unit) {
             mainContentRequester.requestFocus()
         }
@@ -391,15 +377,31 @@ fun SettingsScreen(viewModel: MainViewModel) {
                             )
                         },
                         onClick = {
-                            img = R.drawable.baseline_warning_amber_24
-                            dialogTitle.value =
-                                resources.getString(R.string.restart_application)
-                            dialogText.value = resources.getString(R.string.restart_now)
-                            confirmButtonText.value = resources.getString(R.string.yes)
-                            dismissButtonText.value = resources.getString(R.string.cancel)
-                            isCancelRequired.value = true
-                            isStats.value = true
-                            openAlertDialog.value = true
+                            if (currentConfig.statsEnabled) {
+                                coroutineScope.launch(Dispatchers.IO) {
+                                    context.dataStore.edit { preferences ->
+                                        preferences[booleanPreferencesKey(STATS_PREF_STRING)] =
+                                            false
+                                    }
+                                }
+                                Toast.makeText(
+                                    context,
+                                    activity?.getString(R.string.crashlytics_will_stop_on_next_app_launch),
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                            } else {
+                                coroutineScope.launch(Dispatchers.IO) {
+                                    context.dataStore.edit { preferences ->
+                                        preferences[booleanPreferencesKey(STATS_PREF_STRING)] =
+                                            true
+                                    }
+                                }
+                                Toast.makeText(
+                                    context,
+                                    activity?.getString(R.string.crashlytics_will_start_on_next_app_launch),
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                            }
                         },
                         selected = false,
                         scale = ListItemDefaults.scale(
@@ -1816,125 +1818,6 @@ fun SettingsScreen(viewModel: MainViewModel) {
                         )
                     )
                 }
-                if (!isLanguageDefault && !currentConfig.mlDownloaded) {
-                    item(
-                        key = "language_model",
-                        contentType = "language_model"
-                    ) {
-                        ListItem(
-                            overlineContent = {
-                                Text(
-                                    stringResource(R.string.download_translations_model),
-                                    modifier = Modifier.padding(bottom = 10.dp),
-                                    color = Color(0xFFCAEFF4),
-                                    fontSize = 16.sp
-                                )
-                            },
-                            headlineContent = {
-                                Text(
-                                    stringResource(R.string.download_locale_language_model_to_translate_game_data),
-                                    color = White,
-                                    fontSize = 14.sp
-                                )
-                            },
-                            trailingContent = {
-                                Image(
-                                    painter = painterResource(id = R.drawable.baseline_download_24_small),
-                                    colorFilter = ColorFilter.tint(Color(0xFF25B9EF)),
-                                    contentDescription = null
-                                )
-                            },
-                            onClick = {
-                                img = R.drawable.baseline_download_24_small
-                                dialogTitle.value =
-                                    resources.getString(R.string.download_translations_model)
-                                dialogText.value =
-                                    resources.getString(R.string.download_locale_language_model_to_translate_game_data)
-                                viewModel.setLoaderValue(true)
-                            },
-                            selected = false,
-                            scale = ListItemDefaults.scale(
-                                focusedScale = 1f,
-                                selectedScale = 1f
-                            ),
-                            colors = ListItemDefaults.colors(
-                                focusedContainerColor = Color(0x6633B5E5),
-                                pressedContainerColor = Color.Black,
-                                pressedContentColor = White
-                            )
-                        )
-                    }
-                }
-                if (currentConfig.mlDownloaded) {
-                    item(
-                        key = "delete_model",
-                        contentType = "delete_model"
-                    ) {
-                        ListItem(
-                            overlineContent = {
-                                Text(
-                                    stringResource(R.string.delete_language_model),
-                                    modifier = Modifier.padding(bottom = 10.dp),
-                                    color = Color(0xFFCAEFF4),
-                                    fontSize = 16.sp
-                                )
-                            },
-                            headlineContent = {
-                                Text(
-                                    stringResource(R.string.delete_downloaded_language_model),
-                                    color = White,
-                                    fontSize = 14.sp
-                                )
-                            },
-                            trailingContent = {
-                                Image(
-                                    painter = painterResource(id = R.drawable.baseline_delete_forever_24),
-                                    colorFilter = ColorFilter.tint(Color(0xFF25B9EF)),
-                                    contentDescription = null
-                                )
-                            },
-                            onClick = {
-                                val modelManager = RemoteModelManager.getInstance()
-                                val translateRemoteModel =
-                                    TranslateRemoteModel.Builder(currentConfig.language).build()
-                                modelManager.deleteDownloadedModel(translateRemoteModel)
-                                    .addOnSuccessListener {
-
-                                        Toast.makeText(
-                                            activity,
-                                            activity!!.getString(R.string.model_deleted_successfully),
-                                            Toast.LENGTH_SHORT
-                                        ).show()
-
-                                        viewModel.triggerReload()
-                                        coroutineScope.launch(Dispatchers.IO) {
-                                            context.dataStore.edit { preferences ->
-                                                preferences[booleanPreferencesKey(ML_DOWNLOADED)] =
-                                                    false
-                                            }
-                                        }
-                                    }
-                                    .addOnFailureListener {
-                                        Toast.makeText(
-                                            activity,
-                                            activity!!.getString(R.string.model_delete_failed_please_try_again),
-                                            Toast.LENGTH_SHORT
-                                        ).show()
-                                    }
-                            },
-                            selected = false,
-                            scale = ListItemDefaults.scale(
-                                focusedScale = 1f,
-                                selectedScale = 1f
-                            ),
-                            colors = ListItemDefaults.colors(
-                                focusedContainerColor = Color(0x6633B5E5),
-                                pressedContainerColor = Color.Black,
-                                pressedContentColor = White
-                            )
-                        )
-                    }
-                }
                 item(
                     key = "category_advanced_settings",
                     contentType = "category_advanced_settings"
@@ -2392,10 +2275,7 @@ fun SettingsScreen(viewModel: MainViewModel) {
                         img?.let { icon ->
                             AlertDialog(
                                 onDismissRequest = {
-                                    if (isStats.value) {
-                                        openAlertDialog.value = false
-                                        isStats.value = false
-                                    } else if (isHelp.value) {
+                                    if (isHelp.value) {
                                         viewModel.url = TROUBLESHOOTING_URL
                                         viewModel.getNavController()
                                             ?.navigate(Screens.HelpScreen.route)
@@ -2410,18 +2290,7 @@ fun SettingsScreen(viewModel: MainViewModel) {
                                     }
                                 },
                                 onConfirmation = {
-                                    if (isStats.value) {
-                                        coroutineScope.launch {
-                                            val newStatsState = !currentConfig.statsEnabled
-                                            context.dataStore.edit { preferences ->
-                                                preferences[booleanPreferencesKey(STATS_PREF_STRING)] =
-                                                    newStatsState
-                                            }
-                                            restartApplication(context)
-                                        }
-                                        openAlertDialog.value = false
-                                        isStats.value = false
-                                    } else if (!isFpsSupported.value) {
+                                    if (!isFpsSupported.value) {
                                         coroutineScope.launch(Dispatchers.IO) {
                                             context.dataStore.edit { preferences ->
                                                 preferences[stringPreferencesKey(FPS_PREF_STRING)] =
@@ -2437,6 +2306,11 @@ fun SettingsScreen(viewModel: MainViewModel) {
                                             fpsValue = unsupportedFps.value
                                         )
                                     } else if (isLanguage.value) {
+                                        setLocale(
+                                            context = context,
+                                            localeTag = selectedLanguage.value
+                                        )
+
                                         coroutineScope.launch(Dispatchers.IO) {
                                             context.dataStore.edit { preferences ->
                                                 preferences[stringPreferencesKey(
@@ -2444,8 +2318,41 @@ fun SettingsScreen(viewModel: MainViewModel) {
                                                 )] =
                                                     if (selectedLanguage.value == "default") DEFAULT_LANGUAGE_STRING else selectedLanguage.value
                                             }
+
+                                            val modelManager = RemoteModelManager.getInstance()
+                                            val oldRemoteModel = TranslateRemoteModel.Builder(
+                                                normalizeLanguageCode(oldLanguage)
+                                            ).build()
+                                            modelManager.deleteDownloadedModel(oldRemoteModel)
+
+                                            withContext(Dispatchers.Main) {
+                                                Toast.makeText(
+                                                    context,
+                                                    activity?.getString(R.string.old_translation),
+                                                    Toast.LENGTH_SHORT
+                                                ).show()
+                                            }
+
+                                            context.dataStore.edit { preferences ->
+                                                preferences[booleanPreferencesKey(ML_DOWNLOADED)] =
+                                                    false
+                                            }
+
+                                            GameDataBaseManager.getInstance(context)
+                                                ?.clearAllTranslatedText()
+
+                                            if (selectedLanguage.value != "default" && selectedLanguage.value != "en") {
+                                                withContext(Dispatchers.Main) {
+                                                    img = R.drawable.baseline_download_24_small
+                                                    dialogTitle.value =
+                                                        resources.getString(R.string.download_translations_model)
+                                                    dialogText.value =
+                                                        resources.getString(R.string.download_locale_language_model_to_translate_game_data)
+
+                                                    viewModel.setLoaderValue(true)
+                                                }
+                                            }
                                         }
-                                        restartApplication(context)
                                         openAlertDialog.value = false
                                         isLanguage.value = false
                                     } else if (isAaudio.value) {
@@ -2569,19 +2476,54 @@ fun SettingsScreen(viewModel: MainViewModel) {
                                         }
                                         buttonListAlertDialog.value = false
                                     } else if (isLanguage.value) {
-                                        img = R.drawable.baseline_restart_alt_24
-                                        dialogTitle.value =
-                                            resources.getString(R.string.restart_application)
-                                        dialogText.value =
-                                            resources.getString(R.string.restart_now)
-                                        dismissButtonText.value =
-                                            resources.getString(R.string.cancel)
-                                        confirmButtonText.value =
-                                            resources.getString(android.R.string.ok)
-                                        isCancelRequired.value = true
-                                        selectedLanguage.value = it
-                                        buttonListAlertDialog.value = false
-                                        openAlertDialog.value = true
+                                        val dbHandler = GameDataBaseManager.getInstance(context)
+                                        if (dbHandler?.getColumnEntries() == true) {
+                                            img = R.drawable.baseline_warning_amber_24
+                                            dialogTitle.value =
+                                                resources.getString(R.string.clear_translations_title)
+                                            dialogText.value =
+                                                resources.getString(R.string.clear_translations)
+                                            dismissButtonText.value =
+                                                resources.getString(R.string.cancel)
+                                            confirmButtonText.value =
+                                                resources.getString(android.R.string.ok)
+                                            isCancelRequired.value = true
+                                            selectedLanguage.value = it
+                                            buttonListAlertDialog.value = false
+                                            openAlertDialog.value = true
+                                        } else if (it != "default" && it != "en") {
+                                            coroutineScope.launch(Dispatchers.IO) {
+                                                context.dataStore.edit { preferences ->
+                                                    preferences[stringPreferencesKey(
+                                                        LANGUAGE_PREF_STRING
+                                                    )] =
+                                                        if (it == "default") DEFAULT_LANGUAGE_STRING else it
+                                                }
+                                            }
+                                            setLocale(context = context, localeTag = it)
+
+                                            img = R.drawable.baseline_download_24_small
+                                            dialogTitle.value =
+                                                resources.getString(R.string.download_translations_model)
+                                            dialogText.value =
+                                                resources.getString(R.string.download_locale_language_model_to_translate_game_data)
+
+                                            viewModel.setLoaderValue(true)
+                                            buttonListAlertDialog.value = false
+                                            isLanguage.value = false
+                                        } else {
+                                            coroutineScope.launch(Dispatchers.IO) {
+                                                context.dataStore.edit { preferences ->
+                                                    preferences[stringPreferencesKey(
+                                                        LANGUAGE_PREF_STRING
+                                                    )] =
+                                                        if (it == "default") DEFAULT_LANGUAGE_STRING else it
+                                                }
+                                            }
+                                            setLocale(context = context, localeTag = it)
+                                            buttonListAlertDialog.value = false
+                                            isLanguage.value = false
+                                        }
                                     } else if (isVideoFormat.value) {
                                         coroutineScope.launch(Dispatchers.IO) {
                                             context.dataStore.edit { preferences ->
@@ -2736,17 +2678,6 @@ fun SettingsScreen(viewModel: MainViewModel) {
                 }
             }
         }
-    }
-}
-
-// Helper Function to Restart Application
-private fun restartApplication(context: Context) {
-    val packageManager = context.packageManager
-    val intent = packageManager.getLaunchIntentForPackage(context.packageName)
-    if (intent != null) {
-        val restartIntent = Intent.makeRestartActivityTask(intent.component)
-        context.startActivity(restartIntent)
-        exitProcess(0)
     }
 }
 

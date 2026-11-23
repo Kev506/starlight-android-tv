@@ -6,7 +6,7 @@ import android.content.ComponentName
 import android.content.Context
 import android.os.IBinder
 import android.widget.Toast
-import androidx.activity.ComponentActivity
+import androidx.appcompat.app.AppCompatActivity
 import androidx.datastore.preferences.core.stringPreferencesKey
 import com.starlight.R
 import com.starlight.computers.ComputerManagerListener
@@ -21,9 +21,9 @@ import com.starlight.nvstream.http.ComputerDetails
 import com.starlight.nvstream.http.NvApp
 import com.starlight.nvstream.http.NvHTTP
 import com.starlight.nvstream.http.PairingManager
+import com.starlight.preferences.DataStoreConfiguration
 import com.starlight.preferences.PreferenceKeys
 import com.starlight.ui.adapters.AppAdapter
-import com.starlight.ui.adapters.AppAdapter.Companion.allApps
 import com.starlight.ui.adapters.AppAdapter.Companion.favAppIds
 import com.starlight.ui.adapters.AppAdapter.Companion.sunFavAppIds
 import com.starlight.utils.AppComputerObject
@@ -57,7 +57,7 @@ import kotlin.time.Duration.Companion.milliseconds
 class HomeScreenHelper(
     var viewModel: MainViewModel,
     var gameViewModel: GameViewModel,
-    var uiContext: ComponentActivity,
+    var uiContext: AppCompatActivity,
     uuid: String,
     name: String,
     pair: Boolean,
@@ -90,7 +90,7 @@ class HomeScreenHelper(
                     appViewListRowAdapter = try {
                         AppAdapter(
                             viewModel.computer!!, localBinder.uniqueId,
-                            viewModel.showHiddenApps, uiContext
+                            viewModel.showHiddenApps, uiContext, viewModel = viewModel
                         )
                     } catch (e: Exception) {
                         e.printStackTrace()
@@ -254,7 +254,7 @@ class HomeScreenHelper(
 
         putHiddenAppsSet(viewModel.uuidString!!, hiddenAppIdStringSet)
 
-        appViewListRowAdapter?.updateItems(allApps!!.toMutableList(), hiddenAppIds)
+        appViewListRowAdapter?.updateItems(viewModel.allApps.toMutableList(), hiddenAppIds)
 
         if (hideNow && isShown) {
             (uiContext as? HomeScreenCallBack)?.reloadMainViewScreen()
@@ -353,7 +353,7 @@ class HomeScreenHelper(
                 }
             }
             if (updated) {
-                appViewListRowAdapter!!.updateItems(allApps!!.toMutableList(), hiddenAppIds)
+                appViewListRowAdapter!!.updateItems(viewModel.allApps.toMutableList(), hiddenAppIds)
             }
         }
 
@@ -373,11 +373,15 @@ class HomeScreenHelper(
                         viewModel.uuidString!!
                     )
                     applicationScope.launch {
+                        val prefs = PreferenceKeys.fromPreferences(uiContext)
+
+                        val isMissingTranslation = appList.filter { app ->
+                            val existing = dbHandler.getAppData(app.id.toString())
+                            existing.translatedText.isNullOrEmpty()
+                        }
                         val missingApps = appList.filter { app ->
                             val existing = dbHandler.getAppData(app.id.toString())
-                            existing.title.isNullOrEmpty() || existing.description == view.getString(
-                                R.string.No_Details
-                            )
+                            existing.title.isNullOrEmpty()
                         }
                         if (missingApps.isNotEmpty()) {
                             applicationScope.launch {
@@ -398,10 +402,38 @@ class HomeScreenHelper(
                                 }
                             }
                         }
+                        if (isMissingTranslation.isNotEmpty() && prefs.mlDownloaded) {
+                            applicationScope.launch {
+                                isMissingTranslation.forEach { app ->
+                                    translateDetails(AppComputerObject(app), prefs)
+                                    delay(1000.milliseconds)
+                                }
+                            }
+                        }
                     }
                 }
             }
         }
+    }
+
+    // Translate the game details
+    private suspend fun translateDetails(app: AppComputerObject, prefs: DataStoreConfiguration) {
+        val dbHandler = GameDataBaseManager.getInstance(uiContext) ?: return
+        val appData = dbHandler.getAppData(app.app?.id.toString())
+        val language = prefs.language
+        val isModelDownloaded = prefs.mlDownloaded
+
+        if (language == "default" || language == "en" || !isModelDownloaded) return
+
+        TranslatorHelper(
+            uiContext.resources,
+            uiContext
+        ).translateAndSaveAppDescription(
+            app.app?.id.toString(),
+            appData.description,
+            language,
+            true
+        )
     }
 
     // Helper method to check if database exists

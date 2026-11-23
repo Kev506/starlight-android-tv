@@ -16,6 +16,7 @@ Si el elemento seleccionado es una aplicación de escritorio, no habrá detalles
     
     
     
+    
     <string name="trailers">Tráileres</string>
     
     
@@ -410,4 +411,9 @@ El uso de software de escritorio remoto también puede provocar este error. Inte
     <string name="audio_output_mode_eac3_force">Dolby Digital Plus / E-AC-3 5.1 (forzado, experimental)</string>
     <string name="encoded_audio_fallback_to_pcm">La salida de audio codificada no está disponible. Se continúa con audio PCM.</string>
     <string name="switch_to_encoded">La salida de audio codificada está disponible; se cambiará a audio codificado.</string>
+    <string name="crashlytics_will_stop_on_next_app_launch">Crashlytics dejará de funcionar en el próximo lanzamiento de la aplicación.</string>
+    <string name="crashlytics_will_start_on_next_app_launch">Crashlytics comenzará a funcionar en el próximo lanzamiento de la aplicación.</string>
+    <string name="clear_translations">Esto borrará las traducciones existentes, descargará el nuevo modelo y activará la actualización de la base de datos. ¿Está seguro de que desea borrar las traducciones\?</string>
+    <string name="clear_translations_title">Traducciones claras</string>
+    <string name="old_translation">Modelo de traducción antiguo eliminado</string>
 </resources>

@@ -5,7 +5,7 @@ import android.content.ComponentName
 import android.content.Intent
 import android.os.IBinder
 import android.widget.Toast
-import androidx.activity.ComponentActivity
+import androidx.appcompat.app.AppCompatActivity
 import androidx.datastore.preferences.core.stringPreferencesKey
 import com.starlight.R
 import com.starlight.activities.MainView
@@ -31,7 +31,7 @@ import java.util.UUID
 
 class TvHomeHelper(
     var viewModel: MainViewModel,
-    var activity: ComponentActivity
+    var activity: AppCompatActivity
 ) {
 
     private val intentStack = ArrayList<Intent>()

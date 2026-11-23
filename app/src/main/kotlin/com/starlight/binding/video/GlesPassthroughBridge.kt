@@ -505,14 +505,14 @@ class GlesPassthroughBridge(private val context: Context) : OnFrameAvailableList
 
     fun release() {
         lock.withLock {
-            if (eglDisplay !== EGL14.EGL_NO_DISPLAY) {
+            if (eglDisplay != EGL14.EGL_NO_DISPLAY) {
                 EGL14.eglMakeCurrent(
                     eglDisplay,
                     EGL14.EGL_NO_SURFACE,
                     EGL14.EGL_NO_SURFACE,
                     EGL14.EGL_NO_CONTEXT
                 )
-                if (eglSurface !== EGL14.EGL_NO_SURFACE) {
+                if (eglSurface != EGL14.EGL_NO_SURFACE) {
                     EGL14.eglDestroySurface(eglDisplay, eglSurface)
                 }
                 EGL14.eglDestroyContext(eglDisplay, eglContext)

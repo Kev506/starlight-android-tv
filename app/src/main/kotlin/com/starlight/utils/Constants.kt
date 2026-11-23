@@ -2,7 +2,7 @@ package com.starlight.utils
 
 import android.os.LocaleList
 import android.view.KeyEvent
-import java.util.Locale
+import com.google.mlkit.nl.translate.TranslateLanguage
 
 /**
  * Created by Kevin Andrews on 26/11/2025.
@@ -150,8 +150,7 @@ object Constants {
     const val ML_DOWNLOADED = "mldownloaded"
 
     val DEFAULT_LANGUAGE = LocaleList.getDefault().toLanguageTags()
-    val DEFAULT_LANGUAGE_STRING: String
-        get() = Locale.getDefault().language
+    const val DEFAULT_LANGUAGE_STRING = "default"
 
     const val DEFAULT_ML_DOWNLOADED = false
     const val DEFAULT_STRETCH = false
@@ -196,4 +195,13 @@ object Constants {
     const val BROKEN_HDR_FIRMWARE_FINGERPRINT = "PPR1.180610.011/4079208_2235.1395"
 
     const val PREF_KEY_CRASH_COUNT = "CrashCount"
+}
+
+fun normalizeLanguageCode(langPref: String): String {
+    return when (langPref) {
+        "zh-rCN", "zh-rTW" -> TranslateLanguage.CHINESE
+        "in" -> TranslateLanguage.INDONESIAN
+        "default" -> TranslateLanguage.ENGLISH
+        else -> langPref
+    }
 }

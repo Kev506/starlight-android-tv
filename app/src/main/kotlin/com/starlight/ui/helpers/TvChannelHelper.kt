@@ -11,7 +11,7 @@ import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.provider.BaseColumns
 import android.widget.Toast
-import androidx.activity.ComponentActivity
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.createBitmap
 import androidx.core.net.toUri
@@ -33,6 +33,7 @@ import com.starlight.utils.LimeLog.warning
 import com.starlight.utils.Starlight
 import com.starlight.utils.Starlight.Companion.isClassicAndroidTV
 import com.starlight.utils.Starlight.Companion.isGoogleTV
+import com.starlight.utils.normalizeLanguageCode
 import com.starlight.utils.Starlight.Companion.isProjectivyInstalled
 import com.starlight.utils.Starlight.Companion.isTvDevice
 import kotlinx.coroutines.Dispatchers
@@ -41,7 +42,7 @@ import kotlinx.coroutines.withContext
 import java.io.File
 import java.io.IOException
 
-class TvChannelHelper(private val activity: ComponentActivity) {
+class TvChannelHelper(private val activity: AppCompatActivity) {
 
     // Helper function to request channel on home screen
     @Suppress("DEPRECATION")
@@ -292,7 +293,7 @@ class TvChannelHelper(private val activity: ComponentActivity) {
             val options = prefs.language.let {
                 TranslatorOptions.Builder()
                     .setSourceLanguage(TranslateLanguage.ENGLISH)
-                    .setTargetLanguage(it)
+                    .setTargetLanguage(normalizeLanguageCode(it))
                     .build()
             }
             val translator = options.let { Translation.getClient(it) }

@@ -30,7 +30,7 @@ import android.view.WindowManager
 import android.view.inputmethod.InputMethodManager
 import android.widget.FrameLayout
 import android.widget.Toast
-import androidx.activity.ComponentActivity
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.hardware.display.DisplayManagerCompat
 import androidx.core.view.DisplayCompat
 import androidx.core.view.postDelayed
@@ -109,7 +109,7 @@ import kotlin.time.Duration.Companion.milliseconds
 
 class GameScreenHelper(
     var viewModel: MainViewModel,
-    var activity: ComponentActivity,
+    var activity: AppCompatActivity,
     var dataStoreConfiguration: DataStoreConfiguration,
     appId: String,
     appName: String,
@@ -1644,7 +1644,7 @@ class GameScreenHelper(
                 // are relative to the StreamView like our StreamView touch events are.
                 val xOffset: Float
                 val yOffset: Float
-                if (view !== streamView && !dataStoreConfiguration.touchscreenTrackpad) {
+                if (view != streamView && !dataStoreConfiguration.touchscreenTrackpad) {
                     xOffset = -(streamView?.x ?: 0f)
                     yOffset = -(streamView?.y ?: 0f)
                 } else {

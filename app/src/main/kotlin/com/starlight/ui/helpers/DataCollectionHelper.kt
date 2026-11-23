@@ -3,7 +3,7 @@ package com.starlight.ui.helpers
 import android.content.ComponentName
 import android.os.IBinder
 import android.widget.Toast
-import androidx.activity.ComponentActivity
+import androidx.appcompat.app.AppCompatActivity
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import com.starlight.R
@@ -33,7 +33,7 @@ import kotlin.time.Duration.Companion.milliseconds
  * Created by Kevin Andrews on 16/02/2026.
  */
 
-class DataCollectionHelper(var viewModel: MainViewModel, var uiContext: ComponentActivity) {
+class DataCollectionHelper(var viewModel: MainViewModel, var uiContext: AppCompatActivity) {
 
     private var shortcutHelper: ShortcutHelper
     private lateinit var computer: ComputerDetails

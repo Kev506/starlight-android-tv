@@ -16,6 +16,7 @@
     
     
     
+    
     <string name="trailers">予告編</string>
     
     
@@ -410,4 +411,9 @@
     <string name="audio_output_mode_eac3_force">ドルビーデジタルプラス / E-AC-3 5.1 (強制、実験的)</string>
     <string name="encoded_audio_fallback_to_pcm">エンコードされた音声出力は利用できません。PCM音声で再生を続けます。</string>
     <string name="switch_to_encoded">エンコードされた音声出力が利用可能です。エンコードされた音声に切り替えます。</string>
+    <string name="crashlytics_will_stop_on_next_app_launch">Crashlyticsは次回のアプリ起動時に停止します</string>
+    <string name="crashlytics_will_start_on_next_app_launch">Crashlyticsは次回のアプリ起動時に開始されます</string>
+    <string name="clear_translations">これにより、既存の翻訳が削除され、新しいモデルがダウンロードされ、データベースの更新が実行されます。翻訳を削除してもよろしいですか？</string>
+    <string name="clear_translations_title">明確な翻訳</string>
+    <string name="old_translation">古い翻訳モデルが削除されました</string>
 </resources>

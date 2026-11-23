@@ -15,5 +15,6 @@ data class GameDataBaseDetails(
     var video: String? = null,
     var videos: String? = null,
     var slug: String? = null,
-    var id: Int = 0
+    var id: Int = 0,
+    var translatedText: String? = null
 )

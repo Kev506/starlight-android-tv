@@ -2,8 +2,8 @@ package com.starlight.ui.grids
 
 import android.app.Service
 import android.content.Intent
-import androidx.activity.ComponentActivity
 import androidx.activity.compose.LocalActivity
+import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.focusGroup
@@ -77,7 +77,6 @@ import com.starlight.models.GameViewModel
 import com.starlight.models.MainViewModel
 import com.starlight.nvstream.http.ComputerDetails
 import com.starlight.preferences.PreferenceKeys.dataStoreConfigFlow
-import com.starlight.ui.adapters.AppAdapter
 import com.starlight.ui.adapters.AppAdapter.Companion.loader
 import com.starlight.ui.dialogs.AlertDialog
 import com.starlight.ui.helpers.FavoritesHelper
@@ -106,10 +105,11 @@ import kotlin.time.Duration.Companion.milliseconds
 fun FavoritesAppGrid(
     viewModel: MainViewModel,
     computer: ComputerDetails?,
-    uuid: String
+    uuid: String,
+    items: List<AppComputerObject>
 ) {
 
-    val activity = LocalActivity.current as? ComponentActivity ?: return
+    val activity = LocalActivity.current as? AppCompatActivity ?: return
 
     val gameViewModel = viewModel<GameViewModel> {
         val repository = GameData(
@@ -153,8 +153,6 @@ fun FavoritesAppGrid(
             }
         }
     }
-
-    val items = remember { AppAdapter.itemList }
 
     FavoritesAppGridContent(
         data = items,
@@ -207,7 +205,7 @@ fun FavoritesAppGridContent(
 
     config?.let { currentConfig ->
 
-        LaunchedEffect(data.size, isSideMenuOpen, focusTrigger) {
+        LaunchedEffect(key1 = data.size, key2 = isSideMenuOpen, key3 = focusTrigger) {
             if (!isSideMenuOpen && data.isNotEmpty()) {
                 if (reloaded) yield() else delay(100.milliseconds)
                 val target =

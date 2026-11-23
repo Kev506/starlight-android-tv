@@ -14,6 +14,7 @@ Jeśli wybrany element to aplikacja komputerowa, nie będzie żadnych szczegół
     
     
     
+    
     <string name="trailers">Przyczepy</string>
     
     
@@ -408,4 +409,9 @@ Korzystanie z oprogramowania do zdalnego pulpitu może również powodować ten 
     <string name="audio_output_mode_eac3_force">Dolby Digital Plus / E-AC-3 5.1 (wymuszony, eksperymentalny)</string>
     <string name="encoded_audio_fallback_to_pcm">Zakodowane wyjście audio jest niedostępne. Kontynuujemy odtwarzanie dźwięku PCM.</string>
     <string name="switch_to_encoded">Dostępne jest wyjście audio kodowane, przełączanie na dźwięk kodowany.</string>
+    <string name="crashlytics_will_stop_on_next_app_launch">Crashlytics zostanie zatrzymany przy następnym uruchomieniu aplikacji</string>
+    <string name="crashlytics_will_start_on_next_app_launch">Crashlytics zostanie uruchomiony wraz z premierą kolejnej aplikacji</string>
+    <string name="clear_translations">Spowoduje to wyczyszczenie istniejących tłumaczeń, pobranie nowego modelu i uruchomienie aktualizacji bazy danych. Czy na pewno chcesz wyczyścić tłumaczenia\?</string>
+    <string name="clear_translations_title">Przejrzyste tłumaczenia</string>
+    <string name="old_translation">Stary model tłumaczenia został usunięty</string>
 </resources>

@@ -14,6 +14,7 @@ Wenn es sich bei dem ausgewählten Element um eine Desktop-Anwendung handelt, we
     
     
     
+    
     <string name="trailers">Anhänger</string>
     
     
@@ -408,4 +409,9 @@ Auch die Verwendung von Remote-Desktop-Software kann diesen Fehler verursachen. 
     <string name="audio_output_mode_eac3_force">Dolby Digital Plus / E-AC-3 5.1 (erzwungen, experimentell)</string>
     <string name="encoded_audio_fallback_to_pcm">Die Ausgabe von kodiertem Audio ist nicht verfügbar. Es wird mit PCM-Audio fortgefahren.</string>
     <string name="switch_to_encoded">Die Ausgabe von codiertem Audio ist verfügbar; Umschalten auf codiertes Audio.</string>
+    <string name="crashlytics_will_stop_on_next_app_launch">Crashlytics wird beim nächsten App-Start beendet.</string>
+    <string name="crashlytics_will_start_on_next_app_launch">Crashlytics startet beim nächsten App-Start.</string>
+    <string name="clear_translations">Dadurch werden bestehende Übersetzungen gelöscht, das neue Modell heruntergeladen und die Datenbankaktualisierung ausgelöst. Möchten Sie die Übersetzungen wirklich löschen\?</string>
+    <string name="clear_translations_title">Klare Übersetzungen</string>
+    <string name="old_translation">Altes Übersetzungsmodell gelöscht</string>
 </resources>

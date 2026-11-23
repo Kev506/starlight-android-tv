@@ -2,8 +2,8 @@ package com.starlight.ui.adapters
 
 import android.content.Context
 import android.graphics.BitmapFactory
-import androidx.compose.runtime.mutableStateListOf
 import com.starlight.R
+import com.starlight.models.MainViewModel
 import com.starlight.nvstream.http.ComputerDetails
 import com.starlight.nvstream.http.NvApp
 import com.starlight.ui.grids.assets.CachedAppAssetLoader
@@ -19,7 +19,8 @@ import java.util.concurrent.ConcurrentHashMap
  */
 class AppAdapter(
     computer: ComputerDetails, uniqueId: String,
-    showHiddenApps: Boolean, context: Context
+    showHiddenApps: Boolean, context: Context,
+    private val viewModel: MainViewModel
 ) {
 
     private var computer: ComputerDetails? = null
@@ -33,20 +34,20 @@ class AppAdapter(
 
         if (hideImmediately) {
             // Use a more functional approach with filter
-            _items.filter { !hiddenAppIds.contains(it.app?.id) || showHiddenApps }.toMutableList()
+            viewModel.appItems.filter { !hiddenAppIds.contains(it.app?.id) || showHiddenApps }.toMutableList()
         } else {
             // Update isHidden state directly
-            _items.forEach { it.isHidden = hiddenAppIds.contains(it.app?.id) }
+            viewModel.appItems.forEach { it.isHidden = hiddenAppIds.contains(it.app?.id) }
         }
 
-        updateItems(_items, hiddenAppIds)
+        updateItems(viewModel.appItems, hiddenAppIds)
     }
 
     // Update the items list
     fun updateItems(newList: MutableList<AppComputerObject>?, newHiddenAppIds: Set<Int>) {
         hiddenAppIds = newHiddenAppIds.toMutableSet()
 
-        _items.clear()
+        viewModel.appItems.clear()
 
         newList?.forEach { app ->
             app.isHidden = hiddenAppIds.contains(app.app?.id)
@@ -54,7 +55,7 @@ class AppAdapter(
             if (showHiddenApps || !app.isHidden!!) {
                 app.app?.let { loader?.queueCacheLoad(it) }
 
-                _items.add(app)
+                viewModel.appItems.add(app)
                 sortList()
             }
         }
@@ -62,7 +63,7 @@ class AppAdapter(
 
     // Sort the list of computers
     private fun sortList() {
-        _items.sortWith(Comparator.comparing { lhs: AppComputerObject ->
+        viewModel.appItems.sortWith(Comparator.comparing { lhs: AppComputerObject ->
             lhs.app?.appName!!.lowercase(
                 Locale.ROOT
             )
@@ -71,12 +72,12 @@ class AppAdapter(
 
     // Get an app by index
     fun get(index: Int): AppComputerObject {
-        return _items[index]
+        return viewModel.appItems[index]
     }
 
     // Get adapter size
     fun size(): Int {
-        return _items.size
+        return viewModel.appItems.size
     }
 
     // Cancel queued operations
@@ -104,25 +105,25 @@ class AppAdapter(
 
     // Remove an app by ID
     fun removeAppById(itemId: Int?) {
-        allApps!!.removeAll { it.app?.id == itemId }
-        updateItems(allApps, hiddenAppIds)
+        viewModel.allApps.removeAll { it.app?.id == itemId }
+        updateItems(viewModel.allApps, hiddenAppIds)
     }
 
     // Remove an app
     fun removeApp(app: AppComputerObject) {
-        allApps?.remove(app)
-        updateItems(allApps, hiddenAppIds)
+        viewModel.allApps.remove(app)
+        updateItems(viewModel.allApps, hiddenAppIds)
     }
 
     // Add an app
     fun addApp(app: AppComputerObject) {
-        allApps?.add(app)
-        updateItems(allApps, hiddenAppIds)
+        viewModel.allApps.add(app)
+        updateItems(viewModel.allApps, hiddenAppIds)
     }
 
     init {
 
-        allApps = ArrayList()
+        viewModel.allApps.clear()
 
         this.computer = computer
         this.uniqueId = uniqueId
@@ -134,15 +135,8 @@ class AppAdapter(
 
     companion object {
         var hiddenAppIds: MutableSet<Int> = ConcurrentHashMap.newKeySet()
-
         var loader: CachedAppAssetLoader? = null
-
-        private val _items = mutableStateListOf<AppComputerObject>()
-        val itemList: List<AppComputerObject> = _items
-
-        var allApps: MutableList<AppComputerObject>? = null
         val sunFavAppIds: MutableList<NvApp> = mutableListOf()
         val favAppIds: MutableList<NvApp> = mutableListOf()
-
     }
 }

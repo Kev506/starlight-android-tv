@@ -14,6 +14,7 @@ Hvis det valgte elementet er et skrivebordsprogram, vil det ikke være noen deta
     
     
     
+    
     <string name="trailers">Tilhengere</string>
     
     
@@ -408,4 +409,9 @@ Bruk av eksternt skrivebordsprogramvare kan også forårsake denne feilen. Prøv
     <string name="audio_output_mode_eac3_force">Dolby Digital Plus / E-AC-3 5.1 (force, eksperimentell)</string>
     <string name="encoded_audio_fallback_to_pcm">Kodet lydutgang er ikke tilgjengelig. Fortsetter med PCM-lyd.</string>
     <string name="switch_to_encoded">Kodet lydutgang er tilgjengelig, og bytter til kodet lyd.</string>
+    <string name="crashlytics_will_stop_on_next_app_launch">Crashlytics stopper ved neste applansering</string>
+    <string name="crashlytics_will_start_on_next_app_launch">Crashlytics starter ved neste applansering</string>
+    <string name="clear_translations">Dette vil fjerne eksisterende oversettelser, laste ned den nye modellen og utløse databaseoppdateringen. Er du sikker på at du vil fjerne oversettelsene\?</string>
+    <string name="clear_translations_title">Tydelige oversettelser</string>
+    <string name="old_translation">Gammel oversettelsesmodell slettet</string>
 </resources>

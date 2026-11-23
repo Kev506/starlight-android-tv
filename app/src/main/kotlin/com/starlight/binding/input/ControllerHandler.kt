@@ -35,8 +35,8 @@ import android.view.KeyEvent
 import android.view.MotionEvent
 import android.view.Surface
 import android.widget.Toast
-import androidx.activity.ComponentActivity
 import androidx.annotation.RequiresApi
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.hardware.display.DisplayManagerCompat
 import androidx.core.util.forEach
 import androidx.core.util.size
@@ -79,7 +79,7 @@ import kotlin.reflect.KMutableProperty0
 import kotlin.time.Duration.Companion.milliseconds
 
 class ControllerHandler(
-    private val activityContext: ComponentActivity, private val conn: NvConnection,
+    private val activityContext: AppCompatActivity, private val conn: NvConnection,
     private val gestures: GameGestures,
     private val prefConfig: DataStoreConfiguration
 ) : InputDeviceListener, UsbDriverListener {
