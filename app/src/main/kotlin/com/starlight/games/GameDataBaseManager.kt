@@ -13,7 +13,7 @@ import com.starlight.models.DbVideoItem
 
 
 class GameDataBaseManager(context: Context?, factory: SQLiteDatabase.CursorFactory?) :
-    SQLiteOpenHelper(context, DB_NAME, factory, DB_VERSION + 1) {
+    SQLiteOpenHelper(context, DB_NAME, factory, DB_VERSION) {
 
     override fun onCreate(db: SQLiteDatabase) {
         val query = """
@@ -177,11 +177,12 @@ class GameDataBaseManager(context: Context?, factory: SQLiteDatabase.CursorFacto
     }
 
     override fun onUpgrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) {
-        if (oldVersion == 2) {
-            db.execSQL("ALTER TABLE $GAME_TABLE_NAME ADD COLUMN $GAME_TRANSTEXT_COLUMN_NAME TEXT")
-        } else {
-            db.execSQL("DROP TABLE IF EXISTS $GAME_TABLE_NAME")
-            onCreate(db)
+        if (oldVersion < 2) {
+            try {
+                db.execSQL("ALTER TABLE $GAME_TABLE_NAME ADD COLUMN $GAME_TRANSTEXT_COLUMN_NAME TEXT")
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
         }
     }
 

@@ -153,7 +153,7 @@ class GlesPassthroughBridge(private val context: Context) : OnFrameAvailableList
                 0
             )
 
-            if (eglSurface === EGL14.EGL_NO_SURFACE) {
+            if (eglSurface == EGL14.EGL_NO_SURFACE) {
                 val error = EGL14.eglGetError()
                 checkGlError("$TAG: eglCreateWindowSurface failed: $error")
                 throw IllegalStateException("eglCreateWindowSurface failed with error $error")
@@ -359,7 +359,7 @@ class GlesPassthroughBridge(private val context: Context) : OnFrameAvailableList
         frameAvailableQueue.poll(50, TimeUnit.MILLISECONDS) ?: return
 
         lock.withLock {
-            if (eglDisplay === EGL14.EGL_NO_DISPLAY) return@withLock
+            if (eglDisplay == EGL14.EGL_NO_DISPLAY) return@withLock
 
             // Ensure the EGL context is current on the rendering coroutine thread
             if (!EGL14.eglMakeCurrent(eglDisplay, eglSurface, eglSurface, eglContext)) {

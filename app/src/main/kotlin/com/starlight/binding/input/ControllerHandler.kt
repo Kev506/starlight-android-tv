@@ -2067,7 +2067,7 @@ class ControllerHandler(
             val newListener = createSensorListener(
                 controllerNumber,
                 motionType,
-                sensorManager === deviceSensorManager
+                sensorManager == deviceSensorManager
             )
 
             try {
@@ -3080,7 +3080,7 @@ class ControllerHandler(
             controllerNumber = oldContext.controllerNumber
 
             // We may have set this device to use the built-in sensor manager. If so, do that again.
-            if (oldContext.sensorManager === deviceSensorManager) {
+            if (oldContext.sensorManager == deviceSensorManager) {
                 sensorManager = deviceSensorManager
             }
 

@@ -54,14 +54,14 @@ open class DigitalButton(
         val wasPressed = isPressed
 
         // check if the movement directly happened on the button
-        if ((this.movingButton == null || movingButton === this.movingButton)
+        if ((this.movingButton == null || movingButton == this.movingButton)
             && isWithinBounds(x, y)
         ) {
             // set button pressed state depending on moving button pressed state
             if (this.isPressed != movingButton.isPressed) {
                 isPressed = movingButton.isPressed
             }
-        } else if (movingButton === this.movingButton) {
+        } else if (movingButton == this.movingButton) {
             isPressed = false
         }
 

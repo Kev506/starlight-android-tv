@@ -40,8 +40,7 @@ class TranslatorHelper(
         description: String?, language: String?, isModelDownloaded: Boolean
     ): String? {
 
-        val noDetailsPlaceholder = "No Details"
-        if (description == noDetailsPlaceholder || description.isNullOrEmpty()) {
+        if (description.isNullOrEmpty()) {
             state.description = resources.getString(R.string.No_Details)
             return state.description
         }
@@ -51,7 +50,7 @@ class TranslatorHelper(
                 GameDataBaseManager.getInstance(uiContext) ?: return description
             if (!dbHandler.isDatabaseEmpty()) {
                 val appData = dbHandler.getAppData(app?.app?.id.toString())
-                if (!appData.translatedText.isNullOrEmpty() && appData.translatedText != noDetailsPlaceholder) {
+                if (!appData.translatedText.isNullOrEmpty()) {
                     state.description = appData.translatedText
                     return state.description
                 }
@@ -112,9 +111,11 @@ class TranslatorHelper(
                 }
                 ?.addOnFailureListener { exception ->
                     LimeLog.warning("Translation failed for app $appId: ${exception.message}")
+                    translatedText = description
                 }?.await()
         } catch (e: Exception) {
             LimeLog.warning("Translation exception for app $appId: ${e.message}")
+            translatedText = description
         }
 
         // Save to database

@@ -91,7 +91,7 @@ fun DownloadDialog(
 
     val config by context.dataStoreConfigFlow.collectAsStateWithLifecycle(initialValue = null)
 
-    config?.let { currentConfig ->
+    config?.let {
 
         val targetLang = normalizeLanguageCode(language)
         val options = remember(targetLang) {
