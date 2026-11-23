@@ -309,7 +309,7 @@ fun SettingsScreen(viewModel: MainViewModel) {
 
     config?.let { currentConfig ->
 
-        val oldLanguage = remember { currentConfig.language }
+        val oldLanguage = currentConfig.language
 
         LaunchedEffect(Unit) {
             mainContentRequester.requestFocus()
