@@ -5,9 +5,9 @@ package com.starlight.binding.input.capture
 import android.content.Context
 import android.view.PointerIcon
 import android.view.View
-import androidx.activity.ComponentActivity
+import androidx.appcompat.app.AppCompatActivity
 
-open class AndroidPointerIconCaptureProvider(activity: ComponentActivity, private val targetView: View) :
+open class AndroidPointerIconCaptureProvider(activity: AppCompatActivity, private val targetView: View) :
     InputCaptureProvider() {
 
     private val context: Context = activity

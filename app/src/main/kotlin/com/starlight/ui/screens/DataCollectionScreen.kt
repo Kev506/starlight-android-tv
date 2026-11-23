@@ -2,8 +2,8 @@ package com.starlight.ui.screens
 
 import android.app.Service
 import android.content.Intent
-import androidx.activity.ComponentActivity
 import androidx.activity.compose.LocalActivity
+import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
@@ -71,17 +71,17 @@ import kotlin.time.Duration.Companion.milliseconds
 fun DataCollectionScreen(
     viewModel: MainViewModel
 ) {
-    val activity = LocalActivity.current as ComponentActivity
+    val activity = LocalActivity.current as AppCompatActivity
     val lifecycleOwner = LocalLifecycleOwner.current
     val dataLoader = remember { DataCollectionHelper(viewModel, activity) }
     dataLoader.uiContext = activity
     viewModel.setDataCollectionHelper(dataLoader)
 
-    LaunchedEffect(Unit) {
+    LaunchedEffect(key1 = Unit) {
         viewModel.setLoaderValue(true)
     }
 
-    DisposableEffect(lifecycleOwner) {
+    DisposableEffect(key1 = lifecycleOwner) {
         val bound = activity.bindService(
             Intent(
                 activity,
@@ -122,7 +122,7 @@ fun DataCollectionScreenContent(
     )
 
     val showLoader = viewModel.showLoaderState.observeAsState(true)
-    val activity = LocalActivity.current as ComponentActivity
+    val activity = LocalActivity.current as AppCompatActivity
     val focusRequester = remember { FocusRequester() }
     val lifecycleOwner = LocalLifecycleOwner.current
     val coroutineScope = rememberCoroutineScope()
@@ -141,7 +141,7 @@ fun DataCollectionScreenContent(
         }
     }
 
-    LaunchedEffect(Unit) {
+    LaunchedEffect(key1 = Unit) {
         focusRequester.requestFocus()
     }
 
@@ -184,7 +184,7 @@ fun DataCollectionScreenContent(
                     }
             )
 
-            LaunchedEffect(Unit) {
+            LaunchedEffect(key1 = Unit) {
                 while (targetProgress < 1f) {
                     delay(500.milliseconds)
                     targetProgress += 0.01f

@@ -14,6 +14,7 @@ Seçilen öğe bir masaüstü uygulaması ise, görüntülenecek bilgi olmayacak
     
     
     
+    
     <string name="trailers">Römorklar</string>
     
     
@@ -408,4 +409,9 @@ Uzak masaüstü yazılımının kullanılması da bu hataya neden olabilir. Maki
     <string name="audio_output_mode_eac3_force">Dolby Digital Plus / E-AC-3 5.1 (zorunlu, deneysel)</string>
     <string name="encoded_audio_fallback_to_pcm">Kodlanmış ses çıkışı kullanılamıyor. PCM ses ile devam ediliyor.</string>
     <string name="switch_to_encoded">Kodlanmış ses çıkışı mevcuttur, kodlanmış sese geçiliyor.</string>
+    <string name="crashlytics_will_stop_on_next_app_launch">Crashlytics bir sonraki uygulama lansmanında durdurulacak.</string>
+    <string name="crashlytics_will_start_on_next_app_launch">Crashlytics bir sonraki uygulama lansmanında kullanıma sunulacak.</string>
+    <string name="clear_translations">Bu işlem mevcut çevirileri silecektir, yeni modeli indirecektir ve veritabanı güncellemesini tetikleyecektir. Çevirileri silmek istediğinizden emin misiniz\?</string>
+    <string name="clear_translations_title">Açık Çeviriler</string>
+    <string name="old_translation">Eski çeviri modeli silindi</string>
 </resources>

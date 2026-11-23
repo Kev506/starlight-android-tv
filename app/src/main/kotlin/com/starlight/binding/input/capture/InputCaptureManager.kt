@@ -1,7 +1,7 @@
 package com.starlight.binding.input.capture
 
 import android.view.View
-import androidx.activity.ComponentActivity
+import androidx.appcompat.app.AppCompatActivity
 import com.starlight.utils.LimeLog.info
 
 object InputCaptureManager {
@@ -10,7 +10,7 @@ object InputCaptureManager {
 
     // Get the input capture provider.
     fun getInputCaptureProvider(
-        activity: ComponentActivity,
+        activity: AppCompatActivity,
         view: View
     ): InputCaptureProvider {
         return when {

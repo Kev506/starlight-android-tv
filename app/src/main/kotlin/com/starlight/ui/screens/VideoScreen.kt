@@ -1,7 +1,7 @@
 package com.starlight.ui.screens
 
-import androidx.activity.ComponentActivity
 import androidx.activity.compose.LocalActivity
+import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.MarqueeAnimationMode
 import androidx.compose.foundation.MarqueeDefaults
@@ -89,7 +89,7 @@ fun VideoGridScreen(
     var focusTrigger by remember { mutableIntStateOf(0) }
     val context = LocalContext.current
     val focusManager = LocalFocusManager.current
-    val activity = LocalActivity.current as ComponentActivity
+    val activity = LocalActivity.current as AppCompatActivity
     val coroutineScope = rememberCoroutineScope()
     var isGridReady by remember { mutableStateOf(false) }
     val config by context.dataStoreConfigFlow.collectAsStateWithLifecycle(initialValue = null)

@@ -16,6 +16,7 @@ S\'il s\'agit d\'une application de bureau, aucun détail ne sera affiché.</str
     
     
     
+    
     <string name="trailers">Remorques</string>
     
     
@@ -410,4 +411,9 @@ L\'utilisation d\'un logiciel de bureau à distance peut également provoquer ce
     <string name="audio_output_mode_eac3_force">Dolby Digital Plus / E-AC-3 5.1 (force, expérimental)</string>
     <string name="encoded_audio_fallback_to_pcm">La sortie audio encodée est indisponible. Poursuite de la lecture avec l\'audio PCM.</string>
     <string name="switch_to_encoded">Sortie audio encodée disponible, passage à l\'audio encodé.</string>
+    <string name="crashlytics_will_stop_on_next_app_launch">Crashlytics cessera de fonctionner au prochain lancement de l\'application.</string>
+    <string name="crashlytics_will_start_on_next_app_launch">Crashlytics sera disponible dès le prochain lancement de l\'application.</string>
+    <string name="clear_translations"><![CDATA[Cette opération supprimera les traductions existantes, téléchargera le nouveau modèle et déclenchera la mise à jour de la base de données. Êtes-vous sûr de vouloir supprimer les traductions \?]]></string>
+    <string name="clear_translations_title">Traductions claires</string>
+    <string name="old_translation">Ancien modèle de traduction supprimé</string>
 </resources>

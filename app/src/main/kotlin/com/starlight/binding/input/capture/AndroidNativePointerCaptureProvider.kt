@@ -7,14 +7,14 @@ import android.hardware.input.InputManager.InputDeviceListener
 import android.view.InputDevice
 import android.view.MotionEvent
 import android.view.View
-import androidx.activity.ComponentActivity
+import androidx.appcompat.app.AppCompatActivity
 import com.starlight.utils.Starlight.Companion.applicationScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlin.time.Duration.Companion.milliseconds
 
-class AndroidNativePointerCaptureProvider(activity: ComponentActivity, private val targetView: View) :
+class AndroidNativePointerCaptureProvider(activity: AppCompatActivity, private val targetView: View) :
     AndroidPointerIconCaptureProvider(activity,targetView), InputDeviceListener {
 
     private val inputManager: InputManager = activity.getSystemService(InputManager::class.java)

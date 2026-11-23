@@ -4,7 +4,7 @@ import android.content.ComponentName
 import android.content.res.Resources
 import android.os.IBinder
 import android.widget.Toast
-import androidx.activity.ComponentActivity
+import androidx.appcompat.app.AppCompatActivity
 import com.starlight.R
 import com.starlight.computers.ComputerManagerService
 import com.starlight.models.MainViewModel
@@ -28,7 +28,7 @@ import java.net.URI
 import java.net.URISyntaxException
 
 class AddComputerHelper(
-    var uiContext: ComponentActivity,
+    var uiContext: AppCompatActivity,
     private val resources: Resources, private val viewModel: MainViewModel
 ) {
 

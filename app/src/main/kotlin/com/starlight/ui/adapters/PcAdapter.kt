@@ -1,6 +1,5 @@
 package com.starlight.ui.adapters
 
-import androidx.compose.runtime.mutableStateListOf
 import com.starlight.models.MainViewModel
 import com.starlight.nvstream.http.ComputerDetails
 import com.starlight.nvstream.http.PairingManager.PairState
@@ -10,19 +9,19 @@ import java.util.Locale
 class PcAdapter(var viewModel: MainViewModel) {
 
     init {
-        computerObjects = ArrayList()
+        viewModel.computerObjects.clear()
     }
 
     // Update the list of computers
     fun updateComputers(newList: List<ComputerObject>) {
-        _computers.clear()
-        _computers.addAll(newList)
+        viewModel.computerItems.clear()
+        viewModel.computerItems.addAll(newList)
         sortList()
     }
 
     // Sort the list of computers
     private fun sortList() {
-        _computers.sortWith(Comparator.comparing { lhs: ComputerObject ->
+        viewModel.computerItems.sortWith(Comparator.comparing { lhs: ComputerObject ->
             lhs.details?.name!!.lowercase(
                 Locale.ROOT
             )
@@ -31,14 +30,14 @@ class PcAdapter(var viewModel: MainViewModel) {
 
     // Remove computer
     fun removeComputer(computer: ComputerObject?) {
-        computerObjects?.remove(computer)
-        updateComputers(computerObjects!!)
+        viewModel.computerObjects.remove(computer)
+        updateComputers(viewModel.computerObjects)
     }
 
     // Add computer
     fun addComputer(computer: ComputerObject) {
-        computerObjects?.add(computer)
-        updateComputers(computerObjects!!)
+        viewModel.computerObjects.add(computer)
+        updateComputers(viewModel.computerObjects)
     }
 
     // Update existing computer
@@ -49,7 +48,7 @@ class PcAdapter(var viewModel: MainViewModel) {
 
                 // Check if this is the same computer
                 if (details.uuid.equals(computer.details!!.uuid)) {
-                    _computers[i] = ComputerObject(details)
+                    viewModel.computerItems[i] = ComputerObject(details)
                     break
                 }
             }
@@ -79,19 +78,11 @@ class PcAdapter(var viewModel: MainViewModel) {
 
     // Get computer
     fun get(index: Int?): ComputerObject {
-        return _computers[index!!]
+        return viewModel.computers[index!!]
     }
 
     // Get computer count
     fun getCount(): Int {
-        return _computers.size
-    }
-
-    companion object {
-
-        private val _computers = mutableStateListOf<ComputerObject>()
-        val computers: List<ComputerObject> = _computers
-
-        var computerObjects: MutableList<ComputerObject>? = null
+        return viewModel.computers.size
     }
 }

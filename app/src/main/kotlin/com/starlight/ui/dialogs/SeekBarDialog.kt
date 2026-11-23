@@ -3,11 +3,13 @@ package com.starlight.ui.dialogs
 import android.view.KeyEvent
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.focusable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Slider
 import androidx.compose.material3.SliderDefaults
+import androidx.compose.material3.rememberSliderState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -56,6 +58,11 @@ fun SeekBarDialog(
 
     val internalSteps = ((max - min) / visualStep).toInt() - 1
 
+    val interactionSource: MutableInteractionSource = remember { MutableInteractionSource() }
+    val sliderState = rememberSliderState(
+        value = pendingValue,
+        steps = internalSteps, trackRange = min..max
+    )
     val focusRequester = remember { FocusRequester() }
     var isFocused by remember { mutableStateOf(false) }
 
@@ -81,15 +88,35 @@ fun SeekBarDialog(
         text = {
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
                 Text(
-                    text = "${pendingValue / 1000.0} Mbps",
+                    text = "${sliderState.value / 1000.0} Mbps",
                     style = MaterialTheme.typography.titleLarge,
                     color = Color.White
                 )
                 Slider(
-                    value = pendingValue,
-                    onValueChange = { pendingValue = it },
-                    valueRange = min..max,
-                    steps = internalSteps,
+                    state = sliderState,
+                    onValueChange = { sliderState.value = it },
+                    modifier = Modifier
+                        .onKeyEvent { event ->
+                            event.type == KeyEventType.KeyDown && when (event.nativeKeyEvent.keyCode) {
+                                KeyEvent.KEYCODE_DPAD_LEFT -> {
+                                    sliderState.value =
+                                        (sliderState.value - dPadStep).coerceAtLeast(min)
+                                    true
+                                }
+
+                                KeyEvent.KEYCODE_DPAD_RIGHT -> {
+                                    sliderState.value =
+                                        (sliderState.value + dPadStep).coerceAtMost(max)
+                                    true
+                                }
+
+                                else -> false
+                            }
+                        }
+                        .focusRequester(focusRequester)
+                        .onFocusChanged { isFocused = it.isFocused }
+                        .focusable(),
+                    enabled = true,
                     colors = SliderDefaults.colors(
                         thumbColor = if (isFocused) Color(0xFF97D3EC).copy(alpha = 0.5f) else Color.LightGray.copy(
                             alpha = 0.5f
@@ -101,25 +128,7 @@ fun SeekBarDialog(
                         activeTickColor = Color.White.copy(alpha = 0.5f),
                         inactiveTickColor = Color.White.copy(alpha = 0.1f)
                     ),
-                    modifier = Modifier
-                        .onKeyEvent { event ->
-                            event.type == KeyEventType.KeyDown && when (event.nativeKeyEvent.keyCode) {
-                                KeyEvent.KEYCODE_DPAD_LEFT -> {
-                                    pendingValue = (pendingValue - dPadStep).coerceAtLeast(min)
-                                    true
-                                }
-
-                                KeyEvent.KEYCODE_DPAD_RIGHT -> {
-                                    pendingValue = (pendingValue + dPadStep).coerceAtMost(max)
-                                    true
-                                }
-
-                                else -> false
-                            }
-                        }
-                        .focusRequester(focusRequester)
-                        .onFocusChanged { isFocused = it.isFocused }
-                        .focusable()
+                    interactionSource = interactionSource
                 )
             }
         },
@@ -133,7 +142,7 @@ fun SeekBarDialog(
                     focusedContentColor = Color.White,
                     pressedContentColor = Color.White
                 ),
-                onClick = { onConfirm(pendingValue.toInt()) }
+                onClick = { onConfirm(sliderState.value.toInt()) }
             ) {
                 Text(confirm, color = Color.White)
             }

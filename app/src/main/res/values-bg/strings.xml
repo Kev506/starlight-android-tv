@@ -14,6 +14,7 @@
     
     
     
+    
     <string name="trailers">Ремаркета</string>
     
     
@@ -408,4 +409,9 @@
     <string name="audio_output_mode_eac3_force">Dolby Digital Plus / E-AC-3 5.1 (принудително, експериментално)</string>
     <string name="encoded_audio_fallback_to_pcm">Кодираният аудио изход не е наличен. Продължава се с PCM аудио.</string>
     <string name="switch_to_encoded">Наличен е кодиран аудио изход, превключване към кодиран звук.</string>
+    <string name="crashlytics_will_stop_on_next_app_launch">Crashlytics ще спре при следващото стартиране на приложението</string>
+    <string name="crashlytics_will_start_on_next_app_launch">Crashlytics ще стартира при следващото стартиране на приложението</string>
+    <string name="clear_translations">Това ще изчисти съществуващите преводи, ще изтегли новия модел и ще задейства актуализацията на базата данни. Наистина ли искате да изчистите преводите\?</string>
+    <string name="clear_translations_title">Ясни преводи</string>
+    <string name="old_translation">Старият модел на превод е изтрит</string>
 </resources>

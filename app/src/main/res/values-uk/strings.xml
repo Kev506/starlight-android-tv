@@ -14,6 +14,7 @@
     
     
     
+    
     <string name="trailers">Причепи</string>
     
     
@@ -408,4 +409,9 @@
     <string name="audio_output_mode_eac3_force">Dolby Digital Plus / E-AC-3 5.1 (примусовий, експериментальний)</string>
     <string name="encoded_audio_fallback_to_pcm">Вихід кодованого аудіо недоступний. Продовжуємо відтворення аудіо PCM.</string>
     <string name="switch_to_encoded">Доступний кодований аудіовихід, перемикання на кодоване аудіо.</string>
+    <string name="crashlytics_will_stop_on_next_app_launch">Crashlytics зупиниться під час наступного запуску програми</string>
+    <string name="crashlytics_will_start_on_next_app_launch">Crashlytics запуститься під час наступного запуску програми</string>
+    <string name="clear_translations">Це очистить існуючі переклади, завантажить нову модель та запустить оновлення бази даних. Ви впевнені, що хочете очистити переклади\?</string>
+    <string name="clear_translations_title">Очистити переклади</string>
+    <string name="old_translation">Стару модель перекладу видалено</string>
 </resources>

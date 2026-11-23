@@ -1,11 +1,10 @@
 package com.starlight.ui.screens
 
-import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.widget.Toast
-import androidx.activity.ComponentActivity
 import androidx.activity.compose.LocalActivity
+import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.focusGroup
@@ -84,19 +83,19 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import kotlin.system.exitProcess
 import kotlin.time.Duration.Companion.milliseconds
 
 
 @Composable
 fun OptionsScreen(
-    viewModel: MainViewModel
+    viewModel: MainViewModel,
+    tvItems: List<OptionsHelper.TvItem>
 ) {
-    val activity = LocalActivity.current as ComponentActivity
+    val activity = LocalActivity.current as AppCompatActivity
     val optionsHelper = remember { OptionsHelper(viewModel, activity) }
 
     OptionsScreenContent(
-        data = viewModel.items,
+        tvItems = tvItems,
         options = optionsHelper,
         viewModel = viewModel
     )
@@ -104,14 +103,14 @@ fun OptionsScreen(
 
 @Composable
 fun OptionsScreenContent(
-    data: List<OptionsHelper.TvItem>,
+    tvItems: List<OptionsHelper.TvItem>,
     options: OptionsHelper,
     viewModel: MainViewModel
 ) {
 
     val openAlertDialog by viewModel.openAlertDialog.observeAsState(false)
     var focusedIndex by rememberSaveable { mutableIntStateOf(0) }
-    val dataSize = data.size
+    val dataSize = tvItems.size
     val focusRequesters = remember(dataSize) { Array(dataSize) { FocusRequester() } }
 
     val message by viewModel.dialogMessage.observeAsState("")
@@ -125,11 +124,10 @@ fun OptionsScreenContent(
     val resources = LocalResources.current
     val context = LocalContext.current
     val focusManager = LocalFocusManager.current
-    val activity = LocalActivity.current as? ComponentActivity
+    val activity = LocalActivity.current as? AppCompatActivity
     var focused by remember { mutableStateOf(false) }
     val state = rememberLazyGridState()
 
-    val isCacheSelected = remember { mutableStateOf(false) }
     val isDatabaseSelected = remember { mutableStateOf(false) }
     val isCleanSweep = remember { mutableStateOf(false) }
 
@@ -140,14 +138,14 @@ fun OptionsScreenContent(
     val isAllowedGTV = remember { isTvDevice() || isGoogleTV() && isProjectivyInstalled() }
     val isNormalATV = remember { isTvDevice() && isClassicAndroidTV() }
 
-    LaunchedEffect(data.size) {
-        if (data.isNotEmpty()) {
+    LaunchedEffect(key1 = tvItems.size) {
+        if (tvItems.isNotEmpty()) {
             delay(200.milliseconds)
             focusRequesters.getOrNull(focusedIndex)?.requestFocus()
         }
     }
 
-    DisposableEffect(lifecycleOwner) {
+    DisposableEffect(key1 = lifecycleOwner) {
         onDispose {
             viewModel.setOptionsScreenState(false)
         }
@@ -172,7 +170,7 @@ fun OptionsScreenContent(
         ) {
 
             if (dataSize > 0) {
-                itemsIndexed(items = data, key = { index, _ -> index }) { index, item ->
+                itemsIndexed(items = tvItems, key = { index, _ -> index }) { index, item ->
                     val focusRequester = if (index < focusRequesters.size) {
                         focusRequesters[index]
                     } else {
@@ -188,7 +186,7 @@ fun OptionsScreenContent(
                                     .focusRequester(focusRequester = focusRequester)
                                     .handleWrapEvent(
                                         index = index,
-                                        data = data,
+                                        data = tvItems,
                                         focusRequesters = focusRequesters,
                                         scrollState = state,
                                         coroutineScope = coroutineScope,
@@ -289,14 +287,10 @@ fun OptionsScreenContent(
                                         }
 
                                         R.drawable.baseline_cached_24 -> {
-                                            viewModel.setDialogImage(R.drawable.baseline_cached_24)
-                                            viewModel.setDialogTitle(resources.getString(R.string.clear_cache))
-                                            viewModel.setDialogMessage(resources.getString(R.string.restart_now))
-                                            viewModel.setConfirmButtonLabel(resources.getString(R.string.yes))
-                                            viewModel.setCancelButtonLabel(resources.getString(R.string.cancel))
-                                            viewModel.setIsCancelRequired(true)
-                                            viewModel.setDialogValue(true)
-                                            isCacheSelected.value = true
+                                            coroutineScope.launch {
+                                                CacheHelper.clearAppCache(context)
+                                                options.loadDataAsync()
+                                            }
                                         }
 
                                         R.drawable.baseline_update_24 -> {
@@ -384,14 +378,7 @@ fun OptionsScreenContent(
                             viewModel.setDialogValue(false)
                         },
                         onConfirmation = {
-                            if (isCacheSelected.value) {
-                                coroutineScope.launch {
-                                    CacheHelper.clearAppCache(context)
-                                    restartApplication(context)
-                                }
-                                isCacheSelected.value = false
-                                viewModel.setDialogValue(false)
-                            } else if (isDatabaseSelected.value) {
+                            if (isDatabaseSelected.value) {
                                 coroutineScope.launch {
                                     val dbManager =
                                         GameDataBaseManager.getInstance(context)
@@ -400,31 +387,27 @@ fun OptionsScreenContent(
                                         dbManager.writableDatabase
                                     )
 
-                                    coroutineScope.launch(Dispatchers.IO) {
-                                        context.dataStore.edit { preferences ->
-                                            preferences[booleanPreferencesKey(DATABASE_PREF)] =
-                                                false
-                                        }
+                                    context.dataStore.edit { preferences ->
+                                        preferences[booleanPreferencesKey(DATABASE_PREF)] =
+                                            false
                                     }
 
-                                    coroutineScope.launch {
-                                        viewModel.isDatabaseCleared = true
-                                        val intent =
-                                            Intent(activity, MainView::class.java).apply {
-                                                val bundle = Bundle()
-                                                bundle.putBoolean(
-                                                    "DATABASE_CLEARED",
-                                                    viewModel.isDatabaseCleared
-                                                )
-                                                putExtra("appBundle", bundle)
-                                            }.addFlags(
-                                                Intent.FLAG_ACTIVITY_CLEAR_TASK or
-                                                        Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_NO_ANIMATION
+                                    viewModel.isDatabaseCleared = true
+                                    val intent =
+                                        Intent(activity, MainView::class.java).apply {
+                                            val bundle = Bundle()
+                                            bundle.putBoolean(
+                                                "DATABASE_CLEARED",
+                                                viewModel.isDatabaseCleared
                                             )
-                                        activity?.startActivity(intent)
+                                            putExtra("appBundle", bundle)
+                                        }.addFlags(
+                                            Intent.FLAG_ACTIVITY_CLEAR_TASK or
+                                                    Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_NO_ANIMATION
+                                        )
+                                    activity?.startActivity(intent)
 
-                                        activity?.finish()
-                                    }
+                                    activity?.finish()
                                 }
                                 viewModel.setDialogValue(false)
                                 isDatabaseSelected.value = false
@@ -451,17 +434,6 @@ fun OptionsScreenContent(
                 }
             }
         }
-    }
-}
-
-// Helper Function to Restart Application
-private fun restartApplication(context: Context) {
-    val packageManager = context.packageManager
-    val intent = packageManager.getLaunchIntentForPackage(context.packageName)
-    if (intent != null) {
-        val restartIntent = Intent.makeRestartActivityTask(intent.component)
-        context.startActivity(restartIntent)
-        exitProcess(0)
     }
 }
 

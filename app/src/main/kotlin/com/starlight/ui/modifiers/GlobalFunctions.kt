@@ -2,7 +2,7 @@ package com.starlight.ui.modifiers
 
 import android.view.KeyEvent
 import android.widget.Toast
-import androidx.activity.ComponentActivity
+import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.animateScrollBy
@@ -82,7 +82,7 @@ fun LoadingOverlay(
 // Extension function to handle D-Pad key events
 fun Modifier.handleKeyEvent(
     viewModel: MainViewModel,
-    parent: ComponentActivity,
+    parent: AppCompatActivity,
     isSideMenuOpen: Boolean
 ): Modifier = this.onKeyEvent { event ->
 
@@ -358,7 +358,7 @@ fun Modifier.handleWrapEvent(
 // Extension function to handle MainView D-Pad back events
 fun Modifier.handleMainBackEvent(
     viewModel: MainViewModel,
-    parent: ComponentActivity,
+    parent: AppCompatActivity,
     isSideMenuOpen: Boolean,
     scrollState: LazyGridState,
     coroutineScope: CoroutineScope,
@@ -494,7 +494,7 @@ fun Modifier.handleMainBackEvent(
 // Extension function to handle Menu D-Pad back events
 fun Modifier.handleMainMenuBackEvent(
     viewModel: MainViewModel,
-    parent: ComponentActivity,
+    parent: AppCompatActivity,
     isSideMenuOpen: Boolean,
     coroutineScope: CoroutineScope
 ): Modifier = this.onKeyEvent { event ->
@@ -597,7 +597,7 @@ fun Modifier.handleMainMenuBackEvent(
 // Extension function to handle MainView D-Pad navigation events
 fun Modifier.handleMainNavigation(
     viewModel: MainViewModel,
-    parent: ComponentActivity,
+    parent: AppCompatActivity,
     scrollState: LazyGridState,
     coroutineScope: CoroutineScope,
     index: Int,
@@ -788,7 +788,7 @@ fun Modifier.handleMainNavigation(
 // Extension function to handle D-Pad right
 fun Modifier.handleOnKeyRight(
     viewModel: MainViewModel,
-    parent: ComponentActivity,
+    parent: AppCompatActivity,
     mainContentRequester: FocusRequester
 ): Modifier = this.onKeyEvent { event ->
     if (event.nativeKeyEvent.action == KeyEvent.ACTION_DOWN) {

@@ -4,7 +4,7 @@ import android.content.Context
 import android.hardware.display.DisplayManager
 import android.os.Build
 import android.view.Display
-import androidx.activity.ComponentActivity
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.DisplayCompat
 import androidx.datastore.preferences.core.stringPreferencesKey
 import com.starlight.R
@@ -28,7 +28,7 @@ import java.io.File
 
 class OptionsHelper(
     val viewModel: MainViewModel,
-    val uiContext: ComponentActivity
+    val uiContext: AppCompatActivity
 ) {
 
     private var tvChannelHelper: TvChannelHelper? = TvChannelHelper(uiContext)
@@ -44,7 +44,7 @@ class OptionsHelper(
 
             val tempUiList = mutableListOf<TvItem>()
 
-            val prefConfig = PreferenceKeys.fromPreferences(uiContext)
+            val prefConfig = PreferenceKeys.fromPreferencesAsync(uiContext)
 
             val cacheSize = CacheHelper.getDirSizeString(uiContext.applicationContext)
             val hdrSupported = isHdrSupported()

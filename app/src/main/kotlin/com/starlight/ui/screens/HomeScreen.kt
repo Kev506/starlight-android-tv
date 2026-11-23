@@ -1,7 +1,7 @@
 package com.starlight.ui.screens
 
-import androidx.activity.ComponentActivity
 import androidx.activity.compose.LocalActivity
+import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
@@ -15,11 +15,9 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.key
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -36,11 +34,11 @@ import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
-import androidx.core.net.toUri
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.tv.material3.Surface
@@ -77,7 +75,7 @@ fun HomeScreen(
     content: @Composable () -> Unit
 ) {
 
-    val activity = LocalActivity.current as? ComponentActivity ?: return
+    val activity = LocalActivity.current as? AppCompatActivity ?: return
 
     val gameViewModel = viewModel<GameViewModel> {
         val repository = GameData(
@@ -95,57 +93,53 @@ fun HomeScreen(
 
     val config by context.dataStoreConfigFlow.collectAsStateWithLifecycle(initialValue = null)
 
-    config?.let { _ ->
+    config?.let { currentConfig ->
 
         val composeData = remember {
             TranslatorHelper(
                 resources = resources,
-                viewModel = viewModel,
                 uiContext = activity
             )
         }
 
-        key(selectedApp?.app?.id) {
-            LaunchedEffect(Unit) {
-                if (!composeData.doesDatabaseExist(context)) {
-                    val desc = composeData.displayTranslatedDescription(
-                        gameState,
-                        activity.getString(R.string.No_Details),
-                        composeData.getValues().third,
-                        composeData.getValues().second!!
-                    )
-                    val uri =
-                        ("android.resource://" + context.packageName + "/drawable/portrait_mode").toUri()
-                    gameState = gameState.copy(
-                        description = desc,
-                        backgroundUrl = uri.toString()
-                    )
-                }
+        LaunchedEffect(key1 = selectedApp?.app?.id, key2 = gameData, key3 = currentConfig) {
+            val defaultBgUri = "android.resource://${context.packageName}/drawable/portrait_mode"
+
+            if (!composeData.doesDatabaseExist(context)) {
+                val desc = composeData.displayTranslatedDescription(
+                    state = gameState,
+                    app = selectedApp,
+                    description = activity.getString(R.string.No_Details),
+                    language = currentConfig.language,
+                    isModelDownloaded = currentConfig.mlDownloaded
+                )
+                gameState = gameState.copy(
+                    description = desc,
+                    backgroundUrl = defaultBgUri
+                )
+                return@LaunchedEffect
             }
 
-            LaunchedEffect(gameData) {
-                gameData?.let { data ->
-                    val desc = composeData.displayTranslatedDescription(
-                        gameState,
-                        data.description,
-                        composeData.getValues().third,
-                        composeData.getValues().second!!
-                    )
-                    val uri =
-                        ("android.resource://" + context.packageName + "/drawable/portrait_mode").toUri()
+            gameData?.let { data ->
+                val desc = composeData.displayTranslatedDescription(
+                    state = gameState,
+                    app = selectedApp,
+                    description = data.description,
+                    language = currentConfig.language,
+                    isModelDownloaded = currentConfig.mlDownloaded
+                )
 
-                    gameState = gameState.copy(
-                        developer = data.developers,
-                        description = desc,
-                        title = data.title,
-                        releaseYear = data.released,
-                        ratingValue = data.esrb_rating,
-                        ratingText = data.metacritic,
-                        backgroundUrl = if (data.background_image != null) data.background_image else uri.toString(),
-                        isFavorite = viewModel.isFavs,
-                        coverUrl = data.coverArt
-                    )
-                }
+                gameState = gameState.copy(
+                    developer = data.developers,
+                    description = desc,
+                    title = data.title,
+                    releaseYear = data.released,
+                    ratingValue = data.esrb_rating,
+                    ratingText = data.metacritic,
+                    backgroundUrl = data.background_image ?: defaultBgUri,
+                    isFavorite = viewModel.isFavs,
+                    coverUrl = data.coverArt
+                )
             }
         }
 
@@ -444,13 +438,13 @@ fun HomeScreenContent(
 
                     if (!state.description.isNullOrEmpty()) {
                         Text(
-                            text = state.description?.take(150)?.plus(" ...")
-                                ?: stringResource(R.string.No_Details),
+                            text = state.description ?: stringResource(R.string.No_Details),
                             color = White,
                             fontSize = 14.sp,
+                            maxLines = 3,
+                            overflow = TextOverflow.Ellipsis,
                             modifier = Modifier
                                 .width(400.dp)
-                                .wrapContentSize()
                         )
                     }
                 }

@@ -15,9 +15,9 @@ import android.view.Choreographer
 import android.view.Display
 import android.view.Surface
 import android.view.SurfaceHolder
-import androidx.activity.ComponentActivity
 import androidx.annotation.IntDef
 import androidx.annotation.RequiresApi
+import androidx.appcompat.app.AppCompatActivity
 import androidx.collection.LongSparseArray
 import androidx.core.hardware.display.DisplayManagerCompat
 import com.starlight.R
@@ -64,7 +64,7 @@ import kotlin.math.min
 @Suppress("unused")
 class MediaCodecDecoderRenderer(
 
-    private val activity: ComponentActivity, private val prefs: DataStoreConfiguration,
+    private val activity: AppCompatActivity, private val prefs: DataStoreConfiguration,
     private val crashListener: CrashListener,
     private val consecutiveCrashCount: Int, meteredData: Boolean, requestedHdr:
     Boolean, private val glRenderer: String,

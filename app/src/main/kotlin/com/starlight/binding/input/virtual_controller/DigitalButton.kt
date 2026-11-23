@@ -84,7 +84,7 @@ open class DigitalButton(
 
     private fun checkMovementForAllButtons(x: Float, y: Float) {
         virtualController.getElements().filterIsInstance<DigitalButton>()
-            .filter { it !== this }
+            .filter { it != this }
             .forEach { it.checkMovement(x, y, this) }
     }
 

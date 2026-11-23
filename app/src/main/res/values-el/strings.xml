@@ -15,6 +15,7 @@
     
     
     
+    
     <string name="trailers">Ρυμουλκούμενα</string>
     
     
@@ -409,4 +410,9 @@
     <string name="audio_output_mode_eac3_force">Dolby Digital Plus / E-AC-3 5.1 (δυναμική, πειραματική)</string>
     <string name="encoded_audio_fallback_to_pcm">Η κωδικοποιημένη έξοδος ήχου δεν είναι διαθέσιμη. Συνέχεια με ήχο PCM.</string>
     <string name="switch_to_encoded">Διατίθεται κωδικοποιημένη έξοδος ήχου, με εναλλαγή σε κωδικοποιημένο ήχο.</string>
+    <string name="crashlytics_will_stop_on_next_app_launch">Το Crashlytics θα σταματήσει στην επόμενη εκκίνηση της εφαρμογής</string>
+    <string name="crashlytics_will_start_on_next_app_launch">Το Crashlytics θα ξεκινήσει με την επόμενη εκκίνηση της εφαρμογής</string>
+    <string name="clear_translations">Αυτό θα διαγράψει τις μεταφράσεις που υπάρχουν, θα κατεβάσει το νέο μοντέλο και θα ενεργοποιήσει την ενημέρωση της βάσης δεδομένων. Είστε βέβαιοι ότι θέλετε να διαγράψετε τις μεταφράσεις;</string>
+    <string name="clear_translations_title">Σαφείς Μεταφράσεις</string>
+    <string name="old_translation">Το παλιό μοντέλο μετάφρασης διαγράφηκε</string>
 </resources>

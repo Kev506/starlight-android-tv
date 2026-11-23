@@ -16,6 +16,7 @@ Ha a kiválasztott elem egy asztali alkalmazás, akkor nem lesznek megjeleníthe
     
     
     
+    
     <string name="trailers">Pótkocsik</string>
     
     
@@ -410,4 +411,9 @@ A távoli asztali szoftver használata is okozhatja ezt a hibát. Próbálja új
     <string name="audio_output_mode_eac3_force">Dolby Digital Plus / E-AC-3 5.1 (kényszerített, kísérleti)</string>
     <string name="encoded_audio_fallback_to_pcm">Kódolt hangkimenet nem érhető el. Folytatás PCM hanggal.</string>
     <string name="switch_to_encoded">Kódolt hangkimenet érhető, átvált kódolt hangra.</string>
+    <string name="crashlytics_will_stop_on_next_app_launch">A Crashlytics a következő alkalmazásindításkor leáll.</string>
+    <string name="crashlytics_will_start_on_next_app_launch">A Crashlytics a következő alkalmazásindításkor elindul</string>
+    <string name="clear_translations">Ez törli a meglévő fordításokat, letölti az új modellt és elindítja az adatbázis frissítését. Biztosan törölni szeretné a fordításokat\?</string>
+    <string name="clear_translations_title">Tiszta fordítások</string>
+    <string name="old_translation">Régi fordítási modell törölve</string>
 </resources>

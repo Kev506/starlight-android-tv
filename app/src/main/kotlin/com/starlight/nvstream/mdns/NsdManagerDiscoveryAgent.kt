@@ -42,7 +42,7 @@ class NsdManagerDiscoveryAgent(context: Context, listener: MdnsDiscoveryListener
             severe("NSD: Service discovery start failed: $errorCode")
 
             mutex.withLock {
-                if (pendingListener !== this) {
+                if (pendingListener != this) {
                     return
                 }
                 pendingListener = null
@@ -58,7 +58,7 @@ class NsdManagerDiscoveryAgent(context: Context, listener: MdnsDiscoveryListener
             severe("NSD: Service discovery stop failed: $errorCode")
 
             mutex.withLock {
-                if (activeListener !== this) {
+                if (activeListener != this) {
                     return
                 }
                 activeListener = null
@@ -72,7 +72,7 @@ class NsdManagerDiscoveryAgent(context: Context, listener: MdnsDiscoveryListener
         private suspend fun onNsdDiscoveryStarted() {
             info("NSD: Service discovery started")
             mutex.withLock {
-                if (pendingListener !== this) {
+                if (pendingListener != this) {
                     nsdManager.stopServiceDiscovery(this@NsdManagerDiscoveryAgent.pendingListener)
                     return
                 }
@@ -88,7 +88,7 @@ class NsdManagerDiscoveryAgent(context: Context, listener: MdnsDiscoveryListener
         private suspend fun onNsdDiscoveryStopped() {
             info("NSD: Service discovery stopped")
             mutex.withLock {
-                if (activeListener !== this) {
+                if (activeListener != this) {
                     return
                 }
                 activeListener = null
@@ -101,7 +101,7 @@ class NsdManagerDiscoveryAgent(context: Context, listener: MdnsDiscoveryListener
 
         private suspend fun onNsdServiceFound(nsdServiceInfo: NsdServiceInfo) {
             mutex.withLock {
-                if (activeListener !== this) {
+                if (activeListener != this) {
                     return
                 }
                 info("NSD: Machine appeared: " + nsdServiceInfo.serviceName)
@@ -143,7 +143,7 @@ class NsdManagerDiscoveryAgent(context: Context, listener: MdnsDiscoveryListener
         private suspend fun onNsdServiceLost(nsdServiceInfo: NsdServiceInfo) {
 
             mutex.withLock {
-                if (activeListener !== this) {
+                if (activeListener != this) {
                     return
                 }
                 info("NSD: Machine lost: " + nsdServiceInfo.serviceName)

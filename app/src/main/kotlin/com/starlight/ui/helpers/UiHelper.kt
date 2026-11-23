@@ -1,14 +1,14 @@
 package com.starlight.ui.helpers
 
-import android.annotation.SuppressLint
 import android.app.GameManager
 import android.app.GameState
 import android.app.LocaleManager
 import android.content.Context
-import android.content.res.Configuration
 import android.os.Build
 import android.os.LocaleList
-import androidx.activity.ComponentActivity
+import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatDelegate
+import androidx.core.os.LocaleListCompat
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import com.starlight.models.MainViewModel
@@ -17,9 +17,9 @@ import com.starlight.utils.Constants
 import com.starlight.utils.LimeLog
 import com.starlight.utils.Starlight.Companion.applicationScope
 import com.starlight.utils.Starlight.Companion.dataStore
+import com.starlight.utils.normalizeLanguageCode
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import java.util.Locale
 
 // Helper object containing UI utility functions
 object UiHelper {
@@ -57,7 +57,7 @@ object UiHelper {
     }
 
     // Helper function to set the activity game mode state
-    fun setActivityGameModeState(activity: ComponentActivity) {
+    fun setActivityGameModeState(activity: AppCompatActivity) {
         setGameModeStatus(activity, isStreaming = false, isInterruptible = false)
     }
 
@@ -86,41 +86,38 @@ object UiHelper {
         setGameModeStatus(context, isStreaming = false, isInterruptible = false)
     }
 
-    // Helper function to set the locale
-    @SuppressLint("AppBundleLocaleChanges") // False positive language split false is set in build.gradle.kts
-    @Suppress("DEPRECATION")
-    fun setLocale(context: Context) {
-        val localeTag = PreferenceKeys.fromPreferences(context).language
+    // Helper function to set the locale for the application
+    fun setLocale(context: Context, localeTag: String) {
+        val languageTag = when (localeTag) {
+            "zh-rCN" -> "zh-CN"
+            "zh-rTW" -> "zh-TW"
+            else -> normalizeLanguageCode(langPref = localeTag)
+        }
 
-        if (localeTag != Constants.DEFAULT_LANGUAGE) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                val localeManager = context.getSystemService(LocaleManager::class.java)
-                val localeList = LocaleList.forLanguageTags(localeTag)
-
-                if (localeManager.applicationLocales != localeList) {
-                    localeManager.applicationLocales = localeList
-                }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            val localeManager = context.getSystemService(LocaleManager::class.java)
+            val localeList = if (localeTag == Constants.DEFAULT_LANGUAGE_STRING) {
+                LocaleList.getEmptyLocaleList()
             } else {
-                val locale = if (localeTag.contains("-")) {
-                    val parts = localeTag.split("-")
-                    Locale(parts[0], parts[1])
-                } else {
-                    Locale(localeTag)
-                }
-
-                Locale.setDefault(locale)
-
-                val resources = context.resources
-                val configuration = Configuration(resources.configuration)
-                configuration.setLocale(locale)
-
-                resources.updateConfiguration(configuration, resources.displayMetrics)
+                LocaleList.forLanguageTags(languageTag)
             }
+
+            if (localeManager.applicationLocales != localeList) {
+                localeManager.applicationLocales = localeList
+            }
+        } else {
+            val localeList = if (localeTag == Constants.DEFAULT_LANGUAGE_STRING) {
+                LocaleListCompat.getEmptyLocaleList()
+            } else {
+                LocaleListCompat.forLanguageTags(languageTag)
+            }
+
+            AppCompatDelegate.setApplicationLocales(localeList)
         }
     }
 
     // Helper function to show the decoder crash dialog
-    fun reportDecoderCrash(activity: ComponentActivity, viewModel: MainViewModel) {
+    fun reportDecoderCrash(activity: AppCompatActivity, viewModel: MainViewModel) {
 
         val prefs = PreferenceKeys.fromPreferences(activity)
 

@@ -2,8 +2,8 @@ package com.starlight.ui.screens
 
 import android.app.Service
 import android.content.Intent
-import androidx.activity.ComponentActivity
 import androidx.activity.compose.LocalActivity
+import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.focusable
@@ -79,7 +79,7 @@ import kotlin.time.Duration.Companion.milliseconds
 fun AddComputerScreen(
     viewModel: MainViewModel
 ) {
-    val activity = LocalActivity.current as ComponentActivity
+    val activity = LocalActivity.current as AppCompatActivity
     val lifecycleOwner = LocalLifecycleOwner.current
     val resources = LocalResources.current
 
@@ -149,7 +149,7 @@ fun AddComputerScreenContent(
                 .fillMaxSize()
                 .handleKeyEvent(
                     viewModel = viewModel,
-                    parent = LocalActivity.current as ComponentActivity,
+                    parent = LocalActivity.current as AppCompatActivity,
                     isSideMenuOpen = false
                 )
                 .focusable(true)

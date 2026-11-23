@@ -15,6 +15,7 @@ Se o item selecionado for um aplicativo para desktop, não haverá detalhes para
     
     
     
+    
     <string name="trailers">Reboques</string>
     
     
@@ -409,4 +410,9 @@ O uso de software de área de trabalho remota também pode causar esse erro. Ten
     <string name="audio_output_mode_eac3_force">Dolby Digital Plus / E-AC-3 5.1 (forçado, experimental)</string>
     <string name="encoded_audio_fallback_to_pcm">A saída de áudio codificada não está disponível. Continuando com áudio PCM.</string>
     <string name="switch_to_encoded">A saída de áudio codificada está disponível; alternando para áudio codificado.</string>
+    <string name="crashlytics_will_stop_on_next_app_launch">O Crashlytics será interrompido na próxima inicialização do aplicativo.</string>
+    <string name="crashlytics_will_start_on_next_app_launch">O Crashlytics será ativado no próximo lançamento do aplicativo.</string>
+    <string name="clear_translations">Isso irá limpar as traduções existentes, baixar o novo modelo e acionar a atualização do banco de dados. Tem certeza de que deseja limpar as traduções\?</string>
+    <string name="clear_translations_title">Traduções claras</string>
+    <string name="old_translation">Modelo de tradução antigo excluído</string>
 </resources>

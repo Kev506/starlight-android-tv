@@ -39,7 +39,11 @@ android {
 
     ndkVersion = ("30.0.16248370")
 
-    compileSdk = 37
+    compileSdk {
+        version = release(37) {
+            minorApiLevel = 1
+        }
+    }
 
     namespace = ("com.starlight")
 
@@ -75,8 +79,8 @@ android {
         minSdk = 29
         targetSdk = 37
 
-        versionName = ("14.6.1")
-        versionCode = 78
+        versionName = ("14.7.0")
+        versionCode = 79
         applicationId = ("com.github.kev506.starlight")
 
         externalNativeBuild {
@@ -170,7 +174,6 @@ android {
 
 dependencies {
 
-    implementation("androidx.compose.runtime:runtime:1.12.1")
     implementation("org.bouncycastle:bcprov-jdk15on:1.70")
     implementation("org.bouncycastle:bcpkix-jdk15on:1.70")
     implementation("org.jcodec:jcodec:0.2.5")
@@ -182,9 +185,10 @@ dependencies {
     implementation("com.google.android.material:material:1.14.0")
     implementation("androidx.tvprovider:tvprovider:1.1.0")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.11.0")
-    implementation("androidx.lifecycle:lifecycle-viewmodel-savedstate:2.11.0")
-    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.11.0")
-    implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.11.0")
+    implementation("androidx.lifecycle:lifecycle-viewmodel-savedstate:2.11.1")
+    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.11.1")
+    implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.11.1")
+    implementation("androidx.appcompat:appcompat:1.8.0")
 
     implementation(platform("com.google.firebase:firebase-bom:35.2.0"))
     implementation("com.google.firebase:firebase-crashlytics-ktx:19.4.4")
@@ -195,27 +199,28 @@ dependencies {
     implementation("com.google.mlkit:translate:17.0.3")
     implementation("com.google.code.gson:gson:2.15.0")
 
-    implementation(platform("androidx.compose:compose-bom:2026.09.00"))
+    implementation(platform("androidx.compose:compose-bom:2026.11.01"))
     implementation("androidx.datastore:datastore-preferences:1.3.0")
-    implementation("androidx.compose.runtime:runtime-saveable:1.12.1")
+    implementation("androidx.compose.runtime:runtime-saveable:1.13.0")
+    implementation("androidx.compose.runtime:runtime:1.13.0")
     implementation("androidx.activity:activity-compose:1.13.0")
     implementation("androidx.constraintlayout:constraintlayout-compose:1.1.2")
-    implementation("androidx.compose.material3:material3:1.4.0")
+    implementation("androidx.compose.material3:material3:1.5.0")
     implementation ("androidx.compose.ui:ui")
     implementation("androidx.tv:tv-foundation:1.0.0")
     implementation("androidx.tv:tv-material:1.1.0")
-    implementation("androidx.compose.runtime:runtime-livedata:1.12.1")
+    implementation("androidx.compose.runtime:runtime-livedata:1.13.0")
     implementation("io.coil-kt.coil3:coil-compose:3.6.3")
     implementation("io.coil-kt.coil3:coil-network-okhttp:3.6.3")
-    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.11.0")
+    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.11.1")
     implementation("androidx.navigation:navigation-compose:2.10.2")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-core:1.13.0")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.13.0")
-    implementation("androidx.lifecycle:lifecycle-runtime-compose:2.11.0")
+    implementation("androidx.lifecycle:lifecycle-runtime-compose:2.11.1")
     implementation("androidx.core:core-ktx:1.19.1")
     implementation("org.slf4j:slf4j-nop:2.0.20")
     implementation("com.squareup.retrofit2:retrofit:3.0.0")
     implementation("com.squareup.retrofit2:converter-kotlinx-serialization:3.0.0")
     implementation("com.squareup.okhttp3:logging-interceptor")
-    implementation("io.github.kev506:compose-custom-youtube-player:2.0.1")
+    implementation("io.github.kev506:compose-custom-youtube-player:2.0.5")
 }

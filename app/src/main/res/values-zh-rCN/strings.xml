@@ -16,6 +16,7 @@
     
     
     
+    
     <string name="trailers">预告片</string>
     
     
@@ -410,4 +411,9 @@
     <string name="audio_output_mode_eac3_force">杜比数字+ / E-AC-3 5.1（强制，实验性）</string>
     <string name="encoded_audio_fallback_to_pcm">编码音频输出不可用。将继续使用PCM音频。</string>
     <string name="switch_to_encoded">已启用编码音频输出，正在切换到编码音频。</string>
+    <string name="crashlytics_will_stop_on_next_app_launch">崩溃分析将在下次应用启动时停止运行</string>
+    <string name="crashlytics_will_start_on_next_app_launch">崩溃分析将在下次应用启动时启动。</string>
+    <string name="clear_translations">这将清除现有翻译，下载新模型并触发数据库更新。您确定要清除翻译吗？</string>
+    <string name="clear_translations_title">清晰翻译</string>
+    <string name="old_translation">旧翻译模型已删除</string>
 </resources>

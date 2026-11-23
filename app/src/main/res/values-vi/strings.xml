@@ -16,6 +16,7 @@ Nếu mục đã chọn là ứng dụng máy tính để bàn, sẽ không có 
     
     
     
+    
     <string name="trailers">Trailer</string>
     
     
@@ -410,4 +411,9 @@ Sử dụng phần mềm máy tính từ xa cũng có thể gây ra lỗi này. 
     <string name="audio_output_mode_eac3_force">Dolby Digital Plus / E-AC-3 5.1 (cường độ cao, thử nghiệm)</string>
     <string name="encoded_audio_fallback_to_pcm">Không thể phát âm thanh mã hóa. Tiếp tục với âm thanh PCM.</string>
     <string name="switch_to_encoded">Chế độ âm thanh mã hóa khả dụng, hãy chuyển sang chế độ âm thanh mã hóa.</string>
+    <string name="crashlytics_will_stop_on_next_app_launch">Crashlytics sẽ ngừng hoạt động khi ứng dụng được khởi chạy lần tiếp theo.</string>
+    <string name="crashlytics_will_start_on_next_app_launch">Crashlytics sẽ bắt đầu hoạt động khi ứng dụng được khởi chạy lần tiếp theo.</string>
+    <string name="clear_translations">Thao tác này sẽ xóa các bản dịch hiện có, tải xuống mô hình mới và kích hoạt cập nhật cơ sở dữ liệu. Bạn có chắc chắn muốn xóa các bản dịch không\?</string>
+    <string name="clear_translations_title">Bản dịch rõ ràng</string>
+    <string name="old_translation">Mô hình dịch cũ đã bị xóa</string>
 </resources>

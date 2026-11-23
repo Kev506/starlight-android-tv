@@ -30,7 +30,8 @@ class GameDataBaseManager(context: Context?, factory: SQLiteDatabase.CursorFacto
             $GAME_FALLBACK_COVER_ART_COLUMN_NAME BLOB,
             $GAME_VIDEO_COLUMN_NAME TEXT,
             $GAME_SLUG_COLUMN_NAME TEXT,
-            $GAME_VIDEOS_COLUMN_NAME TEXT
+            $GAME_VIDEOS_COLUMN_NAME TEXT,
+            $GAME_TRANSTEXT_COLUMN_NAME TEXT
         )
     """.trimIndent()
         db.execSQL(query)
@@ -122,6 +123,7 @@ class GameDataBaseManager(context: Context?, factory: SQLiteDatabase.CursorFacto
             val videoIndex = cursor.getColumnIndex(GAME_VIDEO_COLUMN_NAME)
             val slugIndex = cursor.getColumnIndex(GAME_SLUG_COLUMN_NAME)
             val videosIndex = cursor.getColumnIndex(GAME_VIDEOS_COLUMN_NAME)
+            val transTextIndex = cursor.getColumnIndex(GAME_TRANSTEXT_COLUMN_NAME)
 
             if (cursor.moveToFirst()) {
                 do {
@@ -137,6 +139,7 @@ class GameDataBaseManager(context: Context?, factory: SQLiteDatabase.CursorFacto
                     app.video = cursor.getString(videoIndex)
                     app.videos = cursor.getString(videosIndex)
                     app.slug = cursor.getString(slugIndex)
+                    app.translatedText = cursor.getString(transTextIndex)
                     val imgByte = cursor.getBlob(fallBackCoverArtIndex)
                     if (imgByte != null) {
                         app.fallbackCoverArt = getByteArrayAsBitmap(imgByte)
@@ -160,9 +163,26 @@ class GameDataBaseManager(context: Context?, factory: SQLiteDatabase.CursorFacto
         db.delete(GAME_TABLE_NAME, "$GAME_TABLE_ID = ?", arrayOf(gameId))
     }
 
+    fun clearAllTranslatedText() {
+        val db = this.writableDatabase
+        db.execSQL("UPDATE $GAME_TABLE_NAME SET $GAME_TRANSTEXT_COLUMN_NAME = NULL")
+    }
+
+    fun updateGameEntry(app: GameDataBaseDetails) {
+        val db = this.writableDatabase
+        val values = android.content.ContentValues().apply {
+            put(GAME_TRANSTEXT_COLUMN_NAME, app.translatedText)
+        }
+        db.update(GAME_TABLE_NAME, values, "$GAME_TABLE_ID = ?", arrayOf(app.id.toString()))
+    }
+
     override fun onUpgrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) {
-        db.execSQL("DROP TABLE IF EXISTS $GAME_TABLE_NAME")
-        onCreate(db)
+        if (oldVersion == 2) {
+            db.execSQL("ALTER TABLE $GAME_TABLE_NAME ADD COLUMN $GAME_TRANSTEXT_COLUMN_NAME TEXT")
+        } else {
+            db.execSQL("DROP TABLE IF EXISTS $GAME_TABLE_NAME")
+            onCreate(db)
+        }
     }
 
     // Convert ByteArray to Bitmap (for loading)
@@ -171,7 +191,7 @@ class GameDataBaseManager(context: Context?, factory: SQLiteDatabase.CursorFacto
     }
 
     companion object {
-        private const val DB_VERSION = 1
+        private const val DB_VERSION = 2
         const val DB_NAME = "game.db"
         const val GAME_TABLE_NAME = "Games"
         const val GAME_TABLE_ID = "id"
@@ -187,6 +207,7 @@ class GameDataBaseManager(context: Context?, factory: SQLiteDatabase.CursorFacto
         const val GAME_VIDEO_COLUMN_NAME = "Video"
         const val GAME_VIDEOS_COLUMN_NAME = "Videos"
         const val GAME_SLUG_COLUMN_NAME = "Slug"
+        const val GAME_TRANSTEXT_COLUMN_NAME = "TranslatedText"
 
         @Synchronized
         fun getInstance(context: Context): GameDataBaseManager? {
@@ -237,5 +258,16 @@ class GameDataBaseManager(context: Context?, factory: SQLiteDatabase.CursorFacto
         }
 
         return games
+    }
+
+    fun getColumnEntries(): Boolean {
+        val db = this.readableDatabase
+        val query = "SELECT COUNT(*) FROM $GAME_TABLE_NAME WHERE $GAME_TRANSTEXT_COLUMN_NAME IS NOT NULL AND TRIM($GAME_TRANSTEXT_COLUMN_NAME) != ''"
+        db.rawQuery(query, null).use { cursor ->
+            if (cursor.moveToFirst()) {
+                return cursor.getInt(0) > 0
+            }
+        }
+        return false
     }
 }

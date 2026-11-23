@@ -4,7 +4,7 @@ import android.content.ComponentName
 import android.os.Build
 import android.os.IBinder
 import android.widget.Toast
-import androidx.activity.ComponentActivity
+import androidx.appcompat.app.AppCompatActivity
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import com.starlight.R
@@ -32,7 +32,7 @@ import java.io.FileNotFoundException
 import java.io.IOException
 import java.net.UnknownHostException
 
-class ComputerHelper(var viewModel: MainViewModel, var uiContext: ComponentActivity) {
+class ComputerHelper(var viewModel: MainViewModel, var uiContext: AppCompatActivity) {
 
     private var shortcutHelper: ShortcutHelper? = null
     private var pcAdapter: PcAdapter? = null

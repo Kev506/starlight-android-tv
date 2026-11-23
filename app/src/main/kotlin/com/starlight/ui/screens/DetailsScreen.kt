@@ -1,7 +1,7 @@
 package com.starlight.ui.screens
 
-import androidx.activity.ComponentActivity
 import androidx.activity.compose.LocalActivity
+import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clipScrollableContainer
@@ -99,7 +99,7 @@ fun GameDetailsScreen(
     binder: ComputerManagerService.ComputerManagerBinder?,
     viewModel: MainViewModel
 ) {
-    val activity = LocalActivity.current as? ComponentActivity ?: return
+    val activity = LocalActivity.current as? AppCompatActivity ?: return
     val context = LocalContext.current
     val resources = LocalResources.current
 
@@ -114,7 +114,6 @@ fun GameDetailsScreen(
     val composeData = remember {
         TranslatorHelper(
             resources = resources,
-            viewModel = viewModel,
             uiContext = activity
         )
     }
@@ -124,15 +123,16 @@ fun GameDetailsScreen(
 
     val config by context.dataStoreConfigFlow.collectAsStateWithLifecycle(initialValue = null)
 
-    config?.let { _ ->
+    config?.let { currentConfig ->
 
-        LaunchedEffect(Unit) {
+        LaunchedEffect(key1 = Unit) {
             if (!composeData.doesDatabaseExist(context)) {
                 val desc = composeData.displayTranslatedDescription(
-                    gameState,
-                    activity.getString(R.string.No_Details),
-                    composeData.getValues().third,
-                    composeData.getValues().second!!
+                    state = gameState,
+                    app = app,
+                    description = activity.getString(R.string.No_Details),
+                    language = currentConfig.language,
+                    isModelDownloaded = currentConfig.mlDownloaded
                 )
                 val uri =
                     ("android.resource://" + context.packageName + "/drawable/portrait_mode").toUri()
@@ -145,13 +145,14 @@ fun GameDetailsScreen(
             }
         }
 
-        LaunchedEffect(gameData) {
+        LaunchedEffect(key1 = gameData) {
             gameData?.let { data ->
                 val desc = composeData.displayTranslatedDescription(
-                    gameState,
-                    data.description,
-                    composeData.getValues().third,
-                    composeData.getValues().second!!
+                    state = gameState,
+                    app = app,
+                    description = data.description,
+                    language = currentConfig.language,
+                    isModelDownloaded = currentConfig.mlDownloaded
                 )
                 val uri =
                     ("android.resource://" + context.packageName + "/drawable/portrait_mode").toUri()
@@ -170,7 +171,7 @@ fun GameDetailsScreen(
                     isTVScreen = viewModel.getTVScreenState(),
                     video = data.video,
                     slug = data.slug,
-                    isLoading = false // Data loaded
+                    isLoading = false
                 )
             }
         }
@@ -239,7 +240,7 @@ fun GameDetailsContent(
             val (loading, background, maskView, gameImage, playButton, gameTitle, rating) = createRefs()
             val (yearIcon, igdbImg, gridDetails) = createRefs()
 
-            val activity = LocalActivity.current as? ComponentActivity
+            val activity = LocalActivity.current as? AppCompatActivity
             var focusState by remember { mutableStateOf(false) }
             val scrollState = rememberScrollState()
             val scrollAmount = 50f // Adjust scroll speed

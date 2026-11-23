@@ -1,0 +1,8 @@
+- Major update to in app language selection, now extends AppCompatActivity for seamless language changes.
+- Language models now download automatically and triggers updating the database.
+- Game data translations are now stored in the database.
+- Updated our custom YouTube video player.
+- Updated dependencies.
+- Upgraded to Gradle version 9.5.2
+- Bug fixes and UI improvements.
+- Bumped app version.

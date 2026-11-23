@@ -1,6 +1,6 @@
 package com.starlight.ui.helpers
 
-import androidx.activity.ComponentActivity
+import androidx.appcompat.app.AppCompatActivity
 import androidx.datastore.preferences.core.stringPreferencesKey
 import com.starlight.computers.ComputerManagerService
 import com.starlight.models.MainViewModel
@@ -15,7 +15,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 
-class ShortcutHelper(private val context: ComponentActivity) {
+class ShortcutHelper(private val context: AppCompatActivity) {
 
     private val tvChannelHelper: TvChannelHelper = TvChannelHelper(context)
 
@@ -51,7 +51,7 @@ class ShortcutHelper(private val context: ComponentActivity) {
 
     // Helper function to add game to watch next
     fun addWatchNextShortcut(
-        activity: ComponentActivity,
+        activity: AppCompatActivity,
         gameScreenHelper: GameScreenHelper,
         viewModel: MainViewModel,
         computer: ComputerDetails,
@@ -105,7 +105,7 @@ class ShortcutHelper(private val context: ComponentActivity) {
 
     // Helper function to quit game
     fun quitGame(
-        activity: ComponentActivity,
+        activity: AppCompatActivity,
         gameScreenHelper: GameScreenHelper,
         computer: ComputerDetails?,
         app: NvApp?,
