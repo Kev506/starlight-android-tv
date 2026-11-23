@@ -109,9 +109,11 @@ import com.starlight.utils.Constants.VIDEO_SR_STRING
 import com.starlight.utils.LimeLog
 import com.starlight.utils.Starlight.Companion.dataStore
 import com.starlight.utils.normalizeLanguageCode
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
 
 /**
@@ -2320,17 +2322,32 @@ fun SettingsScreen(viewModel: MainViewModel) {
                                             }
 
                                             val modelManager = RemoteModelManager.getInstance()
-                                            val oldRemoteModel = TranslateRemoteModel.Builder(
+                                            val oldLanguageTarget =
                                                 normalizeLanguageCode(oldLanguage)
-                                            ).build()
-                                            modelManager.deleteDownloadedModel(oldRemoteModel)
+                                            val selectedLanguageTarget =
+                                                normalizeLanguageCode(selectedLanguage.value)
+                                            if (oldLanguageTarget != selectedLanguageTarget) {
+                                                val oldRemoteModel =
+                                                    TranslateRemoteModel.Builder(oldLanguageTarget)
+                                                        .build()
+                                                try {
+                                                    modelManager.deleteDownloadedModel(oldRemoteModel)
+                                                        .await()
 
-                                            withContext(Dispatchers.Main) {
-                                                Toast.makeText(
-                                                    context,
-                                                    activity?.getString(R.string.old_translation),
-                                                    Toast.LENGTH_SHORT
-                                                ).show()
+                                                    withContext(Dispatchers.Main) {
+                                                        Toast.makeText(
+                                                            context,
+                                                            activity?.getString(R.string.old_translation),
+                                                            Toast.LENGTH_SHORT
+                                                        ).show()
+                                                    }
+                                                } catch (e: CancellationException) {
+                                                    throw e
+                                                } catch (e: Exception) {
+                                                    LimeLog.warning(
+                                                        "Failed to delete old translation model: ${e.message}"
+                                                    )
+                                                }
                                             }
 
                                             context.dataStore.edit { preferences ->
