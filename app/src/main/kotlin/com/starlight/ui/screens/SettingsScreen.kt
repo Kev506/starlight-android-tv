@@ -2265,6 +2265,7 @@ fun SettingsScreen(viewModel: MainViewModel) {
                                 title = dialogTitle.value,
                                 message = it,
                                 icon = icon,
+                                language = selectedLanguage.value,
                                 viewModel = viewModel
                             )
                         }
@@ -2509,6 +2510,7 @@ fun SettingsScreen(viewModel: MainViewModel) {
                                             buttonListAlertDialog.value = false
                                             openAlertDialog.value = true
                                         } else if (it != "default" && it != "en") {
+                                            selectedLanguage.value = it
                                             coroutineScope.launch(Dispatchers.IO) {
                                                 context.dataStore.edit { preferences ->
                                                     preferences[stringPreferencesKey(

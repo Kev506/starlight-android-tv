@@ -81,6 +81,7 @@ fun DownloadDialog(
     message: String,
     onDismissRequest: () -> Unit,
     icon: Int?,
+    language: String,
     viewModel: MainViewModel
 ) {
 
@@ -92,8 +93,8 @@ fun DownloadDialog(
 
     config?.let { currentConfig ->
 
-        val targetLang = normalizeLanguageCode(currentConfig.language)
-        val options = remember(currentConfig.language) {
+        val targetLang = normalizeLanguageCode(language)
+        val options = remember(targetLang) {
             TranslatorOptions.Builder()
                 .setSourceLanguage(TranslateLanguage.ENGLISH)
                 .setTargetLanguage(targetLang)
@@ -101,7 +102,7 @@ fun DownloadDialog(
         }
         val translator = remember(options) { Translation.getClient(options) }
 
-        LaunchedEffect(Unit) {
+        LaunchedEffect(targetLang) {
             downloadModel(
                 activity = activity,
                 translator = translator,
