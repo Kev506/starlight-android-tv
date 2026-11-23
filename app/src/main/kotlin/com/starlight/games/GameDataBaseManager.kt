@@ -177,8 +177,12 @@ class GameDataBaseManager(context: Context?, factory: SQLiteDatabase.CursorFacto
     }
 
     override fun onUpgrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) {
-        db.execSQL("DROP TABLE IF EXISTS $GAME_TABLE_NAME")
-        onCreate(db)
+        if (oldVersion == 2) {
+            db.execSQL("ALTER TABLE $GAME_TABLE_NAME ADD COLUMN $GAME_TRANSTEXT_COLUMN_NAME TEXT")
+        } else {
+            db.execSQL("DROP TABLE IF EXISTS $GAME_TABLE_NAME")
+            onCreate(db)
+        }
     }
 
     // Convert ByteArray to Bitmap (for loading)
@@ -187,7 +191,7 @@ class GameDataBaseManager(context: Context?, factory: SQLiteDatabase.CursorFacto
     }
 
     companion object {
-        private const val DB_VERSION = 1
+        private const val DB_VERSION = 2
         const val DB_NAME = "game.db"
         const val GAME_TABLE_NAME = "Games"
         const val GAME_TABLE_ID = "id"
