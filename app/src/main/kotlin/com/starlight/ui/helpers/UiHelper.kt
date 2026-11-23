@@ -88,24 +88,31 @@ object UiHelper {
 
     // Helper function to set the locale for the application
     fun setLocale(context: Context, localeTag: String) {
+        val languageTag = when (localeTag) {
+            "zh-rCN" -> "zh-CN"
+            "zh-rTW" -> "zh-TW"
+            else -> normalizeLanguageCode(langPref = localeTag)
+        }
 
-        if (localeTag != Constants.DEFAULT_LANGUAGE) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                val localeManager = context.getSystemService(LocaleManager::class.java)
-                val localeList = LocaleList.forLanguageTags(normalizeLanguageCode(langPref = localeTag))
-
-                if (localeManager.applicationLocales != localeList) {
-                    localeManager.applicationLocales = localeList
-                }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            val localeManager = context.getSystemService(LocaleManager::class.java)
+            val localeList = if (localeTag == Constants.DEFAULT_LANGUAGE_STRING) {
+                LocaleList.getEmptyLocaleList()
             } else {
-                val localeList = if (localeTag.isEmpty()) {
-                    LocaleListCompat.getEmptyLocaleList()
-                } else {
-                    LocaleListCompat.forLanguageTags(normalizeLanguageCode(langPref = localeTag))
-                }
-
-                AppCompatDelegate.setApplicationLocales(localeList)
+                LocaleList.forLanguageTags(languageTag)
             }
+
+            if (localeManager.applicationLocales != localeList) {
+                localeManager.applicationLocales = localeList
+            }
+        } else {
+            val localeList = if (localeTag == Constants.DEFAULT_LANGUAGE_STRING) {
+                LocaleListCompat.getEmptyLocaleList()
+            } else {
+                LocaleListCompat.forLanguageTags(languageTag)
+            }
+
+            AppCompatDelegate.setApplicationLocales(localeList)
         }
     }
 
