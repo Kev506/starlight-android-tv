@@ -411,8 +411,13 @@ fun GameScreen(
                                         gameStreamHelper.quitGame()
                                     }
                                 } else if (error) {
-                                    viewModel.getNavController()?.popBackStack()
-                                    viewModel.setDialogValue(false)
+                                    try {
+                                        viewModel.getNavController()?.popBackStack()
+                                        viewModel.setDialogValue(false)
+                                    } catch (_: Exception) {
+                                        activity.finish()
+                                        viewModel.setDialogValue(false)
+                                    }
                                 }
                             },
                             onDismissRequest = {
