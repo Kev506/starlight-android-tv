@@ -10,6 +10,10 @@ import android.graphics.Canvas
 import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.provider.BaseColumns
+import android.text.StaticLayout
+import android.text.TextPaint
+import android.text.TextUtils
+import android.util.TypedValue
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
@@ -287,7 +291,8 @@ class TvChannelHelper(private val activity: AppCompatActivity) {
         val fullDescription = appData.description
             ?: return activity.resources.getString(R.string.No_Details)
 
-        var shortDescription = fullDescription.take(150) + " ....."
+        var shortDescription = truncateToLines(activity, fullDescription,
+            3, 400f, 14f)
 
         if (prefs.language != "default" && prefs.language != "en") {
             if (!appData.translatedText.isNullOrEmpty()) {
@@ -497,6 +502,32 @@ class TvChannelHelper(private val activity: AppCompatActivity) {
         }
 
         return null
+    }
+
+    // Helper function to truncate a text to a specified number of lines
+    fun truncateToLines(
+        context: Context,
+        text: String,
+        maxLines: Int = 3,
+        widthDp: Float = 400f,
+        textSizeSp: Float = 14f
+    ): String {
+        val metrics = context.resources.displayMetrics
+        val widthPx =
+            TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, widthDp, metrics).toInt()
+        val textSizePx = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, textSizeSp, metrics)
+
+        val textPaint = TextPaint().apply {
+            textSize = textSizePx
+        }
+
+        val layout = StaticLayout.Builder
+            .obtain(text, 0, text.length, textPaint, widthPx)
+            .setMaxLines(maxLines)
+            .setEllipsize(TextUtils.TruncateAt.END)
+            .build()
+
+        return layout.text.toString()
     }
 
     companion object {
